@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Player</title>
+  <link
+  href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css"
+  rel="stylesheet"
+/>
+  <style>
+
+
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(45deg,#452e5d 0%, #202747 100% );
+      color: #e6e6e6;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    header {
+      background: #1a1f2e;
+      padding: 15px;
+      font-size: 20px;
+      font-weight: bold;
+      border-bottom: 1px solid #2a3042;
+    }
+    .header{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .button button{
+        background-color:#6138f6;
+    
+    padding:  2.5vw 3.5vw;
+    font-weight: bold;
+    border-radius: 5vw;
+    
+    display: flex;
+    align-items: flex-end;
+    gap: 1vw;
+    cursor: pointer;
+    font-size: 3vw;
+    margin-top: 2vw;
+    color: rgb(255, 255, 255);
+    align-self: flex-end;
+    border: solid transparent ;
+    text-transform: capitalize;
+
+
+    }
+    .music-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    .track {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #6565652c;
+      -webkit-backdrop-filter: blur(5px);
+      padding: 10px 20px;
+      margin-bottom: 8px;
+      border-radius: 30px;
+      cursor: pointer;
+    }
+    .track:hover {
+        background: #9491912c;
+        -webkit-backdrop-filter: blur(5px);
+    }
+    .track-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .track-info strong {
+      color: #c2bfbf;
+      font-size: 1.2rem;
+    }
+    .track-info small {
+      color: #8a8a8b;
+    }
+    .player {
+    background: linear-gradient(135deg, #202747 0%, #7a50a4 100%);
+    padding: 25px;
+    border-radius: 20px 20px 0px 0px;
+    text-align: center;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    
+  }
+
+  #currentTrack {
+    font-size: 1.1rem;
+    color: white;
+    font-weight: 500;
+    margin-bottom: 15px;
+  }
+
+  audio {
+    width: 100%;
+    margin-bottom: 20px;
+    outline: none;
+    border-radius: 10px;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+  }
+
+  button {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    padding: 2vw 6vw;
+    border-radius: 10vw;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: white;
+    transition: background 0.3s, transform 0.2s;
+  }
+
+  button:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: scale(1.1);
+  }
+
+  #playPauseBtn i {
+    font-size: 2rem;
+  }
+    audio {
+      width: 100%;
+    }
+    .delet{
+        background-color: transparent;
+        color: #f63838;
+        border: solid transparent;
+        font-size: 5vw;
+    }
+    .addbtn{
+        background: linear-gradient(135deg, #402957 0%, #2d3867 100%);
+       
+        
+    }
+    .addbtn z, .addbtn i{
+        
+        font-size: 1.1rem;
+        
+
+    }
+    .header a{
+        text-decoration: none;
+    }
+
+    @media (min-width: 500px) {
+        body{
+            display: none;
+        }
+    }
+
+
+
+
+
+
+    
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header">
+        <div class="div">🎵 Music Player</div>
+        <div class="button">
+        <a href="/postmp3">
+            <button class="addbtn"><z>add</z>  <i class="ri-add-circle-line"></i></button>
+            
+        </a></div>
+    </div>
+    
+  </header>
+  
+
+  <div class="music-list" id="musicList">
+    <% if (files.length === 0) { %>
+      <p>No music found.</p>
+    <% } else { %>
+      <% files.forEach((file, index) => { %>
+        <div class="track" data-index="<%= index %>">
+          <div class="track-info">
+            <strong>Music <%= files.length - index %></strong>
+            <small>
+              <%= (file.bytes / 1024 / 1024).toFixed(2) %> MB 
+              <% if (file.duration) { %> • <%= Math.floor(file.duration / 60) %>:<%= String(Math.floor(file.duration % 60)).padStart(2, '0') %> <% } %>
+            </small>
+          </div>
+         
+         <a href="/AllBus/<%=file.public_id.split('/').pop() %>"><button onclick="myFunction()" class="delet"><i class="ri-delete-bin-6-line"></i></button></a>
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+
+  <div class="player">
+    <p id="currentTrack">No track playing</p>
+    <audio id="audioPlayer" controls></audio>
+    <div class="controls">
+      <button id="prevBtn">⏮ </button>
+      <button id="playPauseBtn"><i class="ri-play-circle-fill"></i> </button>
+      <button id="nextBtn">⏭ </button>
+    </div>
+  </div>
+
+  <script>
+    const musicList = <%- JSON.stringify(files) %>;
+    let currentTrackIndex = 0;
+    let isPlaying = false;
+
+    const audioPlayer = document.getElementById("audioPlayer");
+    const currentTrack = document.getElementById("currentTrack");
+    const playPauseBtn = document.getElementById("playPauseBtn");
+
+    function playTrack(index) {
+      currentTrackIndex = index;
+      const song = musicList[index];
+      audioPlayer.src = song.url;
+      currentTrack.textContent = `Playing: ${song.public_id.split('/').pop()}`;
+
+      audioPlayer.play();
+      isPlaying = true;
+      playPauseBtn.innerHTML = '<i class="ri-pause-circle-fill"></i>';
+    }
+
+    function togglePlayPause() {
+      if (!audioPlayer.src) {
+        playTrack(currentTrackIndex);
+        return;
+      }
+      if (isPlaying) {
+        audioPlayer.pause();
+        //playPauseBtn.textContent = "▶ Play";
+        playPauseBtn.innerHTML = '<i class="ri-play-circle-fill"></i>';
+
+      } else {
+        audioPlayer.play();
+        playPauseBtn.innerHTML = '<i class="ri-pause-circle-fill"></i>';
+       
+      }
+      isPlaying = !isPlaying;
+    }
+
+    function nextTrack() {
+      currentTrackIndex = (currentTrackIndex + 1) % musicList.length;
+      playTrack(currentTrackIndex);
+    }
+
+    function prevTrack() {
+      currentTrackIndex = (currentTrackIndex - 1 + musicList.length) % musicList.length;
+      playTrack(currentTrackIndex);
+    }
+
+    document.getElementById("musicList").addEventListener("click", (e) => {
+      const trackDiv = e.target.closest(".track");
+      if (trackDiv) {
+        playTrack(parseInt(trackDiv.dataset.index));
+      }
+    });
+
+    playPauseBtn.addEventListener("click", togglePlayPause);
+    document.getElementById("nextBtn").addEventListener("click", nextTrack);
+    document.getElementById("prevBtn").addEventListener("click", prevTrack);
+    audioPlayer.addEventListener("ended", nextTrack);
+
+
+
+
+    function myFunction() {
+       alert("confirm Delete");
+   }
+  </script>
+</body>
+</html>
