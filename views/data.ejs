@@ -9,8 +9,6 @@
   rel="stylesheet"
 />
   <style>
-
-
     body {
       font-family: Arial, sans-serif;
       background: linear-gradient(45deg,#452e5d 0%, #202747 100% );
@@ -34,23 +32,19 @@
     }
     .button button{
         background-color:#6138f6;
-    
-    padding:  2.5vw 3.5vw;
-    font-weight: bold;
-    border-radius: 5vw;
-    
-    display: flex;
-    align-items: flex-end;
-    gap: 1vw;
-    cursor: pointer;
-    font-size: 3vw;
-    margin-top: 2vw;
-    color: rgb(255, 255, 255);
-    align-self: flex-end;
-    border: solid transparent ;
-    text-transform: capitalize;
-
-
+        padding:  2.5vw 3.5vw;
+        font-weight: bold;
+        border-radius: 5vw;
+        display: flex;
+        align-items: flex-end;
+        gap: 1vw;
+        cursor: pointer;
+        font-size: 3vw;
+        margin-top: 2vw;
+        color: rgb(255, 255, 255);
+        align-self: flex-end;
+        border: solid transparent ;
+        text-transform: capitalize;
     }
     .music-list {
       flex: 1;
@@ -78,63 +72,92 @@
     }
     .track-info strong {
       color: #c2bfbf;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
     }
     .track-info small {
       color: #8a8a8b;
     }
     .player {
-    background: linear-gradient(135deg, #202747 0%, #7a50a4 100%);
-    padding: 25px;
-    border-radius: 20px 20px 0px 0px;
-    text-align: center;
-    backdrop-filter: blur(15px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-    
-  }
+      background: linear-gradient(135deg, #202747 0%, #7a50a4 100%);
+      padding: 25px;
+      border-radius: 20px 20px 0px 0px;
+      text-align: center;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
 
-  #currentTrack {
-    font-size: 1.1rem;
-    color: white;
-    font-weight: 500;
-    margin-bottom: 15px;
-  }
+    #currentTrack {
+      font-size: 1.1rem;
+      color: white;
+      font-weight: 500;
+      margin-bottom: 15px;
+    }
 
-  audio {
-    width: 100%;
-    margin-bottom: 20px;
-    outline: none;
-    border-radius: 10px;
-  }
-
-  .controls {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-  }
-
-  button {
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    padding: 2vw 6vw;
-    border-radius: 10vw;
-    cursor: pointer;
-    font-size: 1.5rem;
-    color: white;
-    transition: background 0.3s, transform 0.2s;
-  }
-
-  button:hover {
-    background: rgba(255, 255, 255, 0.4);
-    transform: scale(1.1);
-  }
-
-  #playPauseBtn i {
-    font-size: 2rem;
-  }
     audio {
       width: 100%;
+      margin-bottom: 20px;
+      outline: none;
+      border-radius: 10px;
     }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      padding: 2vw 6vw;
+      border-radius: 10vw;
+      cursor: pointer;
+      font-size: 1.5rem;
+      color: white;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(1.1);
+    }
+
+    #playPauseBtn i {
+      font-size: 2rem;
+    }
+
+    /* Shuffle Button Specific Styles */
+    .shuffle-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      padding: 2vw 4vw;
+      border-radius: 10vw;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: white;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .shuffle-btn:hover {
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(1.1);
+    }
+
+    .shuffle-btn.active {
+      background:rgb(96, 255, 75);
+      color: white;
+      box-shadow: 0 0 15px rgb(71, 255, 47);
+    }
+
+    .shuffle-btn.active i {
+      color: white;
+    }
+
     .delet{
         background-color: transparent;
         color: #f63838;
@@ -143,14 +166,9 @@
     }
     .addbtn{
         background: linear-gradient(135deg, #402957 0%, #2d3867 100%);
-       
-        
     }
     .addbtn z, .addbtn i{
-        
         font-size: 1.1rem;
-        
-
     }
     .header a{
         text-decoration: none;
@@ -162,13 +180,18 @@
         }
     }
 
+    /* Status indicator for shuffle mode */
+    .shuffle-status {
+      font-size: 0.9rem;
+      color: rgb(71, 255, 47);
+      margin-bottom: 10px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
 
-
-
-
-
-    
-
+    .shuffle-status.visible {
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
@@ -178,13 +201,10 @@
         <div class="button">
         <a href="/postmp3">
             <button class="addbtn"><z>add</z>  <i class="ri-add-circle-line"></i></button>
-            
         </a></div>
     </div>
-    
   </header>
   
-
   <div class="music-list" id="musicList">
     <% if (files.length === 0) { %>
       <p>No music found.</p>
@@ -192,13 +212,12 @@
       <% files.forEach((file, index) => { %>
         <div class="track" data-index="<%= index %>">
           <div class="track-info">
-            <strong>Music <%= files.length - index %></strong>
+            <strong><%= file.originalname.replace(/\.[^.]+$/, '').split(/_+/).slice(0, 4).join(' ') %></strong>
             <small>
               <%= (file.bytes / 1024 / 1024).toFixed(2) %> MB 
               <% if (file.duration) { %> • <%= Math.floor(file.duration / 60) %>:<%= String(Math.floor(file.duration % 60)).padStart(2, '0') %> <% } %>
             </small>
           </div>
-         
          <a href="/AllBus/<%=file.public_id.split('/').pop() %>"><button onclick="myFunction()" class="delet"><i class="ri-delete-bin-6-line"></i></button></a>
         </div>
       <% }) %>
@@ -206,12 +225,14 @@
   </div>
 
   <div class="player">
+    
     <p id="currentTrack">No track playing</p>
     <audio id="audioPlayer" controls></audio>
     <div class="controls">
-      <button id="prevBtn">⏮ </button>
-      <button id="playPauseBtn"><i class="ri-play-circle-fill"></i> </button>
-      <button id="nextBtn">⏭ </button>
+      <button id="prevBtn">⏮</button>
+      <button id="playPauseBtn"><i class="ri-play-circle-fill"></i></button>
+      <button id="nextBtn">⏭</button>
+      <button id="shuffleBtn" class="shuffle-btn"><i class="ri-shuffle-line"></i></button>
     </div>
   </div>
 
@@ -219,20 +240,106 @@
     const musicList = <%- JSON.stringify(files) %>;
     let currentTrackIndex = 0;
     let isPlaying = false;
+    let isShuffleEnabled = false;
+
+    // Anti-repeat system
+    let recentlyPlayed = []; // Tracks played recently (to avoid immediate repeats)
+    let shuffleHistory = []; // Complete shuffle history
+    const RECENT_TRACKS_LIMIT = Math.min(3, Math.floor(musicList.length / 2)); // Avoid last 3 tracks or half the library
 
     const audioPlayer = document.getElementById("audioPlayer");
     const currentTrack = document.getElementById("currentTrack");
     const playPauseBtn = document.getElementById("playPauseBtn");
+    const shuffleBtn = document.getElementById("shuffleBtn");
+    const shuffleStatus = document.getElementById("shuffleStatus");
 
     function playTrack(index) {
       currentTrackIndex = index;
       const song = musicList[index];
       audioPlayer.src = song.url;
-      currentTrack.textContent = `Playing: ${song.public_id.split('/').pop()}`;
+      const displayTitle = song.originalname.replace(/\.[^.]+$/, '').split(/_+/).slice(0, 4).join(' ');
+      currentTrack.textContent = `Playing: ${displayTitle}`;
 
       audioPlayer.play();
       isPlaying = true;
       playPauseBtn.innerHTML = '<i class="ri-pause-circle-fill"></i>';
+      
+      // Add to recently played when shuffle is enabled
+      if (isShuffleEnabled) {
+        addToRecentlyPlayed(index);
+      }
+    }
+
+    function addToRecentlyPlayed(trackIndex) {
+      // Remove if already in recently played
+      recentlyPlayed = recentlyPlayed.filter(index => index !== trackIndex);
+      
+      // Add to beginning of array
+      recentlyPlayed.unshift(trackIndex);
+      
+      // Keep only the specified number of recent tracks
+      if (recentlyPlayed.length > RECENT_TRACKS_LIMIT) {
+        recentlyPlayed = recentlyPlayed.slice(0, RECENT_TRACKS_LIMIT);
+      }
+      
+      // Add to complete shuffle history
+      if (!shuffleHistory.includes(trackIndex)) {
+        shuffleHistory.push(trackIndex);
+      }
+    }
+
+    function getRandomTrackIndex() {
+      // If we've played all tracks, reset shuffle history but keep recent tracks restriction
+      if (shuffleHistory.length >= musicList.length) {
+        shuffleHistory = [];
+        // Keep some recently played tracks to avoid immediate repeats even after full cycle
+        recentlyPlayed = recentlyPlayed.slice(0, Math.min(2, recentlyPlayed.length));
+      }
+      
+      // Get available tracks (not recently played and not in current shuffle cycle)
+      let availableTracks = [];
+      
+      for (let i = 0; i < musicList.length; i++) {
+        const notRecentlyPlayed = !recentlyPlayed.includes(i);
+        const notInCurrentCycle = !shuffleHistory.includes(i);
+        const notCurrentTrack = i !== currentTrackIndex;
+        
+        if (notRecentlyPlayed && notInCurrentCycle && notCurrentTrack) {
+          availableTracks.push(i);
+        }
+      }
+      
+      // If no tracks available due to strict filtering, relax the rules
+      if (availableTracks.length === 0) {
+        console.log("No tracks available with strict rules, relaxing...");
+        
+        // First fallback: Only avoid recently played (ignore shuffle history)
+        availableTracks = musicList
+          .map((_, index) => index)
+          .filter(i => !recentlyPlayed.includes(i) && i !== currentTrackIndex);
+        
+        // Second fallback: Only avoid current track
+        if (availableTracks.length === 0) {
+          availableTracks = musicList
+            .map((_, index) => index)
+            .filter(i => i !== currentTrackIndex);
+        }
+        
+        // Final fallback: Include everything (shouldn't happen unless only 1 song)
+        if (availableTracks.length === 0) {
+          availableTracks = [0];
+          recentlyPlayed = [];
+          shuffleHistory = [];
+        }
+      }
+      
+      // Select random track from available ones
+      const randomIndex = Math.floor(Math.random() * availableTracks.length);
+      const selectedTrack = availableTracks[randomIndex];
+      
+      console.log(`Available tracks: ${availableTracks.length}, Selected: ${selectedTrack}, Recently played: [${recentlyPlayed.join(', ')}]`);
+      
+      return selectedTrack;
     }
 
     function togglePlayPause() {
@@ -242,45 +349,79 @@
       }
       if (isPlaying) {
         audioPlayer.pause();
-        //playPauseBtn.textContent = "▶ Play";
         playPauseBtn.innerHTML = '<i class="ri-play-circle-fill"></i>';
-
       } else {
         audioPlayer.play();
         playPauseBtn.innerHTML = '<i class="ri-pause-circle-fill"></i>';
-       
       }
       isPlaying = !isPlaying;
     }
 
     function nextTrack() {
-      currentTrackIndex = (currentTrackIndex + 1) % musicList.length;
+      if (isShuffleEnabled) {
+        currentTrackIndex = getRandomTrackIndex();
+      } else {
+        currentTrackIndex = (currentTrackIndex + 1) % musicList.length;
+      }
       playTrack(currentTrackIndex);
     }
 
     function prevTrack() {
-      currentTrackIndex = (currentTrackIndex - 1 + musicList.length) % musicList.length;
+      if (isShuffleEnabled) {
+        // In shuffle mode, previous goes to a random track (avoiding repeats)
+        currentTrackIndex = getRandomTrackIndex();
+      } else {
+        currentTrackIndex = (currentTrackIndex - 1 + musicList.length) % musicList.length;
+      }
       playTrack(currentTrackIndex);
     }
 
+    function toggleShuffle() {
+      isShuffleEnabled = !isShuffleEnabled;
+      
+      if (isShuffleEnabled) {
+        shuffleBtn.classList.add('active');
+        shuffleBtn.innerHTML = '<i class="ri-shuffle-fill"></i>';
+        shuffleStatus.classList.add('visible');
+        
+        // Initialize shuffle system
+        recentlyPlayed = [currentTrackIndex];
+        shuffleHistory = [currentTrackIndex];
+        
+        
+      } else {
+        shuffleBtn.classList.remove('active');
+        shuffleBtn.innerHTML = '<i class="ri-shuffle-line"></i>';
+        shuffleStatus.classList.remove('visible');
+        
+        // Reset shuffle system
+        recentlyPlayed = [];
+        shuffleHistory = [];
+        
+        
+      }
+    }
+
+    // Event Listeners
     document.getElementById("musicList").addEventListener("click", (e) => {
       const trackDiv = e.target.closest(".track");
-      if (trackDiv) {
-        playTrack(parseInt(trackDiv.dataset.index));
+      if (trackDiv && !e.target.closest('button')) {
+        const selectedIndex = parseInt(trackDiv.dataset.index);
+        playTrack(selectedIndex);
       }
     });
 
     playPauseBtn.addEventListener("click", togglePlayPause);
     document.getElementById("nextBtn").addEventListener("click", nextTrack);
     document.getElementById("prevBtn").addEventListener("click", prevTrack);
+    shuffleBtn.addEventListener("click", toggleShuffle);
+
+    // Auto-advance to next track when current ends
     audioPlayer.addEventListener("ended", nextTrack);
 
-
-
-
     function myFunction() {
-       alert("confirm Delete");
-   }
+      alert("confirm Delete");
+    }
   </script>
 </body>
 </html>
