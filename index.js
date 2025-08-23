@@ -67,7 +67,7 @@ app.get("/", async (req, res) => {
     }));
     //console.log(files1)
 
-    res.render("Data", { files: formattedFiles });
+    res.render("data3", { files: formattedFiles });
     //console.log(formattedFiles)
   } catch (err) {
     console.error("Cloudinary search error:", err);
