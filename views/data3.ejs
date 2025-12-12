@@ -3,653 +3,302 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VibePlayer</title>
-  <!-- Remix Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet"/>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-  
+  <title>Music Player</title>
+  <link
+  href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css"
+  rel="stylesheet"
+/>
   <style>
-    :root {
-      --primary: #8b5cf6;
-      --secondary: #ec4899;
-      --glass-bg: rgba(255, 255, 255, 0.08);
-      --glass-border: rgba(255, 255, 255, 0.1);
-      --text-main: #ffffff;
-      --text-muted: #a1a1aa;
-      --danger: #ef4444;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
     body {
-      font-family: 'Poppins', sans-serif;
-      background: #0f172a;
-      color: var(--text-main);
-      height: 100vh;
-      width: 100vw;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-    }
-
-    /* Animated Background Blob */
-    .bg-blob {
-      position: absolute;
-      width: 600px;
-      height: 600px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      border-radius: 50%;
-      filter: blur(80px);
-      animation: float 10s infinite alternate ease-in-out;
-      z-index: -1;
-      opacity: 0.6;
-    }
-
-    @keyframes float {
-      0% { transform: translate(-20%, -20%) scale(1); }
-      100% { transform: translate(20%, 20%) scale(1.1); }
-    }
-
-    /* Main Container */
-    .app-container {
-      width: 100%;
-      height: 100%;
-      max-width: 1000px;
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border);
+      font-family: Arial, sans-serif;
+      background: linear-gradient(45deg,#452e5d 0%, #202747 100% );
+      color: #e6e6e6;
+      margin: 0;
       display: flex;
       flex-direction: column;
-      position: relative;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      height: 100vh;
     }
-
-    /* Desktop Layout: Split view */
-    @media (min-width: 768px) {
-      .app-container {
-        height: 85vh;
-        border-radius: 24px;
-        flex-direction: row;
-        overflow: hidden;
-      }
-    }
-
-    /* Header */
     header {
-      padding: 20px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid var(--glass-border);
-      background: rgba(0,0,0,0.2);
+      background: #1a1f2e;
+      padding: 15px;
+      font-size: 20px;
+      font-weight: bold;
+      border-bottom: 1px solid #2a3042;
     }
-
-    .brand {
-      font-size: 1.25rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: linear-gradient(to right, #fff, #a1a1aa);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .header{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
-
-    .add-btn {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 50px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: transform 0.2s, box-shadow 0.2s;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+    .button button{
+        background-color:#6138f6;
+        padding:  2.5vw 3.5vw;
+        font-weight: bold;
+        border-radius: 5vw;
+        display: flex;
+        align-items: flex-end;
+        gap: 1vw;
+        cursor: pointer;
+        font-size: 3vw;
+        margin-top: 2vw;
+        color: rgb(255, 255, 255);
+        align-self: flex-end;
+        border: solid transparent ;
+        text-transform: capitalize;
     }
-
-    .add-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(236, 72, 153, 0.5);
-    }
-
-    /* Music List Area */
-    .playlist-section {
+    .music-list {
       flex: 1;
       overflow-y: auto;
-      padding: 20px;
-      scrollbar-width: thin;
-      scrollbar-color: var(--glass-border) transparent;
+      padding: 10px;
     }
-
-    .playlist-section::-webkit-scrollbar {
-      width: 6px;
-    }
-    .playlist-section::-webkit-scrollbar-thumb {
-      background-color: rgba(255,255,255,0.2);
-      border-radius: 20px;
-    }
-
-    .track-item {
+    .track {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      padding: 12px 16px;
-      margin-bottom: 10px;
-      background: var(--glass-bg);
-      border: 1px solid transparent;
-      border-radius: 12px;
+      align-items: center;
+      background: #6565652c;
+      -webkit-backdrop-filter: blur(5px);
+      padding: 10px 20px;
+      margin-bottom: 8px;
+      border-radius: 30px;
       cursor: pointer;
-      transition: all 0.2s ease;
     }
-
-    .track-item:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.1);
+    .track:hover {
+        background: #9491912c;
+        -webkit-backdrop-filter: blur(5px);
     }
-
-    .track-item.active {
-      background: rgba(139, 92, 246, 0.15);
-      border-color: var(--primary);
-    }
-
-    .track-left {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      overflow: hidden;
-    }
-
-    .icon-box {
-      width: 40px;
-      height: 40px;
-      background: rgba(0,0,0,0.2);
-      border-radius: 8px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: var(--text-muted);
-      flex-shrink: 0;
-    }
-
-    .track-item.active .icon-box {
-      color: var(--secondary);
-    }
-
-    /* Playing Equalizer Animation */
-    .playing-anim {
-      display: none;
-      gap: 2px;
-      height: 15px;
-      align-items: flex-end;
-    }
-    .track-item.active.is-playing .icon-box i { display: none; }
-    .track-item.active.is-playing .playing-anim { display: flex; }
-    
-    .bar {
-      width: 3px;
-      background: var(--secondary);
-      animation: bounce 1s infinite;
-    }
-    .bar:nth-child(2) { animation-delay: 0.2s; }
-    .bar:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes bounce {
-      0%, 100% { height: 3px; }
-      50% { height: 15px; }
-    }
-
     .track-info {
       display: flex;
       flex-direction: column;
-      overflow: hidden;
     }
-
-    .track-title {
-      font-size: 0.95rem;
-      font-weight: 500;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .track-meta {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .delete-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      padding: 8px;
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-
-    .delete-btn:hover {
-      color: var(--danger);
-    }
-
-    /* Player Section */
-    .player-section {
-      background: rgba(0, 0, 0, 0.3);
-      padding: 24px;
-      border-top: 1px solid var(--glass-border);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 20px;
-      z-index: 10;
-    }
-
-    @media (min-width: 768px) {
-      .player-section {
-        width: 350px;
-        border-top: none;
-        border-left: 1px solid var(--glass-border);
-        background: rgba(0, 0, 0, 0.2);
-      }
-    }
-
-    .player-art {
-      width: 100%;
-      aspect-ratio: 1;
-      background: linear-gradient(45deg, #2a2a72, #009ffd);
-      border-radius: 16px;
-      display: none;
-      position: relative;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-      overflow: hidden;
-    }
-    
-    .player-art::after {
-        content: "🎵";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 4rem;
-        opacity: 0.5;
-    }
-
-    @media (min-width: 768px) {
-      .player-art { display: block; }
-    }
-
-    .current-track-details {
-      text-align: center;
-    }
-
-    .current-title {
+    .track-info strong {
+      color: #c2bfbf;
       font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    }
+    .track-info small {
+      color: #8a8a8b;
+    }
+    .player {
+      background: linear-gradient(135deg, #202747 0%, #7a50a4 100%);
+      padding: 25px;
+      border-radius: 20px 20px 0px 0px;
+      text-align: center;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
     }
 
-    .current-status {
-      font-size: 0.8rem;
-      color: var(--secondary);
+    #currentTrack {
+      font-size: 1.1rem;
+      color: white;
       font-weight: 500;
-      min-height: 1.2em;
-    }
-
-    .controls-wrapper {
-      width: 100%;
-    }
-
-    .progress-area {
-      width: 100%;
       margin-bottom: 15px;
     }
 
-    .progress-bar {
+    audio {
       width: 100%;
-      height: 6px;
-      background: rgba(255,255,255,0.1);
+      margin-bottom: 20px;
+      outline: none;
       border-radius: 10px;
-      cursor: pointer;
-      position: relative;
-      appearance: none;
-      -webkit-appearance: none;
     }
 
-    .progress-bar::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: var(--secondary);
-      cursor: pointer;
-      box-shadow: 0 0 10px var(--secondary);
-      transition: transform 0.1s;
-    }
-    .progress-bar::-webkit-slider-thumb:hover {
-        transform: scale(1.2);
-    }
-
-    .time-info {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: 8px;
-    }
-
-    .buttons {
+    .controls {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 20px;
+      gap: 15px;
+      flex-wrap: wrap;
     }
 
-    .btn-control {
-      background: transparent;
+    button {
+      background: rgba(255, 255, 255, 0.2);
       border: none;
-      color: var(--text-main);
+      padding: 2vw 6vw;
+      border-radius: 10vw;
       cursor: pointer;
-      font-size: 1.4rem;
-      transition: all 0.2s;
-      opacity: 0.8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+      transition: background 0.3s, transform 0.2s;
     }
 
-    .btn-control:hover {
-      opacity: 1;
+    button:hover {
+      background: rgba(255, 255, 255, 0.4);
       transform: scale(1.1);
     }
 
-    .btn-control.active {
-      color: var(--secondary);
-      text-shadow: 0 0 10px var(--secondary);
-      opacity: 1;
+    #playPauseBtn i {
+      font-size: 2rem;
     }
 
-    .btn-main {
-      width: 55px;
-      height: 55px;
-      background: white;
-      color: #0f172a;
-      border-radius: 50%;
-      font-size: 1.6rem;
-      opacity: 1;
-      box-shadow: 0 0 20px rgba(255,255,255,0.3);
-    }
-    
-    .btn-main:hover {
-        transform: scale(1.05);
-        box-shadow: 0 0 25px rgba(255,255,255,0.5);
+    /* Shuffle Button Specific Styles */
+    .shuffle-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      padding: 2vw 4vw;
+      border-radius: 10vw;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: white;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .empty-state {
-        text-align: center;
-        padding: 40px;
-        color: var(--text-muted);
+    .shuffle-btn:hover {
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(1.1);
     }
-    
-    /* Hidden audio element */
-    audio { display: none; }
+
+    .shuffle-btn.active {
+      background:rgb(96, 255, 75);
+      color: white;
+      box-shadow: 0 0 15px rgb(71, 255, 47);
+    }
+
+    .shuffle-btn.active i {
+      color: white;
+    }
+
+    .delet{
+        background-color: transparent;
+        color: #f63838;
+        border: solid transparent;
+        font-size: 5vw;
+    }
+    .addbtn{
+        background: linear-gradient(135deg, #402957 0%, #2d3867 100%);
+    }
+    .addbtn z, .addbtn i{
+        font-size: 1.1rem;
+    }
+    .header a{
+        text-decoration: none;
+    }
+
+    @media (min-width: 500px) {
+        body{
+            display: none;
+        }
+    }
+
+    /* Status indicator for shuffle mode */
+    .shuffle-status {
+      font-size: 0.9rem;
+      color: rgb(71, 255, 47);
+      margin-bottom: 10px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .shuffle-status.visible {
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
-
-  <!-- Background Effect -->
-  <div class="bg-blob"></div>
-
-  <div class="app-container">
-    
-    <!-- Left Side: Playlist -->
-    <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
-      <header>
-        <div class="brand">
-          <i class="ri-music-2-fill" style="color: var(--secondary)"></i>
-          <span>VibePlayer</span>
-        </div>
-        <a href="/postmp3" style="text-decoration: none;">
-          <button class="add-btn">
-            <i class="ri-add-line"></i>
-            <span>Add Music</span>
-          </button>
-        </a>
-      </header>
-
-      <!-- Replaced server-side EJS loop with a container for JS rendering -->
-      <div class="playlist-section" id="playlistSection">
-         <!-- Playlist items will be injected here by JavaScript -->
-      </div>
+  <header>
+    <div class="header">
+        <div class="div">🎵 Music Player</div>
+        <div class="button">
+        <a href="/postmp3">
+            <button class="addbtn"><z>add</z>  <i class="ri-add-circle-line"></i></button>
+        </a></div>
     </div>
-
-    <!-- Right/Bottom Side: Player -->
-    <div class="player-section">
-      <div class="player-art"></div>
-      
-      <div class="current-track-details">
-        <div class="current-title" id="trackTitle">Select a track</div>
-        <div class="current-status" id="trackStatus">Ready to play</div>
-      </div>
-
-      <div class="controls-wrapper">
-        <div class="progress-area">
-          <input type="range" class="progress-bar" id="progressBar" value="0" min="0" max="100">
-          <div class="time-info">
-            <span id="currentTime">0:00</span>
-            <span id="totalTime">0:00</span>
+  </header>
+  
+  <div class="music-list" id="musicList">
+    <% if (files.length === 0) { %>
+      <p>No music found.</p>
+    <% } else { %>
+      <% files.forEach((file, index) => { %>
+        <div class="track" data-index="<%= index %>">
+          <div class="track-info">
+            <strong><%= file.originalname.replace(/\.[^.]+$/, '').split(/_+/).slice(0, 4).join(' ') %></strong>
+            <small>
+              <%= (file.bytes / 1024 / 1024).toFixed(2) %> MB 
+              <% if (file.duration) { %> • <%= Math.floor(file.duration / 60) %>:<%= String(Math.floor(file.duration % 60)).padStart(2, '0') %> <% } %>
+            </small>
           </div>
+         <a href="/AllBus/<%=file.public_id.split('/').pop() %>"><button onclick="myFunction()" class="delet"><i class="ri-delete-bin-6-line"></i></button></a>
         </div>
-
-        <div class="buttons">
-          <button class="btn-control" id="shuffleBtn" title="Shuffle"><i class="ri-shuffle-line"></i></button>
-          <button class="btn-control" id="prevBtn"><i class="ri-skip-back-fill"></i></button>
-          <button class="btn-control btn-main" id="playPauseBtn"><i class="ri-play-fill"></i></button>
-          <button class="btn-control" id="nextBtn"><i class="ri-skip-forward-fill"></i></button>
-        </div>
-      </div>
-    </div>
-
+      <% }) %>
+    <% } %>
   </div>
 
-  <audio id="audioPlayer"></audio>
+  <div class="player">
+    
+    <p id="currentTrack">No track playing</p>
+    <audio id="audioPlayer" controls></audio>
+    <div class="controls">
+      <button id="prevBtn">⏮</button>
+      <button id="playPauseBtn"><i class="ri-play-circle-fill"></i></button>
+      <button id="nextBtn">⏭</button>
+      <button id="shuffleBtn" class="shuffle-btn"><i class="ri-shuffle-line"></i></button>
+    </div>
+  </div>
 
   <script>
-    // -------------------------------------------------------------------------
-    //  DATA SECTION
-    //  If you are using EJS/Node backend, uncomment the line below and comment out the mock data.
-    // -------------------------------------------------------------------------
-    
-    // const musicList = <%- JSON.stringify(files) %>;  // <-- USE THIS ON SERVER
-
-    // MOCK DATA (For Preview/Client-side only)
-    const musicList = [
-      { 
-        originalname: 'Midnight_City_M83.mp3', 
-        public_id: 'music/Midnight_City', 
-        bytes: 4500000, 
-        duration: 234, 
-        url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' 
-      },
-      { 
-        originalname: 'Cyberpunk_Dreams_2077.mp3', 
-        public_id: 'music/Cyberpunk_Dreams', 
-        bytes: 3200000, 
-        duration: 185, 
-        url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' 
-      },
-      { 
-        originalname: 'Lofi_Chill_Beats_V2.mp3', 
-        public_id: 'music/Lofi_Chill_Beats', 
-        bytes: 5100000, 
-        duration: 290, 
-        url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' 
-      }
-    ];
-
-    // -------------------------------------------------------------------------
-    //  APP LOGIC
-    // -------------------------------------------------------------------------
-
-    // UI Elements
-    const playlistSection = document.getElementById("playlistSection");
-    const audioPlayer = document.getElementById("audioPlayer");
-    const playPauseBtn = document.getElementById("playPauseBtn");
-    const prevBtn = document.getElementById("prevBtn");
-    const nextBtn = document.getElementById("nextBtn");
-    const shuffleBtn = document.getElementById("shuffleBtn");
-    const progressBar = document.getElementById("progressBar");
-    const trackTitle = document.getElementById("trackTitle");
-    const trackStatus = document.getElementById("trackStatus");
-    const currentTimeEl = document.getElementById("currentTime");
-    const totalTimeEl = document.getElementById("totalTime");
-
-    // State Variables
+    const musicList = <%- JSON.stringify(files) %>;
     let currentTrackIndex = 0;
     let isPlaying = false;
     let isShuffleEnabled = false;
 
-    // Shuffle Logic Variables
-    let recentlyPlayed = []; 
-    let shuffleHistory = []; 
-    const RECENT_TRACKS_LIMIT = Math.min(3, Math.floor(musicList.length / 2));
+    // Anti-repeat system
+    let recentlyPlayed = []; // Tracks played recently (to avoid immediate repeats)
+    let shuffleHistory = []; // Complete shuffle history
+    const RECENT_TRACKS_LIMIT = Math.min(3, Math.floor(musicList.length / 2)); // Avoid last 3 tracks or half the library
 
-    // Helper: Format Seconds to MM:SS
-    function formatTime(seconds) {
-      if (!seconds) return "0:00";
-      const m = Math.floor(seconds / 60);
-      const s = Math.floor(seconds % 60);
-      return `${m}:${s.toString().padStart(2, '0')}`;
-    }
-
-    // Initial Render of Playlist (Replaces EJS Loop)
-    function renderPlaylist() {
-        playlistSection.innerHTML = '';
-        if (musicList.length === 0) {
-            playlistSection.innerHTML = `
-              <div class="empty-state">
-                <i class="ri-disc-line" style="font-size: 3rem; margin-bottom: 10px;"></i>
-                <p>No music found.</p>
-              </div>`;
-            return;
-        }
-
-        musicList.forEach((file, index) => {
-            // Logic matching your EJS: file.originalname.replace(/\.[^.]+$/, '').split(/_+/).slice(0, 4).join(' ')
-            const displayName = file.originalname.replace(/\.[^.]+$/, '').split(/_+/).slice(0, 4).join(' ');
-            
-            // Logic matching your delete link
-            const deleteId = file.public_id.split('/').pop();
-
-            const item = document.createElement('div');
-            item.className = 'track-item';
-            item.dataset.index = index;
-            item.onclick = () => playTrack(index);
-
-            item.innerHTML = `
-              <div class="track-left">
-                <div class="icon-box">
-                  <i class="ri-music-fill"></i>
-                  <div class="playing-anim">
-                    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                  </div>
-                </div>
-                <div class="track-info">
-                  <div class="track-title">${displayName}</div>
-                  <div class="track-meta">
-                    ${(file.bytes / 1024 / 1024).toFixed(2)} MB 
-                    ${file.duration ? `• ${Math.floor(file.duration / 60)}:${String(Math.floor(file.duration % 60)).padStart(2, '0')}` : ''}
-                  </div>
-                </div>
-              </div>
-              
-              <a href="/AllBus/${deleteId}" class="delete-btn" onclick="event.stopPropagation(); return confirm('Delete this track?');">
-                <i class="ri-delete-bin-line"></i>
-              </a>
-            `;
-            playlistSection.appendChild(item);
-        });
-    }
-
-    function updateActiveTrackUI(index) {
-        // Remove active class from all
-        document.querySelectorAll('.track-item').forEach(el => {
-            el.classList.remove('active');
-            el.classList.remove('is-playing');
-        });
-        
-        // Add active class to current
-        const currentItem = document.querySelector(`.track-item[data-index="${index}"]`);
-        if(currentItem) {
-            currentItem.classList.add('active');
-            if(isPlaying) currentItem.classList.add('is-playing');
-            currentItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-    }
+    const audioPlayer = document.getElementById("audioPlayer");
+    const currentTrack = document.getElementById("currentTrack");
+    const playPauseBtn = document.getElementById("playPauseBtn");
+    const shuffleBtn = document.getElementById("shuffleBtn");
+    const shuffleStatus = document.getElementById("shuffleStatus");
 
     function playTrack(index) {
-      if(index < 0 || index >= musicList.length) return;
-      
       currentTrackIndex = index;
       const song = musicList[index];
-      
-      // Update Audio
-      if(audioPlayer.src !== song.url) {
-          audioPlayer.src = song.url;
-      }
-      
-      // Same logic for title display
+      audioPlayer.src = song.url;
       const displayTitle = song.originalname.replace(/\.[^.]+$/, '').split(/_+/).slice(0, 4).join(' ');
-      
-      // Update UI Text
-      trackTitle.textContent = displayTitle;
-      
-      audioPlayer.play().catch(e => console.log("Play failed (might need user interaction first)", e));
-      isPlaying = true;
-      trackStatus.textContent = "Now Playing...";
-      playPauseBtn.innerHTML = '<i class="ri-pause-fill"></i>';
-      
-      // Update List UI
-      updateActiveTrackUI(index);
+      currentTrack.textContent = `Playing: ${displayTitle}`;
 
-      // Shuffle History Logic
+      audioPlayer.play();
+      isPlaying = true;
+      playPauseBtn.innerHTML = '<i class="ri-pause-circle-fill"></i>';
+      
+      // Add to recently played when shuffle is enabled
       if (isShuffleEnabled) {
         addToRecentlyPlayed(index);
       }
     }
 
     function addToRecentlyPlayed(trackIndex) {
+      // Remove if already in recently played
       recentlyPlayed = recentlyPlayed.filter(index => index !== trackIndex);
+      
+      // Add to beginning of array
       recentlyPlayed.unshift(trackIndex);
+      
+      // Keep only the specified number of recent tracks
       if (recentlyPlayed.length > RECENT_TRACKS_LIMIT) {
         recentlyPlayed = recentlyPlayed.slice(0, RECENT_TRACKS_LIMIT);
       }
+      
+      // Add to complete shuffle history
       if (!shuffleHistory.includes(trackIndex)) {
         shuffleHistory.push(trackIndex);
       }
     }
 
     function getRandomTrackIndex() {
+      // If we've played all tracks, reset shuffle history but keep recent tracks restriction
       if (shuffleHistory.length >= musicList.length) {
         shuffleHistory = [];
+        // Keep some recently played tracks to avoid immediate repeats even after full cycle
         recentlyPlayed = recentlyPlayed.slice(0, Math.min(2, recentlyPlayed.length));
       }
       
+      // Get available tracks (not recently played and not in current shuffle cycle)
       let availableTracks = [];
+      
       for (let i = 0; i < musicList.length; i++) {
         const notRecentlyPlayed = !recentlyPlayed.includes(i);
         const notInCurrentCycle = !shuffleHistory.includes(i);
@@ -660,36 +309,50 @@
         }
       }
       
+      // If no tracks available due to strict filtering, relax the rules
       if (availableTracks.length === 0) {
+        console.log("No tracks available with strict rules, relaxing...");
+        
+        // First fallback: Only avoid recently played (ignore shuffle history)
         availableTracks = musicList
           .map((_, index) => index)
           .filter(i => !recentlyPlayed.includes(i) && i !== currentTrackIndex);
         
+        // Second fallback: Only avoid current track
         if (availableTracks.length === 0) {
-          availableTracks = musicList.map((_, index) => index).filter(i => i !== currentTrackIndex);
+          availableTracks = musicList
+            .map((_, index) => index)
+            .filter(i => i !== currentTrackIndex);
+        }
+        
+        // Final fallback: Include everything (shouldn't happen unless only 1 song)
+        if (availableTracks.length === 0) {
+          availableTracks = [0];
+          recentlyPlayed = [];
+          shuffleHistory = [];
         }
       }
       
+      // Select random track from available ones
       const randomIndex = Math.floor(Math.random() * availableTracks.length);
-      return availableTracks.length > 0 ? availableTracks[randomIndex] : 0;
+      const selectedTrack = availableTracks[randomIndex];
+      
+      console.log(`Available tracks: ${availableTracks.length}, Selected: ${selectedTrack}, Recently played: [${recentlyPlayed.join(', ')}]`);
+      
+      return selectedTrack;
     }
 
     function togglePlayPause() {
-      if (!audioPlayer.src && musicList.length > 0) {
+      if (!audioPlayer.src) {
         playTrack(currentTrackIndex);
         return;
       }
-      
       if (isPlaying) {
         audioPlayer.pause();
-        playPauseBtn.innerHTML = '<i class="ri-play-fill"></i>';
-        trackStatus.textContent = "Paused";
-        document.querySelectorAll('.track-item').forEach(el => el.classList.remove('is-playing'));
+        playPauseBtn.innerHTML = '<i class="ri-play-circle-fill"></i>';
       } else {
         audioPlayer.play();
-        playPauseBtn.innerHTML = '<i class="ri-pause-fill"></i>';
-        trackStatus.textContent = "Now Playing...";
-        updateActiveTrackUI(currentTrackIndex);
+        playPauseBtn.innerHTML = '<i class="ri-pause-circle-fill"></i>';
       }
       isPlaying = !isPlaying;
     }
@@ -705,6 +368,7 @@
 
     function prevTrack() {
       if (isShuffleEnabled) {
+        // In shuffle mode, previous goes to a random track (avoiding repeats)
         currentTrackIndex = getRandomTrackIndex();
       } else {
         currentTrackIndex = (currentTrackIndex - 1 + musicList.length) % musicList.length;
@@ -718,46 +382,46 @@
       if (isShuffleEnabled) {
         shuffleBtn.classList.add('active');
         shuffleBtn.innerHTML = '<i class="ri-shuffle-fill"></i>';
-        // Initialize history
-        if(!recentlyPlayed.includes(currentTrackIndex)) {
-            recentlyPlayed = [currentTrackIndex];
-            shuffleHistory = [currentTrackIndex];
-        }
+        shuffleStatus.classList.add('visible');
+        
+        // Initialize shuffle system
+        recentlyPlayed = [currentTrackIndex];
+        shuffleHistory = [currentTrackIndex];
+        
+        
       } else {
         shuffleBtn.classList.remove('active');
         shuffleBtn.innerHTML = '<i class="ri-shuffle-line"></i>';
+        shuffleStatus.classList.remove('visible');
+        
+        // Reset shuffle system
         recentlyPlayed = [];
         shuffleHistory = [];
+        
+        
       }
     }
 
     // Event Listeners
+    document.getElementById("musicList").addEventListener("click", (e) => {
+      const trackDiv = e.target.closest(".track");
+      if (trackDiv && !e.target.closest('button')) {
+        const selectedIndex = parseInt(trackDiv.dataset.index);
+        playTrack(selectedIndex);
+      }
+    });
+
     playPauseBtn.addEventListener("click", togglePlayPause);
-    nextBtn.addEventListener("click", nextTrack);
-    prevBtn.addEventListener("click", prevTrack);
+    document.getElementById("nextBtn").addEventListener("click", nextTrack);
+    document.getElementById("prevBtn").addEventListener("click", prevTrack);
     shuffleBtn.addEventListener("click", toggleShuffle);
+
+    // Auto-advance to next track when current ends
     audioPlayer.addEventListener("ended", nextTrack);
 
-    // Progress Bar
-    audioPlayer.addEventListener('timeupdate', () => {
-        if(audioPlayer.duration) {
-            const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-            progressBar.value = progress;
-            currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
-            totalTimeEl.textContent = formatTime(audioPlayer.duration);
-        }
-    });
-
-    progressBar.addEventListener('input', () => {
-        if(audioPlayer.duration) {
-            const seekTime = (progressBar.value / 100) * audioPlayer.duration;
-            audioPlayer.currentTime = seekTime;
-        }
-    });
-
-    // Start App
-    renderPlaylist();
-
+    function myFunction() {
+      alert("confirm Delete");
+    }
   </script>
 </body>
 </html>
