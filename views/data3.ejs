@@ -302,7 +302,7 @@
     .player {
         background: var(--bg-main);
         border-radius: 30px;
-        padding: 15px 25px 25px 25px; /* Added bottom padding for slider */
+        padding: 15px 25px 25px 25px; /* Bottom padding ensures space for slider */
         box-shadow: 0 20px 40px rgba(0,0,0,0.1), var(--shadow-light); /* Floating effect */
         display: flex;
         align-items: center;
@@ -482,7 +482,10 @@
         .track-play-btn { width: 45px; height: 45px; margin-right: 15px; }
         .track { margin-bottom: 20px; }
         .player-container { bottom: 15px; width: 95%; }
-        .player { padding: 15px 20px 20px; } /* Slightly tighter padding */
+        
+        /* FIX: Increased bottom padding to prevent slider overlap on mobile */
+        .player { padding: 15px 20px 32px 20px; } 
+        
         /* Make sure list isn't hidden by player */
         .music-container { padding-bottom: 150px; }
     }
@@ -721,32 +724,36 @@
             <h2 style="margin:0 0 30px; font-size:2rem; color:var(--text-main);">${playlist.name}</h2>
         `;
 
-        // Render tracks based on stored IDs
-        playlist.fileIds.forEach((fileId, i) => {
-            const file = allFiles.find(f => f.public_id === fileId);
-            if(!file) return; // Skip if file was deleted
+        // Filter valid tracks and create a temporary display list
+        const playlistTracks = playlist.fileIds.map(fileId => allFiles.find(f => f.public_id === fileId)).filter(Boolean);
 
-            let durationText = '--:--';
-            if(file.duration) {
-                const m = Math.floor(file.duration / 60);
-                const s = String(Math.floor(file.duration % 60)).padStart(2, '0');
-                durationText = `${m}:${s}`;
-            }
+        if (playlistTracks.length === 0) {
+            html += `<p style="text-align:center; color:var(--text-sub);">No songs in this playlist.</p>`;
+        } else {
+            playlistTracks.forEach((file, i) => {
+                let durationText = '--:--';
+                if(file.duration) {
+                    const m = Math.floor(file.duration / 60);
+                    const s = String(Math.floor(file.duration % 60)).padStart(2, '0');
+                    durationText = `${m}:${s}`;
+                }
 
-            const isCurrent = (currentQueue[currentTrackIndex]?.public_id === fileId && currentTab === 'single_playlist' && viewingPlaylistId === id);
-            const activeClass = isCurrent ? 'active-track' : '';
-            const icon = (isCurrent && isPlaying) ? '<i class="ri-pause-fill"></i>' : '<i class="ri-play-fill"></i>';
+                // Check active state
+                const isCurrent = (currentQueue[currentTrackIndex]?.public_id === file.public_id && currentTab === 'single_playlist' && viewingPlaylistId === id);
+                const activeClass = isCurrent ? 'active-track' : '';
+                const icon = (isCurrent && isPlaying) ? '<i class="ri-pause-fill"></i>' : '<i class="ri-play-fill"></i>';
 
-            html += `
-            <div class="track ${activeClass}" onclick="handleTrackClick(${i}, 'playlist')">
-              <div class="track-play-btn">${icon}</div>
-              <div class="track-info">
-                <div class="track-artist">${file.cleanArtist}</div>
-                <div class="track-title">${file.cleanTitle}</div>
-              </div>
-              <div class="track-duration">${durationText}</div>
-            </div>`;
-        });
+                html += `
+                <div class="track ${activeClass}" onclick="handleTrackClick(${i}, 'playlist')">
+                  <div class="track-play-btn">${icon}</div>
+                  <div class="track-info">
+                    <div class="track-artist">${file.cleanArtist}</div>
+                    <div class="track-title">${file.cleanTitle}</div>
+                  </div>
+                  <div class="track-duration">${durationText}</div>
+                </div>`;
+            });
+        }
         
         mainContainer.innerHTML = html;
     }
@@ -779,10 +786,10 @@
         } else if (context === 'playlist') {
             const playlist = savedPlaylists.find(p => p.id === viewingPlaylistId);
             if(playlist) {
-                // Reconstruct queue based on IDs in playlist
+                // FIXED: Filter out any deleted files first so index matches visually
                 const playlistTracks = playlist.fileIds.map(id => allFiles.find(f => f.public_id === id)).filter(Boolean);
                 currentQueue = playlistTracks;
-                playTrack(index); // Index corresponds to position in this specific queue
+                playTrack(index); 
             }
         }
     }
