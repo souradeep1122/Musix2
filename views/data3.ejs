@@ -4,210 +4,318 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Music Player</title>
-  <link
-  href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css"
-  rel="stylesheet"
-/>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet"/>
+  <!-- Added Poppins font for better typography -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
   <style>
+    /* Reset & Base */
+    * {
+      box-sizing: border-box;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(45deg,#452e5d 0%, #202747 100% );
-      color: #e6e6e6;
+      font-family: 'Poppins', sans-serif; /* Modern font */
+      /* Deep modern gradient background */
+      background: linear-gradient(135deg, #131324 0%, #1f1f45 50%, #291d3d 100%);
+      color: #ffffff;
       margin: 0;
       display: flex;
       flex-direction: column;
       height: 100vh;
+      overflow: hidden;
     }
+
+    /* --- Header Styling --- */
     header {
-      background: #1a1f2e;
-      padding: 15px;
-      font-size: 20px;
-      font-weight: bold;
-      border-bottom: 1px solid #2a3042;
+      background: rgba(255, 255, 255, 0.05); /* Glass effect */
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 20px 25px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 10;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     }
-    .header{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
     }
-    .button button{
-        background-color:#6138f6;
-        padding:  2.5vw 3.5vw;
-        font-weight: bold;
-        border-radius: 5vw;
-        display: flex;
-        align-items: flex-end;
-        gap: 1vw;
-        cursor: pointer;
-        font-size: 3vw;
-        margin-top: 2vw;
-        color: rgb(255, 255, 255);
-        align-self: flex-end;
-        border: solid transparent ;
+
+    /* Logo Text */
+    .header .div {
+      font-size: 1.5rem;
+      font-weight: 600;
+      background: linear-gradient(to right, #fff, #a5b4fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Add Button Container */
+    .header .button a {
+      text-decoration: none;
+    }
+
+    /* Add Button Styling */
+    .addbtn {
+      background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+      padding: 10px 24px;
+      font-weight: 500;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: white;
+      border: none;
+      box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .addbtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(236, 72, 153, 0.5);
+    }
+    
+    .addbtn z {
+        font-family: inherit;
         text-transform: capitalize;
     }
+
+    /* --- Music List Area --- */
     .music-list {
       flex: 1;
       overflow-y: auto;
-      padding: 10px;
+      padding: 20px;
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+      /* Custom Scrollbar */
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.2) transparent;
     }
+
+    .music-list::-webkit-scrollbar { width: 6px; }
+    .music-list::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px;
+    }
+
+    /* Track Item Styling */
     .track {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #6565652c;
-      -webkit-backdrop-filter: blur(5px);
-      padding: 10px 20px;
-      margin-bottom: 8px;
-      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(5px);
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      border-radius: 16px;
       cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.2s ease;
     }
+
     .track:hover {
-        background: #9491912c;
-        -webkit-backdrop-filter: blur(5px);
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.01);
+      border-color: rgba(255, 255, 255, 0.2);
     }
+    
+    /* Active Track Styling (can be toggled by JS) */
+    .track.active-track {
+        background: linear-gradient(90deg, rgba(139, 92, 246, 0.2), rgba(255, 255, 255, 0.05));
+        border-left: 4px solid #ec4899;
+    }
+
     .track-info {
       display: flex;
       flex-direction: column;
+      gap: 4px;
+      overflow: hidden;
     }
+
     .track-info strong {
-      color: #c2bfbf;
-      font-size: 1.1rem;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
+
     .track-info small {
-      color: #8a8a8b;
+      color: #a1a1aa;
+      font-size: 0.8rem;
     }
+
+    /* Delete Button Styling */
+    .delet {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ef4444; /* Red */
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .delet:hover {
+      background: rgba(239, 68, 68, 0.2);
+      transform: scale(1.1);
+    }
+    
+    /* Link wrapper for delete button */
+    a[href^="/AllBus"] {
+        text-decoration: none;
+    }
+
+    /* --- Player Section --- */
     .player {
-      background: linear-gradient(135deg, #202747 0%, #7a50a4 100%);
-      padding: 25px;
-      border-radius: 20px 20px 0px 0px;
+      background: rgba(20, 20, 40, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 20px 25px 30px;
+      border-radius: 30px 30px 0 0;
       text-align: center;
-      backdrop-filter: blur(15px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      z-index: 20;
     }
 
     #currentTrack {
       font-size: 1.1rem;
-      color: white;
+      color: #fff;
       font-weight: 500;
-      margin-bottom: 15px;
+      margin: 0 0 20px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
     }
 
+    /* Customizing Audio Player */
     audio {
       width: 100%;
+      height: 40px;
       margin-bottom: 20px;
-      outline: none;
       border-radius: 10px;
+      filter: invert(1) hue-rotate(180deg) saturate(1.5) contrast(0.9); /* CSS hack to style default player dark */
+      opacity: 0.8;
+      display: none; /* We use custom controls, hide default unless needed */
     }
 
     .controls {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 15px;
-      flex-wrap: wrap;
+      gap: 25px;
+      margin-top: 10px;
     }
 
-    button {
-      background: rgba(255, 255, 255, 0.2);
+    .controls button {
+      background: rgba(255, 255, 255, 0.1);
       border: none;
-      padding: 2vw 6vw;
-      border-radius: 10vw;
+      width: 60px;
+      height: 60px;
+      padding: 0; /* Reset padding */
+      border-radius: 50%;
       cursor: pointer;
       font-size: 1.5rem;
       color: white;
-      transition: background 0.3s, transform 0.2s;
-    }
-
-    button:hover {
-      background: rgba(255, 255, 255, 0.4);
-      transform: scale(1.1);
-    }
-
-    #playPauseBtn i {
-      font-size: 2rem;
-    }
-
-    /* Shuffle Button Specific Styles */
-    .shuffle-btn {
-      background: rgba(255, 255, 255, 0.2);
-      border: none;
-      padding: 2vw 4vw;
-      border-radius: 10vw;
-      cursor: pointer;
-      font-size: 1.2rem;
-      color: white;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
 
-    .shuffle-btn:hover {
-      background: rgba(255, 255, 255, 0.4);
+    .controls button:hover {
+      background: rgba(255, 255, 255, 0.2);
       transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(255,255,255,0.2);
+    }
+    
+    /* Play/Pause Button - Make it bigger */
+    #playPauseBtn {
+        width: 75px;
+        height: 75px;
+        background: linear-gradient(135deg, #8b5cf6, #ec4899);
+        font-size: 2.2rem;
+        box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+    }
+    
+    #playPauseBtn:hover {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    /* Shuffle Button */
+    .shuffle-btn {
+      width: 45px !important;
+      height: 45px !important;
+      font-size: 1.1rem !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      color: #a1a1aa !important;
     }
 
     .shuffle-btn.active {
-      background:rgb(96, 255, 75);
-      color: white;
-      box-shadow: 0 0 15px rgb(71, 255, 47);
+      color: #ec4899 !important;
+      text-shadow: 0 0 10px #ec4899;
     }
 
-    .shuffle-btn.active i {
-      color: white;
-    }
-
-    .delet{
-        background-color: transparent;
-        color: #f63838;
-        border: solid transparent;
-        font-size: 5vw;
-    }
-    .addbtn{
-        background: linear-gradient(135deg, #402957 0%, #2d3867 100%);
-    }
-    .addbtn z, .addbtn i{
-        font-size: 1.1rem;
-    }
-    .header a{
-        text-decoration: none;
-    }
-
-    @media (min-width: 500px) {
-        body{
-            display: none;
-        }
-    }
-
-    /* Status indicator for shuffle mode */
     .shuffle-status {
-      font-size: 0.9rem;
-      color: rgb(71, 255, 47);
-      margin-bottom: 10px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
+      display: none; /* Hidden by default */
     }
 
-    .shuffle-status.visible {
-      opacity: 1;
+    /* Tablet/Desktop Tweaks */
+    @media (min-width: 768px) {
+      .player {
+        max-width: 600px;
+        margin: 0 auto;
+        border-radius: 30px;
+        margin-bottom: 20px;
+      }
+      body {
+        /* Ensuring body is visible on desktop */
+        display: flex !important; 
+      }
     }
   </style>
 </head>
 <body>
   <header>
     <div class="header">
-        <div class="div">🎵 Music Player</div>
+        <div class="div">
+            <i class="ri-music-2-fill" style="color: #ec4899;"></i> 
+            Music Player
+        </div>
         <div class="button">
         <a href="/postmp3">
-            <button class="addbtn"><z>add</z>  <i class="ri-add-circle-line"></i></button>
+            <button class="addbtn"><z>add</z> <i class="ri-add-circle-line"></i></button>
         </a></div>
     </div>
   </header>
   
   <div class="music-list" id="musicList">
     <% if (files.length === 0) { %>
-      <p>No music found.</p>
+      <p style="text-align:center; color:#a1a1aa; margin-top:20px;">No music found.</p>
     <% } else { %>
       <% files.forEach((file, index) => { %>
         <div class="track" data-index="<%= index %>">
@@ -218,87 +326,93 @@
               <% if (file.duration) { %> • <%= Math.floor(file.duration / 60) %>:<%= String(Math.floor(file.duration % 60)).padStart(2, '0') %> <% } %>
             </small>
           </div>
-         <a href="/AllBus/<%=file.public_id.split('/').pop() %>"><button onclick="myFunction()" class="delet"><i class="ri-delete-bin-6-line"></i></button></a>
+          <a href="/AllBus/<%=file.public_id.split('/').pop() %>">
+            <!-- Added event.stopPropagation to prevent playing track when deleting -->
+            <button onclick="event.stopPropagation(); myFunction()" class="delet">
+                <i class="ri-delete-bin-6-line"></i>
+            </button>
+          </a>
         </div>
       <% }) %>
     <% } %>
   </div>
 
   <div class="player">
-    
     <p id="currentTrack">No track playing</p>
-    <audio id="audioPlayer" controls></audio>
+    <audio id="audioPlayer"></audio>
     <div class="controls">
-      <button id="prevBtn">⏮</button>
-      <button id="playPauseBtn"><i class="ri-play-circle-fill"></i></button>
-      <button id="nextBtn">⏭</button>
       <button id="shuffleBtn" class="shuffle-btn"><i class="ri-shuffle-line"></i></button>
+      <button id="prevBtn"><i class="ri-skip-back-fill"></i></button>
+      <button id="playPauseBtn"><i class="ri-play-fill"></i></button>
+      <button id="nextBtn"><i class="ri-skip-forward-fill"></i></button>
     </div>
   </div>
 
   <script>
     const musicList = <%- JSON.stringify(files) %>;
+    
     let currentTrackIndex = 0;
     let isPlaying = false;
     let isShuffleEnabled = false;
 
     // Anti-repeat system
-    let recentlyPlayed = []; // Tracks played recently (to avoid immediate repeats)
-    let shuffleHistory = []; // Complete shuffle history
-    const RECENT_TRACKS_LIMIT = Math.min(3, Math.floor(musicList.length / 2)); // Avoid last 3 tracks or half the library
+    let recentlyPlayed = []; 
+    let shuffleHistory = []; 
+    const RECENT_TRACKS_LIMIT = Math.min(3, Math.floor(musicList.length / 2));
 
     const audioPlayer = document.getElementById("audioPlayer");
     const currentTrack = document.getElementById("currentTrack");
     const playPauseBtn = document.getElementById("playPauseBtn");
     const shuffleBtn = document.getElementById("shuffleBtn");
-    const shuffleStatus = document.getElementById("shuffleStatus");
+    
+    // UI function to highlight active track
+    function highlightTrack(index) {
+        document.querySelectorAll('.track').forEach(t => t.classList.remove('active-track'));
+        const activeEl = document.querySelector(`.track[data-index="${index}"]`);
+        if(activeEl) {
+            activeEl.classList.add('active-track');
+            activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }
 
     function playTrack(index) {
+      if(index < 0 || index >= musicList.length) return;
+
       currentTrackIndex = index;
       const song = musicList[index];
       audioPlayer.src = song.url;
       const displayTitle = song.originalname.replace(/\.[^.]+$/, '').split(/_+/).slice(0, 4).join(' ');
-      currentTrack.textContent = `Playing: ${displayTitle}`;
+      currentTrack.textContent = displayTitle;
 
-      audioPlayer.play();
+      audioPlayer.play().catch(e => console.log("User interaction needed"));
       isPlaying = true;
-      playPauseBtn.innerHTML = '<i class="ri-pause-circle-fill"></i>';
+      playPauseBtn.innerHTML = '<i class="ri-pause-fill"></i>';
       
-      // Add to recently played when shuffle is enabled
+      highlightTrack(index);
+      
       if (isShuffleEnabled) {
         addToRecentlyPlayed(index);
       }
     }
 
     function addToRecentlyPlayed(trackIndex) {
-      // Remove if already in recently played
       recentlyPlayed = recentlyPlayed.filter(index => index !== trackIndex);
-      
-      // Add to beginning of array
       recentlyPlayed.unshift(trackIndex);
-      
-      // Keep only the specified number of recent tracks
       if (recentlyPlayed.length > RECENT_TRACKS_LIMIT) {
         recentlyPlayed = recentlyPlayed.slice(0, RECENT_TRACKS_LIMIT);
       }
-      
-      // Add to complete shuffle history
       if (!shuffleHistory.includes(trackIndex)) {
         shuffleHistory.push(trackIndex);
       }
     }
 
     function getRandomTrackIndex() {
-      // If we've played all tracks, reset shuffle history but keep recent tracks restriction
       if (shuffleHistory.length >= musicList.length) {
         shuffleHistory = [];
-        // Keep some recently played tracks to avoid immediate repeats even after full cycle
         recentlyPlayed = recentlyPlayed.slice(0, Math.min(2, recentlyPlayed.length));
       }
       
-      // Get available tracks (not recently played and not in current shuffle cycle)
       let availableTracks = [];
-      
       for (let i = 0; i < musicList.length; i++) {
         const notRecentlyPlayed = !recentlyPlayed.includes(i);
         const notInCurrentCycle = !shuffleHistory.includes(i);
@@ -309,50 +423,34 @@
         }
       }
       
-      // If no tracks available due to strict filtering, relax the rules
       if (availableTracks.length === 0) {
-        console.log("No tracks available with strict rules, relaxing...");
-        
-        // First fallback: Only avoid recently played (ignore shuffle history)
         availableTracks = musicList
           .map((_, index) => index)
           .filter(i => !recentlyPlayed.includes(i) && i !== currentTrackIndex);
         
-        // Second fallback: Only avoid current track
         if (availableTracks.length === 0) {
-          availableTracks = musicList
-            .map((_, index) => index)
-            .filter(i => i !== currentTrackIndex);
-        }
-        
-        // Final fallback: Include everything (shouldn't happen unless only 1 song)
-        if (availableTracks.length === 0) {
-          availableTracks = [0];
-          recentlyPlayed = [];
-          shuffleHistory = [];
+          availableTracks = musicList.map((_, index) => index).filter(i => i !== currentTrackIndex);
         }
       }
       
-      // Select random track from available ones
+      // Fallback
+      if(availableTracks.length === 0) return 0;
+      
       const randomIndex = Math.floor(Math.random() * availableTracks.length);
-      const selectedTrack = availableTracks[randomIndex];
-      
-      console.log(`Available tracks: ${availableTracks.length}, Selected: ${selectedTrack}, Recently played: [${recentlyPlayed.join(', ')}]`);
-      
-      return selectedTrack;
+      return availableTracks[randomIndex];
     }
 
     function togglePlayPause() {
-      if (!audioPlayer.src) {
+      if (!audioPlayer.src && musicList.length > 0) {
         playTrack(currentTrackIndex);
         return;
       }
       if (isPlaying) {
         audioPlayer.pause();
-        playPauseBtn.innerHTML = '<i class="ri-play-circle-fill"></i>';
+        playPauseBtn.innerHTML = '<i class="ri-play-fill"></i>';
       } else {
         audioPlayer.play();
-        playPauseBtn.innerHTML = '<i class="ri-pause-circle-fill"></i>';
+        playPauseBtn.innerHTML = '<i class="ri-pause-fill"></i>';
       }
       isPlaying = !isPlaying;
     }
@@ -368,7 +466,6 @@
 
     function prevTrack() {
       if (isShuffleEnabled) {
-        // In shuffle mode, previous goes to a random track (avoiding repeats)
         currentTrackIndex = getRandomTrackIndex();
       } else {
         currentTrackIndex = (currentTrackIndex - 1 + musicList.length) % musicList.length;
@@ -381,30 +478,22 @@
       
       if (isShuffleEnabled) {
         shuffleBtn.classList.add('active');
-        shuffleBtn.innerHTML = '<i class="ri-shuffle-fill"></i>';
-        shuffleStatus.classList.add('visible');
-        
-        // Initialize shuffle system
-        recentlyPlayed = [currentTrackIndex];
-        shuffleHistory = [currentTrackIndex];
-        
-        
+        // Initialize if empty
+        if(shuffleHistory.length === 0) {
+             recentlyPlayed = [currentTrackIndex];
+             shuffleHistory = [currentTrackIndex];
+        }
       } else {
         shuffleBtn.classList.remove('active');
-        shuffleBtn.innerHTML = '<i class="ri-shuffle-line"></i>';
-        shuffleStatus.classList.remove('visible');
-        
-        // Reset shuffle system
         recentlyPlayed = [];
         shuffleHistory = [];
-        
-        
       }
     }
 
     // Event Listeners
     document.getElementById("musicList").addEventListener("click", (e) => {
       const trackDiv = e.target.closest(".track");
+      // If clicking button inside track, don't play
       if (trackDiv && !e.target.closest('button')) {
         const selectedIndex = parseInt(trackDiv.dataset.index);
         playTrack(selectedIndex);
@@ -415,12 +504,10 @@
     document.getElementById("nextBtn").addEventListener("click", nextTrack);
     document.getElementById("prevBtn").addEventListener("click", prevTrack);
     shuffleBtn.addEventListener("click", toggleShuffle);
-
-    // Auto-advance to next track when current ends
     audioPlayer.addEventListener("ended", nextTrack);
 
     function myFunction() {
-      alert("confirm Delete");
+        alert("confirm Delete");
     }
   </script>
 </body>
