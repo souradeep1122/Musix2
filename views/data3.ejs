@@ -6,7 +6,7 @@
   <title>Music Player</title>
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet"/>
   <!-- Added Poppins font for better typography -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <style>
     /* Reset & Base */
@@ -17,10 +17,10 @@
     }
 
     body {
-      font-family: 'Poppins', sans-serif; /* Modern font */
-      /* Deep modern gradient background */
-      background: linear-gradient(135deg, #131324 0%, #1f1f45 50%, #291d3d 100%);
-      color: #ffffff;
+      font-family: 'Poppins', sans-serif;
+      /* Modern Light Gradient Background */
+      background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+      color: #2d3748; /* Dark grey text for readability */
       margin: 0;
       display: flex;
       flex-direction: column;
@@ -30,13 +30,13 @@
 
     /* --- Header Styling --- */
     header {
-      background: rgba(255, 255, 255, 0.05); /* Glass effect */
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
       padding: 20px 25px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
       z-index: 10;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     }
 
     .header {
@@ -51,10 +51,8 @@
     /* Logo Text */
     .header .div {
       font-size: 1.5rem;
-      font-weight: 600;
-      background: linear-gradient(to right, #fff, #a5b4fc);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+      color: #1a202c;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -65,9 +63,9 @@
       text-decoration: none;
     }
 
-    /* Add Button Styling */
+    /* Add Button Styling - Pop of color */
     .addbtn {
-      background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       padding: 10px 24px;
       font-weight: 500;
       border-radius: 50px;
@@ -78,13 +76,13 @@
       font-size: 0.95rem;
       color: white;
       border: none;
-      box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+      box-shadow: 0 4px 10px rgba(118, 75, 162, 0.3);
       transition: transform 0.2s, box-shadow 0.2s;
     }
 
     .addbtn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(236, 72, 153, 0.5);
+      box-shadow: 0 6px 15px rgba(118, 75, 162, 0.4);
     }
     
     .addbtn z {
@@ -100,42 +98,42 @@
       max-width: 800px;
       width: 100%;
       margin: 0 auto;
-      /* Custom Scrollbar */
+      /* Custom Scrollbar for Light Mode */
       scrollbar-width: thin;
-      scrollbar-color: rgba(255,255,255,0.2) transparent;
+      scrollbar-color: #cbd5e0 transparent;
     }
 
     .music-list::-webkit-scrollbar { width: 6px; }
     .music-list::-webkit-scrollbar-thumb {
-      background: rgba(255,255,255,0.2);
+      background: #cbd5e0;
       border-radius: 10px;
     }
 
-    /* Track Item Styling */
+    /* Track Item Styling - Clean Cards */
     .track {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(5px);
+      background: #ffffff;
       padding: 16px 20px;
       margin-bottom: 12px;
-      border-radius: 16px;
+      border-radius: 20px;
       cursor: pointer;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0,0,0,0.02);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.05);
       transition: all 0.2s ease;
     }
 
     .track:hover {
-      background: rgba(255, 255, 255, 0.1);
-      transform: scale(1.01);
-      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
     }
     
-    /* Active Track Styling (can be toggled by JS) */
+    /* Active Track Styling */
     .track.active-track {
-        background: linear-gradient(90deg, rgba(139, 92, 246, 0.2), rgba(255, 255, 255, 0.05));
-        border-left: 4px solid #ec4899;
+        background: #f7fafc;
+        border-left: 4px solid #667eea;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
     }
 
     .track-info {
@@ -146,23 +144,23 @@
     }
 
     .track-info strong {
-      color: #fff;
+      color: #2d3748;
       font-size: 1rem;
-      font-weight: 500;
+      font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .track-info small {
-      color: #a1a1aa;
+      color: #718096;
       font-size: 0.8rem;
     }
 
     /* Delete Button Styling */
     .delet {
-      background: rgba(255, 255, 255, 0.1);
-      color: #ef4444; /* Red */
+      background: #fff5f5;
+      color: #fc8181;
       border: none;
       width: 40px;
       height: 40px;
@@ -176,124 +174,134 @@
     }
 
     .delet:hover {
-      background: rgba(239, 68, 68, 0.2);
+      background: #fed7d7;
+      color: #e53e3e;
       transform: scale(1.1);
     }
     
-    /* Link wrapper for delete button */
     a[href^="/AllBus"] {
         text-decoration: none;
     }
 
     /* --- Player Section --- */
     .player {
-      background: rgba(20, 20, 40, 0.8);
+      background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      padding: 20px 25px 30px;
+      padding: 20px 25px 35px;
       border-radius: 30px 30px 0 0;
       text-align: center;
-      box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.08);
+      border-top: 1px solid rgba(255, 255, 255, 0.5);
       position: relative;
       z-index: 20;
     }
 
     #currentTrack {
       font-size: 1.1rem;
-      color: #fff;
-      font-weight: 500;
+      color: #1a202c;
+      font-weight: 600;
       margin: 0 0 20px 0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
     }
 
-    /* Customizing Audio Player */
     audio {
       width: 100%;
-      height: 40px;
-      margin-bottom: 20px;
-      border-radius: 10px;
-      filter: invert(1) hue-rotate(180deg) saturate(1.5) contrast(0.9); /* CSS hack to style default player dark */
-      opacity: 0.8;
-      display: none; /* We use custom controls, hide default unless needed */
+      display: none; 
     }
 
     .controls {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 25px;
+      gap: 30px;
       margin-top: 10px;
     }
 
     .controls button {
-      background: rgba(255, 255, 255, 0.1);
+      background: #edf2f7;
       border: none;
       width: 60px;
       height: 60px;
-      padding: 0; /* Reset padding */
+      padding: 0;
       border-radius: 50%;
       cursor: pointer;
       font-size: 1.5rem;
-      color: white;
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      color: #4a5568;
+      transition: all 0.2s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
 
     .controls button:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: scale(1.1);
-      box-shadow: 0 0 20px rgba(255,255,255,0.2);
+      background: #e2e8f0;
+      transform: scale(1.05);
+      color: #2d3748;
     }
     
-    /* Play/Pause Button - Make it bigger */
+    /* Play/Pause Button - Main Action */
     #playPauseBtn {
         width: 75px;
         height: 75px;
-        background: linear-gradient(135deg, #8b5cf6, #ec4899);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         font-size: 2.2rem;
-        box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+        color: white;
+        box-shadow: 0 10px 20px rgba(118, 75, 162, 0.3);
     }
     
     #playPauseBtn:hover {
-        transform: scale(1.1) rotate(5deg);
+        transform: scale(1.1);
+        color: white;
+        box-shadow: 0 15px 25px rgba(118, 75, 162, 0.4);
     }
 
     /* Shuffle Button */
     .shuffle-btn {
       width: 45px !important;
       height: 45px !important;
-      font-size: 1.1rem !important;
+      font-size: 1.2rem !important;
       background: transparent !important;
       box-shadow: none !important;
-      color: #a1a1aa !important;
+      color: #a0aec0 !important;
+    }
+    
+    .shuffle-btn:hover {
+        background: transparent !important;
+        color: #718096 !important;
     }
 
     .shuffle-btn.active {
-      color: #ec4899 !important;
-      text-shadow: 0 0 10px #ec4899;
+      color: #764ba2 !important;
+      position: relative;
+    }
+    
+    .shuffle-btn.active::after {
+        content: '';
+        position: absolute;
+        bottom: 5px;
+        width: 4px;
+        height: 4px;
+        background: #764ba2;
+        border-radius: 50%;
     }
 
     .shuffle-status {
-      display: none; /* Hidden by default */
+      display: none;
     }
 
-    /* Tablet/Desktop Tweaks */
     @media (min-width: 768px) {
       .player {
         max-width: 600px;
         margin: 0 auto;
         border-radius: 30px;
         margin-bottom: 20px;
+        border: 1px solid rgba(255,255,255,0.8);
       }
       body {
-        /* Ensuring body is visible on desktop */
         display: flex !important; 
       }
     }
@@ -303,7 +311,7 @@
   <header>
     <div class="header">
         <div class="div">
-            <i class="ri-music-2-fill" style="color: #ec4899;"></i> 
+            <i class="ri-music-2-fill" style="color: #764ba2;"></i> 
             Music Player
         </div>
         <div class="button">
@@ -315,7 +323,7 @@
   
   <div class="music-list" id="musicList">
     <% if (files.length === 0) { %>
-      <p style="text-align:center; color:#a1a1aa; margin-top:20px;">No music found.</p>
+      <p style="text-align:center; color:#a0aec0; margin-top:40px; font-weight: 500;">No music found.</p>
     <% } else { %>
       <% files.forEach((file, index) => { %>
         <div class="track" data-index="<%= index %>">
@@ -327,7 +335,6 @@
             </small>
           </div>
           <a href="/AllBus/<%=file.public_id.split('/').pop() %>">
-            <!-- Added event.stopPropagation to prevent playing track when deleting -->
             <button onclick="event.stopPropagation(); myFunction()" class="delet">
                 <i class="ri-delete-bin-6-line"></i>
             </button>
@@ -338,7 +345,7 @@
   </div>
 
   <div class="player">
-    <p id="currentTrack">No track playing</p>
+    <p id="currentTrack">Select a track to play</p>
     <audio id="audioPlayer"></audio>
     <div class="controls">
       <button id="shuffleBtn" class="shuffle-btn"><i class="ri-shuffle-line"></i></button>
