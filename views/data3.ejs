@@ -371,8 +371,8 @@
     .progress-container {
         position: absolute;
         bottom: 0;
-        left: 0;
-        width: 100%;
+        left: 25px; /* Added left padding */
+        width: calc(100% - 50px); /* Adjust width based on padding */
         height: 8px; /* Increased height slightly */
         background: rgba(0,0,0,0.08); /* Darker track for better contrast */
     }
