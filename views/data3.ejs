@@ -104,7 +104,7 @@
 
     /* --- Header --- */
     header {
-      padding: 30px 20px 10px;
+      padding: 40px 25px 10px;
       /* Dark Glass Header */
       background: var(--glass-bg);
       backdrop-filter: blur(var(--backdrop-blur));
@@ -126,12 +126,12 @@
     .header-left {
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 5px;
     }
     
     .subtitle {
-        font-size: 0.75rem;
-        letter-spacing: 1.5px;
+        font-size: 0.8rem;
+        letter-spacing: 2px;
         color: var(--accent); /* Neon Cyan */
         font-weight: 700;
         text-transform: uppercase;
@@ -145,7 +145,7 @@
     }
 
     .main-title {
-        font-size: 1.6rem;
+        font-size: 1.8rem;
         font-weight: 700;
         color: var(--text-main);
         background: transparent;
@@ -158,48 +158,30 @@
     
     .main-title.inactive {
         opacity: 0.4;
-        font-size: 1.3rem;
+        font-size: 1.4rem;
     }
 
     .header-right {
         display: flex;
-        gap: 12px;
+        gap: 15px;
     }
 
     /* Edgy/Tech Buttons */
     .neu-btn {
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
+        width: 45px;
+        height: 45px;
+        border-radius: 12px; /* Less rounded for dystopian feel */
         background: rgba(255, 255, 255, 0.05);
         border: 1px solid var(--glass-border);
         display: flex;
         align-items: center;
         justify-content: center;
         color: var(--text-main);
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         cursor: pointer;
         box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         backdrop-filter: blur(4px);
         transition: all 0.2s ease;
-    }
-
-    /* Fix: Only apply hover effects on devices that support hover to prevent sticky state on mobile */
-    @media (hover: hover) {
-        .neu-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--accent);
-        }
-        .track:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: var(--accent);
-            transform: translateX(5px);
-        }
-        .mini-btn:hover { 
-            color: var(--accent); 
-            text-shadow: 0 0 8px var(--accent); 
-            transform: scale(1.1); 
-        }
     }
 
     .neu-btn:active, .neu-btn.active {
@@ -220,7 +202,7 @@
     .music-container {
       flex: 1;
       overflow-y: auto;
-      padding: 10px 20px 300px; 
+      padding: 10px 25px 300px; 
       max-width: 600px;
       width: 100%;
       margin: 0 auto;
@@ -233,8 +215,8 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20px;
-        margin-top: 5px;
+        margin-bottom: 25px;
+        margin-top: 10px;
     }
     
     .text-btn {
@@ -242,39 +224,45 @@
         border: 1px solid var(--glass-border);
         color: var(--text-main);
         font-weight: 600;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         cursor: pointer;
-        padding: 5px 12px;
+        padding: 6px 14px;
         border-radius: 8px;
     }
 
-    /* Track Item - Compacted */
+    /* Track Item */
     .track {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 10px; /* Reduced margin */
+      margin-bottom: 15px;
       cursor: pointer;
       background: rgba(0, 0, 0, 0.2);
       backdrop-filter: blur(5px);
-      padding: 10px 12px; /* Reduced padding */
-      border-radius: 10px;
+      padding: 15px 16px;
+      border-radius: 12px;
       border: 1px solid rgba(255, 255, 255, 0.05);
       transition: transform 0.2s, background 0.2s, border-color 0.2s;
     }
     
+    .track:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: var(--accent);
+        transform: translateX(5px);
+    }
+    
     .track-play-btn {
-        width: 38px; /* Smaller icon */
-        height: 38px;
+        width: 45px;
+        height: 45px;
         border-radius: 50%;
         background: rgba(255,255,255,0.05);
         display: flex;
         align-items: center;
         justify-content: center;
         color: var(--text-main);
-        font-size: 0.9rem;
+        font-size: 1rem;
         flex-shrink: 0;
-        margin-right: 12px;
+        margin-right: 15px;
         transition: all 0.3s;
         border: 1px solid rgba(255,255,255,0.1);
     }
@@ -288,7 +276,7 @@
     .track.active-track .track-play-btn {
         background: var(--accent);
         color: #000;
-        box-shadow: 0 0 10px var(--accent);
+        box-shadow: 0 0 15px var(--accent);
         border-color: transparent;
     }
 
@@ -301,16 +289,16 @@
     }
 
     .track-artist {
-        font-size: 0.65rem;
+        font-size: 0.7rem;
         color: var(--text-sub);
         font-weight: 600;
-        letter-spacing: 0.5px;
+        letter-spacing: 1px;
         text-transform: uppercase;
-        margin-bottom: 1px;
+        margin-bottom: 2px;
     }
     
     .track-title {
-        font-size: 0.9rem;
+        font-size: 1rem;
         color: var(--text-main);
         font-weight: 600;
         white-space: nowrap;
@@ -322,24 +310,24 @@
         background: transparent;
         border: none;
         color: var(--text-sub);
-        font-size: 1.2rem;
+        font-size: 1.4rem;
         cursor: pointer;
-        padding: 8px;
+        padding: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-left: 8px;
+        margin-left: 10px;
     }
     .more-btn:active { color: var(--accent); }
 
     /* Select Mode */
     .select-check {
-        width: 20px;
-        height: 20px;
+        width: 24px;
+        height: 24px;
         border-radius: 6px;
         background: rgba(0,0,0,0.3);
         border: 1px solid var(--text-sub);
-        margin-right: 15px;
+        margin-right: 20px;
         display: none;
         align-items: center;
         justify-content: center;
@@ -358,9 +346,9 @@
     .playlist-card {
         background: rgba(0, 0, 0, 0.3);
         backdrop-filter: blur(10px);
-        padding: 15px 20px;
+        padding: 20px;
         border-radius: 12px;
-        margin-bottom: 15px;
+        margin-bottom: 20px;
         border: 1px solid var(--glass-border);
         box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         display: flex;
@@ -369,7 +357,7 @@
         cursor: pointer;
         transition: border-color 0.2s;
     }
-    .playlist-card:active { border-color: var(--accent); }
+    .playlist-card:hover { border-color: var(--accent); }
 
     /* --- Floating Player (Cyber-Box) --- */
     .player-container {
@@ -377,7 +365,7 @@
         bottom: 20px;
         left: 50%;
         transform: translateX(-50%);
-        width: 94%;
+        width: 92%;
         max-width: 500px;
         z-index: 100;
         padding-bottom: env(safe-area-inset-bottom);
@@ -388,12 +376,12 @@
         backdrop-filter: blur(30px);
         -webkit-backdrop-filter: blur(30px);
         border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 20px;
-        padding: 15px 20px;
+        border-radius: 20px; /* Slightly sharper corners */
+        padding: 20px 25px;
         box-shadow: 0 20px 50px rgba(0,0,0,0.6);
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 15px;
     }
     
     .player-info {
@@ -405,19 +393,19 @@
     }
     
     .player-title {
-        font-size: 1rem;
+        font-size: 1.1rem;
         font-weight: 700;
         color: var(--text-main);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         max-width: 100%;
-        margin-bottom: 2px;
+        margin-bottom: 4px;
         text-shadow: 0 0 10px rgba(255,255,255,0.2);
     }
     
     .player-artist {
-        font-size: 0.7rem;
+        font-size: 0.75rem;
         color: var(--accent);
         font-weight: 700;
         text-transform: uppercase;
@@ -430,7 +418,7 @@
         width: 100%;
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 8px;
     }
 
     .progress-track {
@@ -463,7 +451,7 @@
         background: var(--accent);
         cursor: pointer;
         margin-top: -6px; 
-        box-shadow: 0 0 10px var(--accent);
+        box-shadow: 0 0 15px var(--accent);
         border: 2px solid #000;
     }
     
@@ -483,18 +471,18 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 5px;
+        padding: 0 10px;
     }
 
     .main-play-btn {
-        width: 60px;
-        height: 60px;
+        width: 65px;
+        height: 65px;
         border-radius: 50%;
         background: transparent;
         border: 2px solid var(--accent);
         box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
         color: var(--text-main);
-        font-size: 1.8rem;
+        font-size: 2rem;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -508,16 +496,13 @@
         background: transparent;
         border: none;
         color: var(--text-sub);
-        font-size: 1.3rem;
+        font-size: 1.4rem;
         cursor: pointer;
         padding: 10px;
         transition: transform 0.2s;
     }
-    
-    /* Active state for Shuffle/Loop specifically */
+    .mini-btn:hover { color: var(--accent); text-shadow: 0 0 8px var(--accent); transform: scale(1.1); }
     .mini-btn.active { color: var(--accent); text-shadow: 0 0 8px var(--accent); }
-    /* Tap state for others */
-    .mini-btn:active { color: var(--text-main); transform: scale(0.9); }
 
     /* Modals & Menus */
     .modal-overlay {
@@ -612,7 +597,7 @@
         transition: background 0.2s;
     }
     
-    .menu-item:active { background: rgba(0, 243, 255, 0.1); color: var(--accent); }
+    .menu-item:hover { background: rgba(0, 243, 255, 0.1); color: var(--accent); }
     .menu-item i { font-size: 1.3rem; color: var(--text-sub); }
     .menu-item.danger { color: #ff0055; background: rgba(255, 0, 85, 0.1); }
     .menu-item.danger i { color: #ff0055; }
@@ -632,7 +617,7 @@
         cursor: pointer;
         color: var(--text-main);
     }
-    .playlist-option:active { color: var(--accent); background: rgba(255,255,255,0.1); }
+    .playlist-option:hover { color: var(--accent); background: rgba(255,255,255,0.1); }
 
     /* --- Desktop View --- */
     @media (min-width: 768px) {
@@ -661,7 +646,7 @@
   <header>
     <div class="header">
         <div class="header-left">
-            <div class="subtitle" id="librarySubtitle">LIBRARY</div>
+            <div class="subtitle">LIBRARY</div>
             <div class="title-switcher">
                 <button class="main-title" onclick="switchTab('all')" id="tab-all">Songs</button>
                 <button class="main-title inactive" onclick="switchTab('playlists')" id="tab-playlists">Playlists</button>
@@ -794,13 +779,9 @@
     const sliderTrack = document.getElementById("sliderTrack");
     const currentTimeText = document.getElementById("currentTimeText");
     const totalTimeText = document.getElementById("totalTimeText");
-    const librarySubtitle = document.getElementById("librarySubtitle");
 
     // --- RENDER LOGIC ---
     function renderAllSongs() {
-        // Update Header Count
-        librarySubtitle.innerHTML = `LIBRARY • ${allFiles.length} SONGS`;
-
         let html = '';
         if(isSelectionMode) {
             html += `
@@ -849,7 +830,7 @@
     }
 
     function renderPlaylistsTab() {
-        let html = `<div class="playlist-controls"><span style="font-weight:700; color:var(--text-main); font-size:1.1rem;">My Playlists</span></div>`;
+        let html = `<div class="playlist-controls"><span style="font-weight:700; color:var(--text-main); font-size:1.2rem;">My Playlists</span></div>`;
         if(savedPlaylists.length === 0) {
             html += `<div style="text-align:center; margin-top:50px; color:var(--text-sub);"><p>No playlists yet</p><button class="neu-btn primary" style="width:auto; padding:0 20px; margin:20px auto;" onclick="switchTab('all'); toggleSelectionMode(true);">Create Playlist</button></div>`;
         } else {
