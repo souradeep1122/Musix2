@@ -9,14 +9,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <style>
-    /* --- Theming Variables --- */
+    /* --- Theming Variables (Matches Reference: Soft White & Pink) --- */
     :root {
       /* Light Mode */
-      --bg-main: #EBECF0;
+      --bg-main: #EBECF0; /* Soft greyish white for neumorphism base */
       --text-main: #4a4a4a;
       --text-sub: #a0a0a0;
       
-      --accent: #FF9EB5;
+      --accent: #FF9EB5; /* Soft Pink from reference */
       --accent-deep: #FF7696;
       
       /* Neumorphic Shadows */
@@ -25,6 +25,7 @@
       --shadow-inset: inset 4px 4px 8px rgba(174, 174, 192, 0.4), inset -4px -4px 8px rgba(255, 255, 255, 1);
       
       --btn-radius: 50%;
+      --card-radius: 30px;
     }
 
     body.dark-mode {
@@ -62,7 +63,7 @@
 
     /* --- Header --- */
     header {
-      padding: 40px 30px 10px;
+      padding: 25px 25px 10px;
       background: var(--bg-main);
       z-index: 10;
       flex-shrink: 0;
@@ -71,7 +72,7 @@
     .header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       max-width: 600px;
       margin: 0 auto;
       width: 100%;
@@ -80,11 +81,11 @@
     .header-left {
         display: flex;
         flex-direction: column;
-        gap: 5px;
+        gap: 2px;
     }
     
     .subtitle {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         letter-spacing: 1.5px;
         color: var(--text-sub);
         font-weight: 600;
@@ -94,11 +95,11 @@
     .title-switcher {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 15px;
     }
 
     .main-title {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
         font-weight: 700;
         color: var(--text-main);
         background: transparent;
@@ -109,19 +110,19 @@
     }
     
     .main-title.inactive {
-        opacity: 0.3;
-        font-size: 1.4rem;
+        opacity: 0.4;
+        font-size: 1.2rem;
     }
 
     .header-right {
         display: flex;
-        gap: 15px;
+        gap: 12px;
     }
 
     /* Neumorphic Button Class */
     .neu-btn {
-        width: 45px;
-        height: 45px;
+        width: 42px;
+        height: 42px;
         border-radius: var(--btn-radius);
         background: var(--bg-main);
         border: none;
@@ -129,7 +130,7 @@
         align-items: center;
         justify-content: center;
         color: var(--text-sub);
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         cursor: pointer;
         box-shadow: var(--shadow-dark), var(--shadow-light);
         transition: all 0.2s ease;
@@ -148,7 +149,7 @@
     .music-container {
       flex: 1;
       overflow-y: auto;
-      padding: 10px 30px 180px; /* Extra bottom padding for stacked player */
+      padding: 10px 25px 180px; /* Large bottom padding for player */
       max-width: 600px;
       width: 100%;
       margin: 0 auto;
@@ -161,7 +162,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 25px;
+        margin-bottom: 20px;
         margin-top: 10px;
     }
     
@@ -180,15 +181,15 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
       cursor: pointer;
       background: transparent;
       transition: transform 0.2s;
     }
     
     .track-play-btn {
-        width: 50px;
-        height: 50px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         background: var(--bg-main);
         box-shadow: var(--shadow-dark), var(--shadow-light);
@@ -198,7 +199,7 @@
         color: var(--text-main);
         font-size: 1rem;
         flex-shrink: 0;
-        margin-right: 20px;
+        margin-right: 15px;
         transition: all 0.3s;
     }
 
@@ -227,11 +228,11 @@
         font-weight: 600;
         letter-spacing: 0.5px;
         text-transform: uppercase;
-        margin-bottom: 2px;
+        margin-bottom: 3px;
     }
     
     .track-title {
-        font-size: 1rem;
+        font-size: 0.95rem;
         color: var(--text-main);
         font-weight: 600;
         white-space: nowrap;
@@ -240,10 +241,10 @@
     }
 
     .track-duration {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         color: var(--text-sub);
         font-weight: 500;
-        margin-left: 15px;
+        margin-left: 10px;
     }
 
     .select-check {
@@ -252,7 +253,7 @@
         border-radius: 6px;
         background: var(--bg-main);
         box-shadow: var(--shadow-inset);
-        margin-right: 20px;
+        margin-right: 15px;
         display: none;
         align-items: center;
         justify-content: center;
@@ -295,7 +296,7 @@
 
     .player {
         background: var(--bg-main);
-        border-radius: 30px;
+        border-radius: var(--card-radius);
         padding: 15px 25px 25px 25px;
         box-shadow: 0 20px 40px rgba(0,0,0,0.1), var(--shadow-light);
         display: flex;
@@ -303,49 +304,55 @@
         justify-content: space-between;
         position: relative;
         overflow: hidden;
+        /* Mobile Stacked Layout */
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
     }
     
     .player-info {
+        width: 100%;
         display: flex;
         flex-direction: column;
-        flex: 1;
-        overflow: hidden;
-        margin-right: 15px;
-        z-index: 2;
+        align-items: center;
+        margin-bottom: 5px;
     }
     
     .player-title {
-        font-size: 1rem;
+        font-size: 1.1rem;
         font-weight: 700;
         color: var(--text-main);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        max-width: 100%;
     }
     
     .player-artist {
-        font-size: 0.7rem;
+        font-size: 0.75rem;
         color: var(--accent-deep);
         font-weight: 600;
         text-transform: uppercase;
+        margin-bottom: 5px;
     }
 
     .player-controls {
+        width: 100%;
         display: flex;
         align-items: center;
-        gap: 15px;
-        z-index: 2;
+        justify-content: space-between;
+        padding: 0 15px;
     }
 
     .main-play-btn {
-        width: 55px;
-        height: 55px;
+        width: 60px;
+        height: 60px;
         border-radius: 50%;
         background: var(--bg-main);
         border: none;
         box-shadow: var(--shadow-dark), var(--shadow-light);
         color: var(--text-main);
-        font-size: 1.5rem;
+        font-size: 1.8rem;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -359,9 +366,9 @@
         background: transparent;
         border: none;
         color: var(--text-sub);
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         cursor: pointer;
-        padding: 5px;
+        padding: 8px;
     }
     .mini-btn:hover { color: var(--accent-deep); }
     .mini-btn.active { color: var(--accent-deep); }
@@ -391,19 +398,19 @@
 
     input[type=range]::-webkit-slider-thumb {
         -webkit-appearance: none;
-        height: 14px;
-        width: 14px;
+        height: 16px;
+        width: 16px;
         border-radius: 50%;
         background: var(--accent-deep);
         cursor: pointer;
-        margin-top: -4px;
-        box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        margin-top: -5px;
+        box-shadow: 0 0 8px rgba(0,0,0,0.2);
         transition: transform 0.1s;
     }
     
     input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
     input[type=range]::-moz-range-thumb {
-        height: 14px; width: 14px; border-radius: 50%; background: var(--accent-deep); border: none;
+        height: 16px; width: 16px; border-radius: 50%; background: var(--accent-deep); border: none;
     }
 
     /* Modal */
@@ -448,42 +455,10 @@
     @media (min-width: 768px) {
       .player-container { width: 450px; left: auto; right: 40px; bottom: 40px; transform: none; }
       .header, .music-container { max-width: 800px; }
-    }
-
-    @media (max-width: 480px) {
-        header { padding: 30px 20px 15px; }
-        .main-title { font-size: 1.5rem; }
-        .neu-btn { width: 40px; height: 40px; font-size: 1.1rem; }
-        
-        /* Mobile Player: Stacked Layout to Prevent Overlap */
-        .player { 
-            flex-direction: column;
-            text-align: center;
-            padding: 20px 15px 35px 15px; /* Bottom padding for timeline */
-            height: auto;
-            gap: 15px;
-        }
-        
-        .player-info {
-            width: 100%;
-            margin-right: 0;
-            margin-bottom: 5px;
-        }
-
-        .player-controls {
-            width: 100%;
-            justify-content: space-between;
-            padding: 0 10px;
-        }
-        
-        .progress-container {
-            /* Ensure it stays at bottom */
-            bottom: 0;
-        }
-        
-        .track { margin-bottom: 20px; }
-        .player-container { bottom: 15px; width: 95%; }
-        .music-container { padding-bottom: 220px; } /* Ensure list clears stacked player */
+      /* Desktop: Row layout for player */
+      .player { flex-direction: row; text-align: left; gap: 0; }
+      .player-info { width: auto; align-items: flex-start; margin-right: 15px; margin-bottom: 0; flex: 1; }
+      .player-controls { width: auto; gap: 15px; padding: 0; }
     }
   </style>
 </head>
@@ -624,7 +599,7 @@
                 </div>
             </div>`;
         } else {
-            html += `<div style="height:20px;"></div>`;
+            html += `<div style="height:10px;"></div>`;
         }
 
         if (allFiles.length === 0) {
@@ -762,7 +737,6 @@
         } else if (context === 'playlist') {
             const playlist = savedPlaylists.find(p => p.id === viewingPlaylistId);
             if(playlist) {
-                // FIXED: Filter out any deleted files first so index matches visually
                 const playlistTracks = playlist.fileIds.map(id => allFiles.find(f => f.public_id === id)).filter(Boolean);
                 currentQueue = playlistTracks;
                 playTrack(index); 
