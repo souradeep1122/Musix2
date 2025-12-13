@@ -148,7 +148,7 @@
     .music-container {
       flex: 1;
       overflow-y: auto;
-      padding: 10px 25px 300px; /* Massive padding to ensure list clears the player */
+      padding: 10px 25px 300px; 
       max-width: 600px;
       width: 100%;
       margin: 0 auto;
@@ -239,12 +239,20 @@
         text-overflow: ellipsis;
     }
 
-    .track-duration {
-        font-size: 0.85rem;
+    /* The 3 Dots Button */
+    .more-btn {
+        background: transparent;
+        border: none;
         color: var(--text-sub);
-        font-weight: 500;
-        margin-left: 15px;
+        font-size: 1.4rem;
+        cursor: pointer;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 10px;
     }
+    .more-btn:active { color: var(--accent-deep); }
 
     /* Select Mode */
     .select-check {
@@ -291,7 +299,6 @@
         width: 92%;
         max-width: 500px;
         z-index: 100;
-        /* Padding for safe area on iPhone X+ */
         padding-bottom: env(safe-area-inset-bottom);
     }
 
@@ -302,7 +309,7 @@
         box-shadow: 0 20px 50px rgba(0,0,0,0.15), var(--shadow-light);
         display: flex;
         flex-direction: column;
-        gap: 15px; /* Clear spacing between elements */
+        gap: 15px;
     }
     
     .player-info {
@@ -342,7 +349,7 @@
     .progress-track {
         width: 100%;
         height: 6px;
-        background: rgba(0,0,0,0.1); /* Darker for visibility */
+        background: rgba(0,0,0,0.1); 
         border-radius: 10px;
         position: relative;
         cursor: pointer;
@@ -373,12 +380,11 @@
         border: 2px solid #fff;
     }
     
-    /* Time Labels */
     .time-labels {
         display: flex;
         justify-content: space-between;
         width: 100%;
-        font-size: 0.8rem; /* Larger font */
+        font-size: 0.8rem;
         color: var(--text-sub);
         font-weight: 600;
     }
@@ -421,12 +427,12 @@
     .mini-btn:hover { color: var(--accent-deep); }
     .mini-btn.active { color: var(--accent-deep); }
 
-    /* Modal */
+    /* Modals & Menus */
     .modal-overlay {
         position: fixed;
         top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(235, 236, 240, 0.8);
-        backdrop-filter: blur(8px);
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(5px);
         display: none;
         align-items: center;
         justify-content: center;
@@ -457,14 +463,85 @@
     
     .modal-btns { display: flex; gap: 15px; justify-content: center; }
 
+    /* Bottom Sheet Menu */
+    .bottom-sheet-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.3);
+        z-index: 150;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    
+    .bottom-sheet {
+        position: fixed;
+        bottom: -100%;
+        left: 0;
+        width: 100%;
+        background: var(--bg-main);
+        border-radius: 30px 30px 0 0;
+        padding: 25px;
+        box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
+        transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        z-index: 151;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .sheet-title {
+        text-align: center;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        font-size: 1.1rem;
+    }
+    
+    .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 12px;
+        background: transparent;
+        border: none;
+        font-size: 1rem;
+        color: var(--text-main);
+        cursor: pointer;
+        text-align: left;
+        border-radius: 15px;
+        transition: background 0.2s;
+    }
+    
+    .menu-item:hover { background: rgba(0,0,0,0.03); }
+    .menu-item i { font-size: 1.3rem; color: var(--text-sub); }
+    .menu-item.danger { color: #ff7675; }
+    .menu-item.danger i { color: #ff7675; }
+
     a { text-decoration: none; }
+
+    /* Playlist Selection List in Modal */
+    .playlist-select-list {
+        max-height: 200px;
+        overflow-y: auto;
+        margin: 15px 0;
+        text-align: left;
+    }
+    .playlist-option {
+        padding: 10px;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        cursor: pointer;
+        color: var(--text-main);
+    }
+    .playlist-option:hover { color: var(--accent-deep); }
 
     /* --- Desktop View --- */
     @media (min-width: 768px) {
       .player-container { width: 550px; left: auto; right: 40px; bottom: 40px; transform: none; }
       .header, .music-container { max-width: 800px; }
       
-      /* Desktop Row Layout */
       .player { flex-direction: row; flex-wrap: wrap; text-align: left; }
       .player-info { width: 35%; align-items: flex-start; text-align: left; }
       .timeline-container { width: 100%; order: 3; margin-top: 10px; }
@@ -502,13 +579,11 @@
   <div class="player-container">
       <div class="player">
         
-        <!-- 1. Track Info -->
         <div class="player-info">
             <div class="player-title" id="currentTrack">Select a track</div>
             <div class="player-artist" id="currentArtist">NOW PLAYING</div>
         </div>
         
-        <!-- 2. Timeline & Times (Between Info and Controls) -->
         <div class="timeline-container">
             <div class="progress-track" id="sliderTrack">
                 <input type="range" id="seekSlider" value="0" min="0" max="100" step="0.1">
@@ -519,7 +594,6 @@
             </div>
         </div>
 
-        <!-- 3. Controls -->
         <div class="player-controls">
             <button class="mini-btn" id="shuffleBtn"><i class="ri-shuffle-line"></i></button>
             <button class="mini-btn" id="prevBtn"><i class="ri-skip-back-fill"></i></button>
@@ -537,7 +611,7 @@
 
   <audio id="audioPlayer"></audio>
 
-  <!-- Playlist Modal -->
+  <!-- Create Playlist Modal -->
   <div class="modal-overlay" id="playlistModal">
       <div class="modal">
           <h3 style="color: var(--text-main); margin-top:0;">New Playlist</h3>
@@ -546,6 +620,31 @@
               <button class="neu-btn" onclick="closeModal()"><i class="ri-close-line"></i></button>
               <button class="neu-btn primary" onclick="confirmSavePlaylist()"><i class="ri-check-line"></i></button>
           </div>
+      </div>
+  </div>
+
+  <!-- Add to Existing Playlist Modal -->
+  <div class="modal-overlay" id="addToPlaylistModal">
+      <div class="modal">
+          <h3 style="color: var(--text-main); margin-top:0;">Add to Playlist</h3>
+          <div class="playlist-select-list" id="playlistSelectList">
+              <!-- JS Populated -->
+          </div>
+          <div class="modal-btns">
+              <button class="neu-btn" onclick="document.getElementById('addToPlaylistModal').style.display='none'"><i class="ri-close-line"></i></button>
+          </div>
+      </div>
+  </div>
+
+  <!-- Track Menu Bottom Sheet -->
+  <div class="bottom-sheet-overlay" id="trackMenuOverlay" onclick="closeTrackMenu()">
+      <div class="bottom-sheet" id="trackMenu" onclick="event.stopPropagation()">
+          <div class="sheet-title" id="menuTitle">Track Options</div>
+          <button class="menu-item" onclick="menuAction('play')"><i class="ri-play-fill"></i> Play Now</button>
+          <button class="menu-item" onclick="menuAction('queue')"><i class="ri-play-list-add-line"></i> Play Next (Queue)</button>
+          <button class="menu-item" onclick="menuAction('playlist')"><i class="ri-folder-add-line"></i> Add to Playlist</button>
+          <button class="menu-item" onclick="menuAction('create_playlist')"><i class="ri-add-box-line"></i> Create New Playlist</button>
+          <button class="menu-item danger" onclick="menuAction('delete')"><i class="ri-delete-bin-line"></i> Delete File</button>
       </div>
   </div>
 
@@ -572,6 +671,7 @@
     let selectedIndices = new Set();
     let currentTab = 'all'; 
     let viewingPlaylistId = null;
+    let selectedTrackForMenu = null; // Stores {index, context, fileId}
 
     let savedPlaylists = JSON.parse(localStorage.getItem('vibePlaylists')) || [];
 
@@ -609,8 +709,6 @@
             html += `<div style="text-align:center; margin-top:50px; color:var(--text-sub);"><p>No songs found</p></div>`;
         } else {
             allFiles.forEach((file, index) => {
-                let durationText = '--:--';
-                if(file.duration) durationText = formatTime(file.duration);
                 
                 const isSelected = selectedIndices.has(index) ? 'selected' : '';
                 const selectClass = isSelectionMode ? 'selection-mode' : '';
@@ -630,7 +728,10 @@
                     <div class="track-artist">${file.cleanArtist}</div>
                     <div class="track-title">${file.cleanTitle}</div>
                   </div>
-                  <div class="track-duration">${durationText}</div>
+                  <!-- Replaced Duration with 3 Dots Menu Button -->
+                  <button class="more-btn" onclick="openTrackMenu(event, ${index}, 'all')">
+                    <i class="ri-more-2-fill"></i>
+                  </button>
                 </div>`;
             });
         }
@@ -674,9 +775,6 @@
             html += `<p style="text-align:center; color:var(--text-sub);">No songs in this playlist.</p>`;
         } else {
             playlistTracks.forEach((file, i) => {
-                let durationText = '--:--';
-                if(file.duration) durationText = formatTime(file.duration);
-
                 const isCurrent = (currentQueue[currentTrackIndex]?.public_id === file.public_id && currentTab === 'single_playlist' && viewingPlaylistId === id);
                 const activeClass = isCurrent ? 'active-track' : '';
                 const icon = (isCurrent && isPlaying) ? '<i class="ri-pause-fill"></i>' : '<i class="ri-play-fill"></i>';
@@ -688,11 +786,123 @@
                     <div class="track-artist">${file.cleanArtist}</div>
                     <div class="track-title">${file.cleanTitle}</div>
                   </div>
-                  <div class="track-duration">${durationText}</div>
+                  <!-- Menu Button for Playlist Tracks too -->
+                  <button class="more-btn" onclick="openTrackMenu(event, ${i}, 'playlist')">
+                    <i class="ri-more-2-fill"></i>
+                  </button>
                 </div>`;
             });
         }
         mainContainer.innerHTML = html;
+    }
+
+    // --- MENU SYSTEM ---
+    function openTrackMenu(e, index, context) {
+        e.stopPropagation();
+        
+        let file;
+        if(context === 'all') file = allFiles[index];
+        else if(context === 'playlist') {
+             const playlist = savedPlaylists.find(p => p.id === viewingPlaylistId);
+             const trackId = playlist.fileIds[index];
+             file = allFiles.find(f => f.public_id === trackId);
+        }
+
+        if(!file) return;
+
+        selectedTrackForMenu = { index, context, file };
+        document.getElementById('menuTitle').textContent = file.cleanTitle;
+        
+        const overlay = document.getElementById('trackMenuOverlay');
+        const sheet = document.getElementById('trackMenu');
+        
+        overlay.style.display = 'block';
+        setTimeout(() => {
+            overlay.style.opacity = '1';
+            sheet.style.bottom = '0';
+        }, 10);
+    }
+
+    function closeTrackMenu() {
+        const overlay = document.getElementById('trackMenuOverlay');
+        const sheet = document.getElementById('trackMenu');
+        
+        sheet.style.bottom = '-100%';
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 300);
+    }
+
+    function menuAction(action) {
+        if(!selectedTrackForMenu) return;
+        const { index, context, file } = selectedTrackForMenu;
+        closeTrackMenu();
+
+        switch(action) {
+            case 'play':
+                // Reset queue to appropriate context and play
+                if(context === 'all') {
+                    currentQueue = [...allFiles];
+                    playTrack(index);
+                } else if (context === 'playlist') {
+                    // Logic already handled in handleTrackClick mostly, reuse logic
+                    handleTrackClick(index, 'playlist');
+                }
+                break;
+                
+            case 'queue':
+                // Insert into current queue right after current playing index
+                // This is a simple implementation. 
+                // A full queue system would need a separate 'nextUp' array.
+                // Here we mutate currentQueue for simplicity.
+                currentQueue.splice(currentTrackIndex + 1, 0, file);
+                alert("Added to queue for next play");
+                break;
+                
+            case 'delete':
+                if(confirm(`Delete ${file.cleanTitle} permanently?`)) {
+                    window.location.href = `/AllBus/${file.public_id.split('/').pop()}`;
+                }
+                break;
+            
+            case 'create_playlist':
+                // Pre-select this track and open create modal
+                selectedIndices.clear();
+                // Find index in allFiles to set selected
+                const masterIndex = allFiles.findIndex(f => f.public_id === file.public_id);
+                if(masterIndex > -1) selectedIndices.add(masterIndex);
+                openSaveModal();
+                break;
+                
+            case 'playlist':
+                openAddToPlaylistModal(file.public_id);
+                break;
+        }
+    }
+
+    function openAddToPlaylistModal(fileId) {
+        const modal = document.getElementById('addToPlaylistModal');
+        const list = document.getElementById('playlistSelectList');
+        list.innerHTML = '';
+        
+        if(savedPlaylists.length === 0) {
+            list.innerHTML = '<p style="padding:10px; color:var(--text-sub)">No playlists found. Create one first.</p>';
+        } else {
+            savedPlaylists.forEach(pl => {
+                const div = document.createElement('div');
+                div.className = 'playlist-option';
+                div.textContent = pl.name;
+                div.onclick = () => {
+                    pl.fileIds.push(fileId);
+                    localStorage.setItem('vibePlaylists', JSON.stringify(savedPlaylists));
+                    alert(`Added to ${pl.name}`);
+                    modal.style.display = 'none';
+                };
+                list.appendChild(div);
+            });
+        }
+        modal.style.display = 'flex';
     }
 
     // --- LOGIC ---
@@ -714,6 +924,7 @@
     }
 
     function handleTrackClick(index, context) {
+        // If clicking on track body (not menu), play it
         if (isSelectionMode && context === 'all') {
             if(selectedIndices.has(index)) selectedIndices.delete(index);
             else selectedIndices.add(index);
