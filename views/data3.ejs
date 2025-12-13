@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <style>
-    /* --- Theming Variables (Matches Reference: Soft White & Pink) --- */
+    /* --- Theming Variables --- */
     :root {
       /* Light Mode */
       --bg-main: #EBECF0;
@@ -135,13 +135,6 @@
         transition: all 0.2s ease;
     }
 
-    /* Hover fix for mobile */
-    @media (hover: hover) {
-        .neu-btn:hover { color: var(--accent-deep); }
-        .track:hover .track-play-btn { color: var(--accent-deep); transform: scale(1.05); }
-        .mini-btn:hover { color: var(--accent-deep); }
-    }
-
     .neu-btn:active, .neu-btn.active {
         box-shadow: var(--shadow-inset);
         color: var(--accent-deep);
@@ -207,6 +200,11 @@
         flex-shrink: 0;
         margin-right: 20px;
         transition: all 0.3s;
+    }
+
+    .track:hover .track-play-btn {
+        color: var(--accent-deep);
+        transform: scale(1.05);
     }
 
     .track.active-track .track-play-btn {
@@ -426,7 +424,7 @@
         cursor: pointer;
         padding: 10px;
     }
-    .mini-btn:active { color: var(--accent-deep); transform: scale(0.9); }
+    .mini-btn:hover { color: var(--accent-deep); }
     .mini-btn.active { color: var(--accent-deep); }
 
     /* Modals & Menus */
@@ -557,7 +555,7 @@
   <header>
     <div class="header">
         <div class="header-left">
-            <div class="subtitle" id="librarySubtitle">LIBRARY</div>
+            <div class="subtitle">LIBRARY</div>
             <div class="title-switcher">
                 <button class="main-title" onclick="switchTab('all')" id="tab-all">Songs</button>
                 <button class="main-title inactive" onclick="switchTab('playlists')" id="tab-playlists">Playlists</button>
@@ -690,13 +688,9 @@
     const sliderTrack = document.getElementById("sliderTrack");
     const currentTimeText = document.getElementById("currentTimeText");
     const totalTimeText = document.getElementById("totalTimeText");
-    const librarySubtitle = document.getElementById("librarySubtitle");
 
     // --- RENDER LOGIC ---
     function renderAllSongs() {
-        // Update Header Count
-        librarySubtitle.innerHTML = `LIBRARY • ${allFiles.length} SONGS`;
-
         let html = '';
         if(isSelectionMode) {
             html += `
@@ -745,7 +739,7 @@
     }
 
     function renderPlaylistsTab() {
-        let html = `<div class="playlist-controls"><span style="font-weight:700; color:var(--text-main); font-size:1.1rem;">My Playlists</span></div>`;
+        let html = `<div class="playlist-controls"><span style="font-weight:700; color:var(--text-main); font-size:1.2rem;">My Playlists</span></div>`;
         if(savedPlaylists.length === 0) {
             html += `<div style="text-align:center; margin-top:50px; color:var(--text-sub);"><p>No playlists yet</p><button class="neu-btn primary" style="width:auto; padding:0 20px; margin:20px auto;" onclick="switchTab('all'); toggleSelectionMode(true);">Create Playlist</button></div>`;
         } else {
@@ -770,7 +764,7 @@
         let html = `
             <div class="playlist-controls">
                 <button class="neu-btn" onclick="switchTab('playlists')" style="width:40px; height:40px;"><i class="ri-arrow-left-line"></i></button>
-                <button class="text-btn" onclick="deletePlaylist('${id}')" style="color:#ff0055;">Delete</button>
+                <button class="text-btn" onclick="deletePlaylist('${id}')" style="color:#ff7675;">Delete</button>
             </div>
             <h2 style="margin:0 0 30px; font-size:2rem; color:var(--text-main);">${playlist.name}</h2>
         `;
