@@ -172,7 +172,7 @@
     .music-list {
       flex: 1;
       overflow-y: auto;
-      padding: 0 20px 320px; /* Space for large bottom player */
+      padding: 0 20px 220px; /* Adjusted padding */
       scrollbar-width: none;
     }
     .music-list::-webkit-scrollbar { display: none; }
@@ -244,14 +244,14 @@
         color: var(--accent-blue);
     }
 
-    /* --- Bottom Player (Floating Card) --- */
+    /* --- Bottom Player (SHRUNK VERSION 75%) --- */
     .player-container {
       position: fixed;
-      bottom: 30px;
+      bottom: 20px; /* Sits lower */
       left: 50%;
       transform: translateX(-50%);
       width: 90%;
-      max-width: 400px;
+      max-width: 380px;
       z-index: 100;
     }
 
@@ -259,8 +259,8 @@
       background: var(--player-bg);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border-radius: 35px;
-      padding: 25px 30px;
+      border-radius: 30px; /* Slightly less rounded */
+      padding: 12px 20px; /* significantly reduced padding */
       box-shadow: var(--player-shadow);
       border: var(--glass-border);
       display: flex;
@@ -270,38 +270,38 @@
     }
 
     .player-title-row {
-      margin-bottom: 20px;
+      margin-bottom: 6px; 
       width: 100%;
     }
 
     .p-title {
-      font-size: 1.2rem;
+      font-size: 0.95rem; /* Smaller font */
       font-weight: 700;
       color: var(--text-main);
-      margin-bottom: 4px;
+      margin-bottom: 1px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .p-artist {
-      font-size: 0.8rem;
+      font-size: 0.65rem; /* Smaller font */
       font-weight: 600;
       color: var(--text-sub);
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
     }
 
     /* Progress Bar */
     .progress-area {
       width: 100%;
-      margin-bottom: 25px;
+      margin-bottom: 8px; /* Reduced spacing */
       position: relative;
     }
 
     .progress-bg {
       width: 100%;
-      height: 5px;
+      height: 4px; /* Thinner line */
       background: rgba(91, 141, 239, 0.15);
       border-radius: 10px;
     }
@@ -309,7 +309,7 @@
     input[type=range] {
       -webkit-appearance: none;
       width: 100%;
-      height: 5px;
+      height: 4px;
       background: transparent;
       position: absolute;
       top: 0; left: 0;
@@ -321,22 +321,22 @@
 
     input[type=range]::-webkit-slider-thumb {
         -webkit-appearance: none;
-        height: 18px; 
-        width: 18px; 
+        height: 14px; /* Smaller thumb */
+        width: 14px; 
         border-radius: 50%;
         background: #FFFFFF;
         border: 1px solid rgba(0,0,0,0.1);
         cursor: pointer;
         box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        margin-top: -6px;
+        margin-top: -5px;
     }
     
     .time-row {
       display: flex;
       justify-content: space-between;
       width: 100%;
-      margin-top: 8px;
-      font-size: 0.8rem;
+      margin-top: 4px;
+      font-size: 0.65rem; /* Smaller labels */
       font-weight: 600;
       color: var(--text-sub);
     }
@@ -347,14 +347,14 @@
       align-items: center;
       justify-content: space-between;
       width: 100%;
-      padding: 0 10px;
+      padding: 0 5px;
     }
 
     .ctrl-btn-small {
       background: transparent;
       border: none;
       color: var(--accent-blue);
-      font-size: 1.4rem;
+      font-size: 1.1rem; /* Smaller icon */
       cursor: pointer;
       opacity: 0.7;
       transition: opacity 0.2s;
@@ -366,13 +366,13 @@
         background: transparent;
         border: none;
         color: var(--accent-blue);
-        font-size: 1.8rem;
+        font-size: 1.4rem; /* Smaller icon */
         cursor: pointer;
     }
 
     .play-btn-large {
-      width: 70px;
-      height: 70px;
+      width: 45px; /* Scaled down from 60px */
+      height: 45px; 
       border-radius: 50%;
       background: #FFFFFF;
       border: none;
@@ -380,8 +380,8 @@
       align-items: center;
       justify-content: center;
       color: var(--accent-blue);
-      font-size: 2.2rem;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      font-size: 1.5rem; /* Smaller play icon */
+      box-shadow: 0 3px 15px rgba(0,0,0,0.1);
       cursor: pointer;
       transition: transform 0.2s;
     }
@@ -390,7 +390,18 @@
     body.dark-mode .play-btn-large {
         background: #2C303A;
         color: #5B8DEF;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+        box-shadow: 0 3px 15px rgba(0,0,0,0.4);
+    }
+
+    /* Visitor Counter */
+    .visitor-footer {
+        padding: 20px;
+        text-align: center;
+        color: var(--text-sub);
+        font-size: 0.75rem;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        opacity: 0.8;
     }
 
     /* --- Modals & Sheets --- */
@@ -439,11 +450,11 @@
     @media (min-width: 768px) {
         .header, .music-list, .player-container, .search-section, .top-nav { max-width: 800px; margin: 0 auto; }
         .player-container { bottom: 40px; }
-        .player-card { flex-direction: row; text-align: left; max-width: 700px; }
+        .player-card { flex-direction: row; text-align: left; max-width: 700px; padding: 15px 30px; }
         .player-title-row { width: 30%; margin-bottom: 0; }
         .progress-area { width: 40%; margin-bottom: 0; margin: 0 20px; }
         .controls-row { width: 30%; }
-        .music-list { overflow-y: auto; height: calc(100vh - 200px); padding-bottom: 150px; }
+        .music-list { overflow-y: auto; height: calc(100vh - 200px); padding-bottom: 120px; }
     }
   </style>
 </head>
@@ -497,7 +508,7 @@
               <button class="ctrl-btn-med" id="prevBtn"><i class="ri-skip-back-fill"></i></button>
               
               <button class="play-btn-large" id="playPauseBtn">
-                  <i class="ri-play-fill" style="margin-left: 5px;"></i>
+                  <i class="ri-play-fill" style="margin-left: 3px;"></i>
               </button>
               
               <button class="ctrl-btn-med" id="nextBtn"><i class="ri-skip-forward-fill"></i></button>
@@ -543,6 +554,31 @@
 
   <script>
     const rawFiles = <%- JSON.stringify(files) %>;
+    
+    // MOCK DATA (For Preview/Client-side only)
+    /* const rawFiles = [
+      { 
+        originalname: 'Midnight_City_M83.mp3', 
+        public_id: 'music/Midnight_City', 
+        bytes: 4500000, 
+        duration: 234, 
+        url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' 
+      },
+      { 
+        originalname: 'Cyberpunk_Dreams_2077.mp3', 
+        public_id: 'music/Cyberpunk_Dreams', 
+        bytes: 3200000, 
+        duration: 185, 
+        url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' 
+      },
+      { 
+        originalname: 'Lofi_Chill_Beats_V2.mp3', 
+        public_id: 'music/Lofi_Chill_Beats', 
+        bytes: 5100000, 
+        duration: 290, 
+        url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' 
+      }
+    ]; */
     
     const allFiles = rawFiles.map(file => {
         const rawName = file.originalname.replace(/\.[^.]+$/, '');
@@ -616,6 +652,15 @@
             container.appendChild(item);
         });
         
+        // VISITOR TRACKER FOOTER
+        const footer = document.createElement('div');
+        footer.className = 'visitor-footer';
+        // Simulate a visitor count based on time or random seed for demo
+        const visits = localStorage.getItem('vibeVisits') || 0;
+        localStorage.setItem('vibeVisits', parseInt(visits) + 1);
+        footer.innerHTML = `Vibe Player • ${parseInt(visits) + 1} Visits`;
+        container.appendChild(footer);
+
         const spacer = document.createElement('div');
         spacer.style.height = '120px';
         container.appendChild(spacer);
