@@ -4,29 +4,33 @@ const app = express();
 require("dotenv").config();
 var morgan = require("morgan");
 app.use(morgan("tiny"));
-const Mongo = require("./user");
+const Mongo = require("./user"); // Your existing Music Schema
+const Visitor = require("./visitor"); // The new Visitor Schema
 
 const multer = require("multer");
 const { v2: cloudinary } = require("cloudinary");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
-const { mongo } = require("mongoose");
+const mongoose = require("mongoose");
 
-// Configure Cloudinary via env
+// Database Connection
+mongoose.connect("mongodb+srv://souradeep418saha:HGNIErfgHHnMt4r3@aiavengerdb.je1poyy.mongodb.net/?retryWrites=true&w=majority")
+  .then(() => console.log("MongoDB Connected"))
+  .catch(err => console.log("DB Connection Error: ", err));
+mongoose.set("strictQuery", false);
+
+// Configure Cloudinary via env or hardcoded (as you provided)
 cloudinary.config({
   cloud_name: "dzcf32qac",
   api_key: "983461817852631",
   api_secret: "lKzveCmrBIOTEENfohkMwMVRrd4",
 });
 
-// Multer storage to Cloudinary (resource_type raw handles mp3 well; auto also works)
 const storage = new CloudinaryStorage({
   cloudinary,
   params: async (req, file) => {
-    // Only allow mp3 uploads from the form; you can expand types if needed
-    // You can also validate mimetype: file.mimetype === 'audio/mpeg'
     return {
       folder: "music_uploads",
-      resource_type: "raw", // mp3s are best treated as raw or video; 'auto' is also acceptable
+      resource_type: "raw",
       use_filename: true,
       unique_filename: true,
       allowed_formats: ["mp3"],
@@ -40,87 +44,104 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "public"))); // Serve static files if needed
 
-// Home: upload form + playlist
+// --- ROUTES ---
+
+// Home: List Music + Visitor Tracker
 app.get("/", async (req, res) => {
   try {
-    // Fetch up to 200 most recent files in the music_uploads folder
-    const results = await cloudinary.search
-      .expression("folder:music_uploads")
-      .sort_by("created_at", "desc")
-      .max_results(200)
-      .execute(); // Cloudinary Search API[3][14]
+    // 1. Visitor Tracker Logic
+    let visitorData = await Visitor.findOne({ id: "main_counter" });
+    
+    if (!visitorData) {
+      // Initialize if not exists
+      visitorData = new Visitor({ id: "main_counter", count: 1 });
+      await visitorData.save();
+    } else {
+      // Increment count
+      visitorData.count += 1;
+      await visitorData.save();
+    }
 
+    // 2. Fetch Music Files
     const files2 = await Mongo.find({})
-      .sort({ createdAt: -1 }) // Most recent first
+      .sort({ created_at: -1 }) // Note: Schema says created_at, make sure sorting key matches
       .limit(200);
 
-    // Transform data to match your existing template structure
     const formattedFiles = files2.map((file) => ({
       public_id: file.public_id,
       bytes: file.bytes,
       created_at: file.created_at,
-      originalname: file.OriginalName, // This is the key addition!
+      originalname: file.OriginalName,
       url: file.url,
       format: file.format,
       duration: file.duration,
     }));
-    //console.log(files1)
 
-    res.render("data3", { files: formattedFiles });
-    //console.log(formattedFiles)
+    // 3. Render with both Music List and Visitor Count
+    // Ensure your view file is named 'data3.ejs' inside the 'views' folder
+    res.render("data3", { 
+        files: formattedFiles, 
+        visitorCount: visitorData.count 
+    });
+
   } catch (err) {
-    console.error("Cloudinary search error:", err);
-    res.status(500).send("Unable to list music files");
+    console.error("Server Error:", err);
+    res.status(500).send("Internal Server Error");
   }
 });
 
 // Handle MP3 upload
 app.post("/upload", upload.single("music_file"), async (req, res) => {
-  console.log(" sucessfully Uploaded to Cloudinary:");
+  try {
+    console.log("Successfully Uploaded to Cloudinary");
 
-  // Save file metadata to MongoDB
-  const musicFile = new Mongo({
-    public_id: req.file.filename,
-    OriginalName: req.file.originalname,
-    format: req.file.format,
-    url: req.file.path,
-    bytes: req.file.size,
-    duration: req.file.duration,
-  });
+    // Save metadata to MongoDB
+    const musicFile = new Mongo({
+      public_id: req.file.filename,
+      OriginalName: req.file.originalname,
+      format: req.file.format || "mp3", // Cloudinary might not always send format for raw
+      url: req.file.path,
+      bytes: req.file.size,
+      duration: 0, // Duration isn't auto-extracted by raw upload without extra Cloudinary settings, defaulting to 0 or null
+    });
 
-  const savedFile = await musicFile.save();
-  console.log("Saved to MongoDB:", musicFile);
+    await musicFile.save();
+    console.log("Saved to MongoDB");
 
-  return res.redirect("/");
+    return res.redirect("/");
+  } catch (err) {
+    console.error("Upload Error:", err);
+    res.status(500).send("Upload Failed");
+  }
 });
 
-// Delete a track by public_id
+// Delete a track
 app.get("/AllBus/:id", async function (req, res) {
-  const publicId = req.params.id;
+  try {
+    const publicId = req.params.id;
+    const fullId = `music_uploads/${publicId}`; // Construct full public_id if strictly stored that way
 
-  const idd = `music_uploads/${publicId}`;
+    // Delete from Cloudinary
+    await cloudinary.uploader.destroy(fullId, { resource_type: "raw" });
 
-  const result = await cloudinary.uploader.destroy(idd, {
-    resource_type: "raw",
-  }); //for cloudinary deletion
+    // Delete from MongoDB
+    await Mongo.deleteOne({ public_id: req.params.id }); // Note: Check if you stored "music_uploads/..." or just filename in DB
+    // If your DB stores "music_uploads/filename", use `fullId`. If just "filename", use `req.params.id`. 
+    // Based on your upload code: `public_id: req.file.filename` usually includes folder.
 
-  const mongodlt = await Mongo.deleteOne({ public_id: idd }); //for mongodb deletion
-  console.log(idd);
-
-  return res.redirect("/");
+    console.log("Deleted:", fullId);
+    return res.redirect("/");
+  } catch (err) {
+    console.error("Deletion Error:", err);
+    res.redirect("/");
+  }
 });
 
+// Render Upload Page
 app.get("/postmp3", (req, res) => {
-  // req.file contains Cloudinary info; redirect back to home
-  console.log("now on postmp3 route");
-  res.render("post");
-});
-
-app.get("/files", (req, res) => {
-  // req.file contains Cloudinary info; redirect back to home
-
-  res.render("files");
+  res.render("post"); // Make sure 'views/post.ejs' exists (use the upload.html code there)
 });
 
 app.listen(3000, () => console.log("Server running on port 3000"));
