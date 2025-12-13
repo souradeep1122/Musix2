@@ -9,11 +9,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <style>
-    /* --- Theming Variables (Matches Reference: Soft White & Pink) --- */
+    /* --- Theming Variables --- */
     :root {
-      /* Light Mode */
+      /* Light Mode: Soft Neumorphism (Matches Image) */
       --bg-main: #EBECF0;
-      --text-main: #4a4a4a;
+      --text-main: #575757;
       --text-sub: #a0a0a0;
       
       --accent: #FF9EB5;
@@ -23,22 +23,33 @@
       --shadow-light: -6px -6px 14px rgba(255, 255, 255, 1);
       --shadow-dark: 6px 6px 10px rgba(174, 174, 192, 0.4);
       --shadow-inset: inset 4px 4px 8px rgba(174, 174, 192, 0.4), inset -4px -4px 8px rgba(255, 255, 255, 1);
-      
+      --card-bg: #EBECF0;
       --btn-radius: 50%;
+      
+      /* Player Floating Card */
+      --player-bg: #EBECF0;
+      --player-border: none;
     }
 
     body.dark-mode {
-      /* Dark Mode Variant */
-      --bg-main: #292d32;
-      --text-main: #e0e0e0;
-      --text-sub: #8b8b8b;
+      /* Dark Mode: Gradient Glassmorphism (Matches Dark Reference) */
+      --bg-main: #1f2229; /* Fallback */
+      --text-main: #ffffff;
+      --text-sub: #cfcfcf;
       
       --accent: #FF9EB5;
-      --accent-deep: #ff5c8d;
+      --accent-deep: #ff8fab;
       
-      --shadow-light: -4px -4px 10px rgba(60, 60, 60, 0.5);
-      --shadow-dark: 4px 4px 10px rgba(0, 0, 0, 0.3);
-      --shadow-inset: inset 3px 3px 6px rgba(0, 0, 0, 0.4), inset -3px -3px 6px rgba(60, 60, 60, 0.3);
+      /* Glass Shadows & BG */
+      --shadow-light: 0 0 0 transparent; /* No heavy light source in dark mode */
+      --shadow-dark: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      --shadow-inset: inset 0 0 20px rgba(255,255,255,0.05);
+      
+      --card-bg: rgba(30, 30, 30, 0.4);
+      
+      /* Glass Player */
+      --player-bg: rgba(20, 20, 20, 0.65);
+      --player-border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     /* Reset & Base */
@@ -59,11 +70,24 @@
       overflow: hidden;
       transition: background 0.3s ease, color 0.3s ease;
     }
+    
+    /* Dark Mode Gradient Background */
+    body.dark-mode::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: 
+            radial-gradient(circle at 10% 20%, rgba(111, 66, 193, 0.4) 0%, transparent 40%),
+            radial-gradient(circle at 90% 80%, rgba(32, 189, 255, 0.4) 0%, transparent 40%),
+            radial-gradient(circle at 50% 50%, rgba(255, 0, 128, 0.2) 0%, transparent 50%);
+        background-color: #0f1115;
+        z-index: -1;
+        pointer-events: none;
+    }
 
     /* --- Header --- */
     header {
       padding: 40px 25px 10px;
-      background: var(--bg-main);
       z-index: 10;
       flex-shrink: 0;
     }
@@ -94,7 +118,7 @@
     .title-switcher {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 15px;
     }
 
     .main-title {
@@ -118,13 +142,13 @@
         gap: 15px;
     }
 
-    /* Neumorphic Button Class */
+    /* Neumorphic/Glass Button Class */
     .neu-btn {
         width: 45px;
         height: 45px;
         border-radius: var(--btn-radius);
-        background: var(--bg-main);
-        border: none;
+        background: var(--card-bg);
+        border: var(--player-border);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -132,10 +156,10 @@
         font-size: 1.2rem;
         cursor: pointer;
         box-shadow: var(--shadow-dark), var(--shadow-light);
+        backdrop-filter: blur(10px);
         transition: all 0.2s ease;
     }
 
-    /* Hover fix for mobile */
     @media (hover: hover) {
         .neu-btn:hover { color: var(--accent-deep); }
         .track:hover .track-play-btn { color: var(--accent-deep); transform: scale(1.05); }
@@ -193,12 +217,14 @@
       transition: transform 0.2s;
     }
     
+    /* Neumorphic Play Circle */
     .track-play-btn {
         width: 50px;
         height: 50px;
         border-radius: 50%;
-        background: var(--bg-main);
+        background: var(--card-bg);
         box-shadow: var(--shadow-dark), var(--shadow-light);
+        border: var(--player-border);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -212,7 +238,6 @@
     .track.active-track .track-play-btn {
         box-shadow: var(--shadow-inset);
         color: var(--accent-deep);
-        border: 1px solid rgba(255, 118, 147, 0.1);
     }
 
     .track-info {
@@ -241,18 +266,21 @@
         text-overflow: ellipsis;
     }
 
-    /* The 3 Dots Button */
+    /* The 3 Dots Button (Circle style from reference) */
     .more-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
         background: transparent;
         border: none;
         color: var(--text-sub);
-        font-size: 1.4rem;
+        font-size: 1.2rem;
         cursor: pointer;
-        padding: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
         margin-left: 10px;
+        /* Optional: Add minimal shadow or leave flat */
     }
     .more-btn:active { color: var(--accent-deep); }
 
@@ -261,7 +289,7 @@
         width: 24px;
         height: 24px;
         border-radius: 6px;
-        background: var(--bg-main);
+        background: var(--card-bg);
         box-shadow: var(--shadow-inset);
         margin-right: 20px;
         display: none;
@@ -280,11 +308,12 @@
     }
 
     .playlist-card {
-        background: var(--bg-main);
+        background: var(--card-bg);
         padding: 20px;
         border-radius: 20px;
         margin-bottom: 20px;
         box-shadow: var(--shadow-dark), var(--shadow-light);
+        border: var(--player-border);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -295,17 +324,20 @@
     /* --- Floating Player (Stacked Layout) --- */
     .player-container {
         position: fixed;
-        bottom: 20px;
+        bottom: 25px;
         left: 50%;
         transform: translateX(-50%);
-        width: 92%;
+        width: 90%;
         max-width: 500px;
         z-index: 100;
         padding-bottom: env(safe-area-inset-bottom);
     }
 
     .player {
-        background: var(--bg-main);
+        background: var(--player-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: var(--player-border);
         border-radius: 30px;
         padding: 20px 25px;
         box-shadow: 0 20px 50px rgba(0,0,0,0.15), var(--shadow-light);
@@ -356,6 +388,9 @@
         position: relative;
         cursor: pointer;
     }
+    
+    /* Dark Mode Track Adjustment */
+    body.dark-mode .progress-track { background: rgba(255,255,255,0.1); }
 
     input[type=range] {
         -webkit-appearance: none;
@@ -404,8 +439,8 @@
         width: 65px;
         height: 65px;
         border-radius: 50%;
-        background: var(--bg-main);
-        border: none;
+        background: var(--card-bg);
+        border: var(--player-border);
         box-shadow: var(--shadow-dark), var(--shadow-light);
         color: var(--text-main);
         font-size: 2rem;
@@ -442,13 +477,14 @@
     }
     
     .modal {
-        background: var(--bg-main);
+        background: var(--card-bg);
         padding: 30px;
         border-radius: 30px;
         width: 85%;
         max-width: 320px;
         text-align: center;
         box-shadow: var(--shadow-dark), var(--shadow-light);
+        border: var(--player-border);
     }
     
     .modal input {
@@ -469,7 +505,7 @@
     .bottom-sheet-overlay {
         position: fixed;
         top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.3);
+        background: rgba(0,0,0,0.4);
         z-index: 150;
         display: none;
         opacity: 0;
@@ -481,10 +517,11 @@
         bottom: -100%;
         left: 0;
         width: 100%;
-        background: var(--bg-main);
+        background: var(--card-bg);
         border-radius: 30px 30px 0 0;
         padding: 25px;
-        box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+        border-top: var(--player-border);
         transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         z-index: 151;
         display: flex;
@@ -854,9 +891,6 @@
                 
             case 'queue':
                 // Insert into current queue right after current playing index
-                // This is a simple implementation. 
-                // A full queue system would need a separate 'nextUp' array.
-                // Here we mutate currentQueue for simplicity.
                 currentQueue.splice(currentTrackIndex + 1, 0, file);
                 alert("Added to queue for next play");
                 break;
