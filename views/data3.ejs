@@ -11,19 +11,17 @@
   <style>
     /* --- Exact Reference Theming --- */
     :root {
-      /* Light Mode Palette (Beige/Blue/White) */
-      --bg-gradient: linear-gradient(180deg, #FDFBF7 0%, #F4F7F6 40%, #E6EEF5 100%);
+      /* Light Mode Palette */
       --text-main: #333333;
       --text-sub: #888888;
       
-      --accent-blue: #5B8DEF; /* The blue used in tabs/controls */
+      --accent-blue: #5B8DEF; 
       --accent-light: #DCE8F9;
       
       --card-bg: rgba(255, 255, 255, 0.7);
       --glass-border: 1px solid rgba(255, 255, 255, 0.5);
       --shadow-soft: 0 10px 30px rgba(0,0,0,0.05);
       
-      /* Specific Elements */
       --tab-bg: #FFFFFF;
       --tab-active-bg: #5B8DEF;
       --tab-active-text: #FFFFFF;
@@ -33,13 +31,15 @@
       --track-icon-bg: #FFFFFF;
       --track-icon-color: #5B8DEF;
       
-      --player-bg: rgba(255, 255, 255, 0.85);
+      --player-bg: rgba(255, 255, 255, 0.9);
       --player-shadow: 0 -10px 40px rgba(91, 141, 239, 0.15);
+      
+      /* SVG Background Data URI for Light Mode (Wavy Lines) */
+      --bg-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 1200'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23FDFBF7;stop-opacity:1' /%3E%3Cstop offset='40%25' style='stop-color:%23F4F7F6;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23DCE8F9;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23grad)'/%3E%3Cg fill='none' stroke='%235B8DEF' stroke-width='1' stroke-opacity='0.15'%3E%3Cpath d='M-100 600 C 200 500, 600 800, 900 700' /%3E%3Cpath d='M-100 620 C 200 520, 600 820, 900 720' /%3E%3Cpath d='M-100 640 C 200 540, 600 840, 900 740' /%3E%3Cpath d='M-100 660 C 200 560, 600 860, 900 760' /%3E%3Cpath d='M-100 680 C 200 580, 600 880, 900 780' /%3E%3Cpath d='M-100 700 C 200 600, 600 900, 900 800' /%3E%3Cpath d='M-100 720 C 200 620, 600 920, 900 820' /%3E%3Cpath d='M-100 740 C 200 640, 600 940, 900 840' /%3E%3Cpath d='M-100 760 C 200 660, 600 960, 900 860' /%3E%3C/g%3E%3C/svg%3E");
     }
 
     body.dark-mode {
-      /* Dark Mode Palette (Navy/Black/Blue) */
-      --bg-gradient: linear-gradient(180deg, #1A1D24 0%, #131519 100%);
+      /* Dark Mode Palette */
       --text-main: #FFFFFF;
       --text-sub: #8892B0;
       
@@ -51,7 +51,7 @@
       --shadow-soft: 0 10px 30px rgba(0,0,0,0.3);
       
       --tab-bg: #252830;
-      --tab-active-bg: #2C303A; /* Slightly lighter in dark mode or keep blue */
+      --tab-active-bg: #353945;
       --tab-active-text: #FFFFFF;
       
       --search-bg: #252830;
@@ -59,22 +59,28 @@
       --track-icon-bg: #2C303A;
       --track-icon-color: #5B8DEF;
       
-      --player-bg: rgba(20, 22, 28, 0.9);
+      --player-bg: rgba(20, 22, 28, 0.95);
       --player-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+
+      /* SVG Background Data URI for Dark Mode (Neon Waves) */
+      --bg-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 1200'%3E%3Cdefs%3E%3ClinearGradient id='grad-dark' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%230F1520;stop-opacity:1' /%3E%3Cstop offset='50%25' style='stop-color:%2318202F;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23253045;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23grad-dark)'/%3E%3Cg fill='none' stroke='%2300C2FF' stroke-width='1.5' stroke-opacity='0.3'%3E%3Cpath d='M-100 600 C 200 500, 600 800, 900 700' /%3E%3Cpath d='M-100 620 C 200 520, 600 820, 900 720' /%3E%3Cpath d='M-100 640 C 200 540, 600 840, 900 740' /%3E%3Cpath d='M-100 660 C 200 560, 600 860, 900 760' /%3E%3Cpath d='M-100 680 C 200 580, 600 880, 900 780' /%3E%3Cpath d='M-100 700 C 200 600, 600 900, 900 800' /%3E%3Cpath d='M-100 720 C 200 620, 600 920, 900 820' /%3E%3Cpath d='M-100 740 C 200 640, 600 940, 900 840' /%3E%3Cpath d='M-100 760 C 200 660, 600 960, 900 860' /%3E%3C/g%3E%3C/svg%3E");
     }
 
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
 
     body {
       font-family: 'Poppins', sans-serif;
-      background: var(--bg-gradient);
+      background-image: var(--bg-image);
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center;
       color: var(--text-main);
       margin: 0;
       display: flex;
       flex-direction: column;
       height: 100vh;
       overflow: hidden;
-      transition: background 0.3s ease, color 0.3s ease;
+      transition: color 0.3s ease;
     }
 
     /* --- Top Navigation Area --- */
@@ -162,8 +168,6 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.02);
     }
     
-    /* Removed mic icon and filter row CSS as requested */
-
     /* --- Song List --- */
     .music-list {
       flex: 1;
@@ -203,7 +207,6 @@
       overflow: hidden;
     }
 
-    /* Visual Hierarchy: Reference Style */
     .track-artist-small {
       font-size: 0.7rem;
       font-weight: 600;
@@ -222,7 +225,6 @@
       text-overflow: ellipsis;
     }
 
-    /* Kebab Menu (3 Dots) */
     .track-menu-btn {
       padding: 10px;
       background: transparent;
@@ -232,7 +234,6 @@
       cursor: pointer;
     }
 
-    /* Active State styling */
     .track-item.active .track-icon {
         background: var(--accent-blue);
         color: #fff;
@@ -301,11 +302,10 @@
     .progress-bg {
       width: 100%;
       height: 5px;
-      background: rgba(91, 141, 239, 0.15); /* Light blue track */
+      background: rgba(91, 141, 239, 0.15);
       border-radius: 10px;
     }
 
-    /* Input Range Styling */
     input[type=range] {
       -webkit-appearance: none;
       width: 100%;
@@ -324,15 +324,13 @@
         height: 18px; 
         width: 18px; 
         border-radius: 50%;
-        background: #FFFFFF; /* White knob */
+        background: #FFFFFF;
         border: 1px solid rgba(0,0,0,0.1);
         cursor: pointer;
         box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        margin-top: -6px; /* Center on track */
+        margin-top: -6px;
     }
     
-    /* Fill part logic handled in JS via gradient on input */
-
     .time-row {
       display: flex;
       justify-content: space-between;
@@ -382,14 +380,13 @@
       align-items: center;
       justify-content: center;
       color: var(--accent-blue);
-      font-size: 2.2rem; /* Big icon */
+      font-size: 2.2rem;
       box-shadow: 0 5px 20px rgba(0,0,0,0.1);
       cursor: pointer;
       transition: transform 0.2s;
     }
     .play-btn-large:active { transform: scale(0.95); }
     
-    /* Dark mode play button tweaks */
     body.dark-mode .play-btn-large {
         background: #2C303A;
         color: #5B8DEF;
@@ -435,20 +432,18 @@
     .menu-item i { font-size: 1.4rem; color: var(--text-sub); }
     .menu-item.red i, .menu-item.red { color: #ff6b6b; }
 
-    /* Playlist List inside Modal */
     .pl-list { max-height: 200px; overflow-y: auto; text-align: left; margin: 10px 0; }
     .pl-item { padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); cursor: pointer; }
 
-    /* Desktop */
+    /* Desktop Fix */
     @media (min-width: 768px) {
-        .header, .music-list, .player-container { max-width: 800px; margin: 0 auto; }
+        .header, .music-list, .player-container, .search-section, .top-nav { max-width: 800px; margin: 0 auto; }
         .player-container { bottom: 40px; }
         .player-card { flex-direction: row; text-align: left; max-width: 700px; }
         .player-title-row { width: 30%; margin-bottom: 0; }
         .progress-area { width: 40%; margin-bottom: 0; margin: 0 20px; }
         .controls-row { width: 30%; }
-        /* Fix for playlist list scrolling on desktop */
-        .music-list { overflow-y: auto; height: calc(100vh - 180px); }
+        .music-list { overflow-y: auto; height: calc(100vh - 200px); padding-bottom: 150px; }
     }
   </style>
 </head>
@@ -456,28 +451,22 @@
 
   <!-- Top Navigation -->
   <div class="top-nav">
-      <!-- Tab Switcher -->
       <div class="tabs-container">
           <button class="tab-btn active" id="tab-songs" onclick="switchTab('all')">Songs</button>
           <button class="tab-btn" id="tab-playlists" onclick="switchTab('playlists')">Playlists</button>
       </div>
       
-      <!-- Right Icons -->
       <div class="top-icons">
           <button class="icon-circle" onclick="toggleTheme()"><i class="ri-moon-line" id="themeIcon"></i></button>
-          <!-- Removed selection/list button -->
-          <!-- Settings Icon (Upload for now) -->
           <a href="/postmp3" style="text-decoration:none;"><button class="icon-circle"><i class="ri-add-line"></i></button></a>
       </div>
   </div>
 
-  <!-- Search Section (Cleaned) -->
+  <!-- Search Section -->
   <div class="search-section" id="searchSection">
       <div class="search-bar-wrapper">
-          <!-- Removed Mic Icon -->
           <input type="text" id="searchInput" class="search-input" placeholder="Search" oninput="filterSongs()">
       </div>
-      <!-- Removed Filter Row -->
   </div>
 
   <!-- Song List -->
@@ -489,15 +478,13 @@
   <div class="player-container">
       <div class="player-card">
           
-          <!-- Title & Artist -->
           <div class="player-title-row">
               <div class="p-title" id="currentTrack">Select a track</div>
               <div class="p-artist" id="currentArtist">UNKNOWN</div>
           </div>
 
-          <!-- Progress Bar -->
           <div class="progress-area">
-              <div class="progress-bg"></div> <!-- Visual Track -->
+              <div class="progress-bg"></div>
               <input type="range" id="seekSlider" value="0" min="0" max="100" step="0.1">
               <div class="time-row">
                   <span id="currentTimeText">0:00</span>
@@ -505,13 +492,12 @@
               </div>
           </div>
 
-          <!-- Controls -->
           <div class="controls-row">
               <button class="ctrl-btn-small" id="shuffleBtn"><i class="ri-shuffle-line"></i></button>
               <button class="ctrl-btn-med" id="prevBtn"><i class="ri-skip-back-fill"></i></button>
               
               <button class="play-btn-large" id="playPauseBtn">
-                  <i class="ri-play-fill" style="margin-left: 5px;"></i> <!-- Offset for visual center -->
+                  <i class="ri-play-fill" style="margin-left: 5px;"></i>
               </button>
               
               <button class="ctrl-btn-med" id="nextBtn"><i class="ri-skip-forward-fill"></i></button>
@@ -525,7 +511,6 @@
 
   <!-- --- MODALS & MENUS --- -->
 
-  <!-- 3 Dots Menu (Bottom Sheet) -->
   <div class="overlay" id="menuOverlay" onclick="closeMenu()">
       <div class="bottom-sheet" id="menuSheet" onclick="event.stopPropagation()">
           <h3 id="menuTitle" style="text-align:center; color:var(--text-main); margin-bottom:10px;">Options</h3>
@@ -537,7 +522,6 @@
       </div>
   </div>
 
-  <!-- Create Playlist Modal -->
   <div class="overlay" id="createModal">
       <div class="modal-box">
           <h3 style="margin:0; color:var(--text-main)">New Playlist</h3>
@@ -549,7 +533,6 @@
       </div>
   </div>
 
-  <!-- Add to Playlist Modal -->
   <div class="overlay" id="addModal">
       <div class="modal-box">
           <h3 style="margin:0; color:var(--text-main)">Add to Playlist</h3>
@@ -558,25 +541,11 @@
       </div>
   </div>
 
-  <!-- Selection Mode Actions (Shows at bottom when selecting) -->
-  <div class="player-container" id="selectionBar" style="display:none; z-index:101;">
-      <div class="player-card" style="flex-direction:row; justify-content:space-between;">
-          <span id="selectCount" style="font-weight:600; color:var(--text-main)">0 Selected</span>
-          <div style="display:flex; gap:10px;">
-              <button class="tab-btn" onclick="toggleSelectionMode(false)">Cancel</button>
-              <button class="tab-btn active" onclick="openCreateModal()">Save</button>
-          </div>
-      </div>
-  </div>
-
   <script>
-    // --- Data ---
     const rawFiles = <%- JSON.stringify(files) %>;
     
-    // Process Data
     const allFiles = rawFiles.map(file => {
         const rawName = file.originalname.replace(/\.[^.]+$/, '');
-        // Split by common separators to guess Artist - Title
         const parts = rawName.split(/[-_]/);
         let artist = "UNKNOWN";
         let title = rawName;
@@ -588,36 +557,26 @@
         return { ...file, cleanTitle: title, cleanArtist: artist };
     }).sort((a, b) => a.cleanTitle.localeCompare(b.cleanTitle));
 
-    // --- State ---
     let currentQueue = [...allFiles];
-    let displayedFiles = [...allFiles]; // For search
+    let displayedFiles = [...allFiles]; 
     let currentTrackIndex = 0;
     let isPlaying = false;
     let isShuffle = false;
     let isLoop = false;
-    let currentTab = 'all'; // 'all' or 'playlists' or 'single_playlist'
+    let currentTab = 'all'; 
     let viewingPlaylistId = null;
     
-    // Selection / Menu State
-    let isSelectionMode = false;
-    let selectedIndices = new Set();
-    let menuTargetFile = null; // file object for context menu
+    let menuTargetFile = null; 
 
-    // Local Storage
     let savedPlaylists = JSON.parse(localStorage.getItem('vibePlaylists')) || [];
 
-    // --- DOM ---
     const audioPlayer = document.getElementById('audioPlayer');
     const container = document.getElementById('musicContainer');
     const playPauseBtn = document.getElementById('playPauseBtn');
     const seekSlider = document.getElementById('seekSlider');
     
-    // --- Render Functions ---
-
     function renderList() {
-        // Toggle Search Visibility
         document.getElementById('searchSection').style.display = (currentTab === 'all') ? 'flex' : 'none';
-        
         container.innerHTML = '';
         
         if (displayedFiles.length === 0 && currentTab === 'all') {
@@ -636,42 +595,27 @@
         }
 
         listToRender.forEach((file, index) => {
-            // Find actual index in main array for selection logic
-            const masterIndex = allFiles.findIndex(f => f.public_id === file.public_id);
-            
-            // Check active state
             const isCurrent = (currentQueue[currentTrackIndex]?.public_id === file.public_id);
             const activeClass = isCurrent ? 'active' : '';
             const icon = (isCurrent && isPlaying) ? '<i class="ri-pause-fill"></i>' : '<i class="ri-play-fill"></i>';
             
-            // Selection logic
-            const isSelected = selectedIndices.has(masterIndex);
-            const checkIcon = isSelected ? '<i class="ri-checkbox-circle-fill" style="color:var(--accent-blue)"></i>' : '<i class="ri-checkbox-blank-circle-line"></i>';
-
-            let leftIcon = `<div class="track-icon">${icon}</div>`;
-            if (isSelectionMode) {
-                leftIcon = `<div class="track-icon" style="background:transparent; color:var(--text-sub); font-size:1.5rem;">${checkIcon}</div>`;
-            }
-
             const item = document.createElement('div');
             item.className = `track-item ${activeClass}`;
-            item.onclick = () => handleItemClick(file, index, masterIndex);
+            item.onclick = () => handleItemClick(file, index);
             
             item.innerHTML = `
-                ${leftIcon}
+                <div class="track-icon">${icon}</div>
                 <div class="track-details">
                     <div class="track-artist-small">${file.cleanArtist}</div>
                     <div class="track-name-large">${file.cleanTitle}</div>
                 </div>
-                ${!isSelectionMode ? 
-                  `<button class="track-menu-btn" onclick="openMenu(event, '${file.public_id}')">
-                      <i class="ri-more-2-fill"></i>
-                   </button>` : ''}
+                <button class="track-menu-btn" onclick="openMenu(event, '${file.public_id}')">
+                    <i class="ri-more-2-fill"></i>
+                </button>
             `;
             container.appendChild(item);
         });
         
-        // Add padding at bottom for player
         const spacer = document.createElement('div');
         spacer.style.height = '120px';
         container.appendChild(spacer);
@@ -691,7 +635,7 @@
 
         savedPlaylists.forEach(pl => {
             const div = document.createElement('div');
-            div.className = 'track-item'; // Reuse styling
+            div.className = 'track-item'; 
             div.onclick = () => openPlaylistView(pl.id);
             div.innerHTML = `
                 <div class="track-icon" style="background:var(--accent-light); color:var(--accent-blue)">
@@ -708,21 +652,10 @@
         });
     }
 
-    // --- Actions ---
-
-    function handleItemClick(file, index, masterIndex) {
-        if (isSelectionMode) {
-            if (selectedIndices.has(masterIndex)) selectedIndices.delete(masterIndex);
-            else selectedIndices.add(masterIndex);
-            document.getElementById('selectCount').textContent = `${selectedIndices.size} Selected`;
-            renderList();
-            return;
-        }
-        
-        // Play Logic
+    function handleItemClick(file, index) {
         if (currentTab === 'all') {
             currentQueue = [...displayedFiles];
-            playTrack(index); // Index matches displayedFiles
+            playTrack(index);
         } else if (currentTab === 'single_playlist') {
             currentQueue = getPlaylistTracks();
             playTrack(index);
@@ -736,19 +669,17 @@
         
         if(audioPlayer.src !== song.url) {
             audioPlayer.src = song.url;
-            // Also update slider visual to 0 immediately
             seekSlider.value = 0;
             updateSliderFill(0);
         }
         
-        // Update Player UI
         document.getElementById('currentTrack').textContent = song.cleanTitle;
         document.getElementById('currentArtist').textContent = song.cleanArtist;
         
         audioPlayer.play().catch(e => console.log("Play error", e));
         isPlaying = true;
         updatePlayBtn();
-        renderList(); // Update icons
+        renderList(); 
     }
 
     function updatePlayBtn() {
@@ -757,14 +688,12 @@
             '<i class="ri-play-fill" style="margin-left:5px"></i>';
     }
 
-    // --- Search ---
     function filterSongs() {
         const q = document.getElementById('searchInput').value.toLowerCase();
         displayedFiles = allFiles.filter(f => f.cleanTitle.toLowerCase().includes(q) || f.cleanArtist.toLowerCase().includes(q));
         renderList();
     }
 
-    // --- Menu Logic ---
     function openMenu(e, id) {
         e.stopPropagation();
         menuTargetFile = allFiles.find(f => f.public_id === id);
@@ -785,7 +714,6 @@
         if (!menuTargetFile) return;
 
         if (action === 'play') {
-            // Play immediately (switch to all context if needed)
             const idx = allFiles.findIndex(f => f.public_id === menuTargetFile.public_id);
             currentQueue = [...allFiles];
             playTrack(idx);
@@ -795,31 +723,21 @@
         } else if (action === 'delete') {
             if(confirm("Delete permanently?")) window.location.href = `/AllBus/${menuTargetFile.public_id.split('/').pop()}`;
         } else if (action === 'create') {
-            selectedIndices.clear();
-            const idx = allFiles.findIndex(f => f.public_id === menuTargetFile.public_id);
-            selectedIndices.add(idx);
             openCreateModal();
         } else if (action === 'playlist') {
             openAddToPlaylistModal(menuTargetFile.public_id);
         }
     }
 
-    // --- Modal Logic ---
     function openCreateModal() {
         document.getElementById('createModal').style.display = 'flex';
     }
 
     function confirmCreatePlaylist() {
         const name = document.getElementById('newPlaylistName').value || "New Playlist";
-        // If selection mode active, use selected indices. Else use menu target if exists.
         let ids = [];
-        if (isSelectionMode) {
-            ids = Array.from(selectedIndices).map(i => allFiles[i].public_id);
-        } else if (menuTargetFile) {
+        if (menuTargetFile) {
             ids = [menuTargetFile.public_id];
-        } else if (savedPlaylists.length === 0 && currentTab === 'playlists') {
-             // Creating empty playlist from empty state
-             ids = []; 
         }
 
         const newPl = { id: Date.now().toString(), name, fileIds: ids };
@@ -827,7 +745,6 @@
         localStorage.setItem('vibePlaylists', JSON.stringify(savedPlaylists));
         
         document.getElementById('createModal').style.display = 'none';
-        toggleSelectionMode(false);
         switchTab('playlists');
     }
 
@@ -850,15 +767,11 @@
         document.getElementById('addModal').style.display = 'flex';
     }
 
-    // --- Tab Switching ---
     function switchTab(tab) {
         currentTab = tab;
         document.getElementById('tab-songs').className = (tab === 'all') ? 'tab-btn active' : 'tab-btn';
         document.getElementById('tab-playlists').className = (tab === 'playlists' || tab === 'single_playlist') ? 'tab-btn active' : 'tab-btn';
         
-        // Hide selection bar if switching away
-        if(isSelectionMode) toggleSelectionMode(false);
-
         if (tab === 'all') renderList();
         else renderPlaylists();
     }
@@ -866,8 +779,6 @@
     function openPlaylistView(id) {
         viewingPlaylistId = id;
         currentTab = 'single_playlist';
-        // Add back button logic visually by changing header? 
-        // For simplicity, reusing list container.
         renderList(); 
     }
     
@@ -885,20 +796,6 @@
         }
     }
 
-    // --- Selection Mode ---
-    function toggleSelectionMode(forceState) {
-        isSelectionMode = forceState;
-        selectedIndices.clear();
-        document.getElementById('selectionBar').style.display = isSelectionMode ? 'flex' : 'none';
-        
-        // If selection mode is on, hide the main player
-        const mainPlayer = document.querySelector('.player-container:not(#selectionBar)');
-        if(mainPlayer) mainPlayer.style.display = isSelectionMode ? 'none' : 'flex';
-        
-        renderList();
-    }
-
-    // --- Audio Events ---
     playPauseBtn.onclick = () => {
         if (!audioPlayer.src && currentQueue.length > 0) playTrack(0);
         else if (isPlaying) { audioPlayer.pause(); isPlaying = false; }
@@ -931,7 +828,6 @@
         else document.getElementById('nextBtn').click();
     };
 
-    // Timeline
     audioPlayer.ontimeupdate = () => {
         if (audioPlayer.duration) {
             const pct = (audioPlayer.currentTime / audioPlayer.duration) * 100;
@@ -949,7 +845,6 @@
     };
 
     function updateSliderFill(val) {
-        // Gradient fill for input range
         const blue = getComputedStyle(document.body).getPropertyValue('--accent-blue').trim();
         seekSlider.style.background = `linear-gradient(to right, ${blue} 0%, ${blue} ${val}%, rgba(91,141,239,0.15) ${val}%, rgba(91,141,239,0.15) 100%)`;
     }
@@ -961,7 +856,6 @@
         return m + ":" + (sec < 10 ? "0"+sec : sec);
     }
 
-    // Theme Toggle
     function toggleTheme() {
         document.body.classList.toggle('dark-mode');
         const isDark = document.body.classList.contains('dark-mode');
@@ -970,7 +864,6 @@
     }
     if (localStorage.getItem('vibeTheme') === 'dark') toggleTheme();
 
-    // Init
     renderList();
 
   </script>
