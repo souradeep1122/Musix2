@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <style>
-    /* --- Theming Variables --- */
+    /* --- Theming Variables (Matches Reference: Soft White & Pink) --- */
     :root {
       /* Light Mode */
       --bg-main: #EBECF0;
@@ -135,6 +135,13 @@
         transition: all 0.2s ease;
     }
 
+    /* Hover fix for mobile */
+    @media (hover: hover) {
+        .neu-btn:hover { color: var(--accent-deep); }
+        .track:hover .track-play-btn { color: var(--accent-deep); transform: scale(1.05); }
+        .mini-btn:hover { color: var(--accent-deep); }
+    }
+
     .neu-btn:active, .neu-btn.active {
         box-shadow: var(--shadow-inset);
         color: var(--accent-deep);
@@ -200,11 +207,6 @@
         flex-shrink: 0;
         margin-right: 20px;
         transition: all 0.3s;
-    }
-
-    .track:hover .track-play-btn {
-        color: var(--accent-deep);
-        transform: scale(1.05);
     }
 
     .track.active-track .track-play-btn {
@@ -424,7 +426,7 @@
         cursor: pointer;
         padding: 10px;
     }
-    .mini-btn:hover { color: var(--accent-deep); }
+    .mini-btn:active { color: var(--accent-deep); transform: scale(0.9); }
     .mini-btn.active { color: var(--accent-deep); }
 
     /* Modals & Menus */
@@ -564,7 +566,6 @@
 
         <div class="header-right">
             <button class="neu-btn" onclick="toggleTheme()" title="Toggle Theme"><i class="ri-moon-line" id="themeIcon"></i></button>
-            <button class="neu-btn" onclick="toggleSelectionMode(true)" id="selectBtn" title="Select Songs"><i class="ri-list-check"></i></button>
             <a href="/postmp3"><button class="neu-btn primary" title="Upload New"><i class="ri-add-line"></i></button></a>
         </div>
     </div>
@@ -739,9 +740,9 @@
     }
 
     function renderPlaylistsTab() {
-        let html = `<div class="playlist-controls"><span style="font-weight:700; color:var(--text-main); font-size:1.2rem;">My Playlists</span></div>`;
+        let html = `<div class="playlist-controls"><span style="font-weight:700; color:var(--text-main); font-size:1.1rem;">My Playlists</span></div>`;
         if(savedPlaylists.length === 0) {
-            html += `<div style="text-align:center; margin-top:50px; color:var(--text-sub);"><p>No playlists yet</p><button class="neu-btn primary" style="width:auto; padding:0 20px; margin:20px auto;" onclick="switchTab('all'); toggleSelectionMode(true);">Create Playlist</button></div>`;
+            html += `<div style="text-align:center; margin-top:50px; color:var(--text-sub);"><p>No playlists yet</p></div>`;
         } else {
             savedPlaylists.forEach(pl => {
                 html += `
