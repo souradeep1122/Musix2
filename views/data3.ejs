@@ -5,62 +5,69 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Music Player</title>
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet"/>
-  <!-- Poppins for the clean look -->
+  <!-- Poppins font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <style>
-    /* --- Theming Variables (Exact Match) --- */
+    /* --- Exact Reference Theming --- */
     :root {
-      /* Light Mode: Soft Neumorphism */
-      --bg-main: #EBECF0;
-      --text-main: #4a4a4a;
-      --text-sub: #9e9e9e;
+      /* Light Mode Palette (Beige/Blue/White) */
+      --bg-gradient: linear-gradient(180deg, #FDFBF7 0%, #F4F7F6 40%, #E6EEF5 100%);
+      --text-main: #333333;
+      --text-sub: #888888;
       
-      --accent: #FF9EB5;
-      --accent-deep: #FF7696;
+      --accent-blue: #5B8DEF; /* The blue used in tabs/controls */
+      --accent-light: #DCE8F9;
       
-      /* Neumorphic Shadows - Tuned for "Clay" look */
-      --shadow-light: -5px -5px 10px rgba(255, 255, 255, 1);
-      --shadow-dark: 5px 5px 10px rgba(163, 177, 198, 0.4);
-      --shadow-inset: inset 4px 4px 8px rgba(163, 177, 198, 0.4), inset -4px -4px 8px rgba(255, 255, 255, 1);
-      --card-bg: #EBECF0;
-      --btn-radius: 50%;
+      --card-bg: rgba(255, 255, 255, 0.7);
+      --glass-border: 1px solid rgba(255, 255, 255, 0.5);
+      --shadow-soft: 0 10px 30px rgba(0,0,0,0.05);
       
-      /* Player Floating Card */
-      --player-bg: #EBECF0;
-      --player-border: none;
+      /* Specific Elements */
+      --tab-bg: #FFFFFF;
+      --tab-active-bg: #5B8DEF;
+      --tab-active-text: #FFFFFF;
+      
+      --search-bg: #FFFFFF;
+      
+      --track-icon-bg: #FFFFFF;
+      --track-icon-color: #5B8DEF;
+      
+      --player-bg: rgba(255, 255, 255, 0.85);
+      --player-shadow: 0 -10px 40px rgba(91, 141, 239, 0.15);
     }
 
     body.dark-mode {
-      /* Dark Mode: Gradient Glassmorphism */
-      --bg-main: #1f2229; 
-      --text-main: #ffffff;
-      --text-sub: #cfcfcf;
+      /* Dark Mode Palette (Navy/Black/Blue) */
+      --bg-gradient: linear-gradient(180deg, #1A1D24 0%, #131519 100%);
+      --text-main: #FFFFFF;
+      --text-sub: #8892B0;
       
-      --accent: #FF9EB5;
-      --accent-deep: #ff8fab;
+      --accent-blue: #5B8DEF;
+      --accent-light: rgba(91, 141, 239, 0.2);
       
-      --shadow-light: 0 0 0 transparent; 
-      --shadow-dark: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-      --shadow-inset: inset 0 0 20px rgba(255,255,255,0.05);
+      --card-bg: rgba(30, 32, 40, 0.6);
+      --glass-border: 1px solid rgba(255, 255, 255, 0.05);
+      --shadow-soft: 0 10px 30px rgba(0,0,0,0.3);
       
-      --card-bg: rgba(30, 30, 30, 0.4);
+      --tab-bg: #252830;
+      --tab-active-bg: #2C303A; /* Slightly lighter in dark mode or keep blue */
+      --tab-active-text: #FFFFFF;
       
-      /* Glass Player */
-      --player-bg: rgba(20, 20, 20, 0.65);
-      --player-border: 1px solid rgba(255, 255, 255, 0.1);
+      --search-bg: #252830;
+      
+      --track-icon-bg: #2C303A;
+      --track-icon-color: #5B8DEF;
+      
+      --player-bg: rgba(20, 22, 28, 0.9);
+      --player-shadow: 0 -10px 40px rgba(0,0,0,0.5);
     }
 
-    /* Reset & Base */
-    * {
-      box-sizing: border-box;
-      outline: none;
-      -webkit-tap-highlight-color: transparent;
-    }
+    * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
 
     body {
       font-family: 'Poppins', sans-serif;
-      background: var(--bg-main);
+      background: var(--bg-gradient);
       color: var(--text-main);
       margin: 0;
       display: flex;
@@ -69,983 +76,827 @@
       overflow: hidden;
       transition: background 0.3s ease, color 0.3s ease;
     }
-    
-    /* Dark Mode Gradient Background */
-    body.dark-mode::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: 
-            radial-gradient(circle at 10% 20%, rgba(111, 66, 193, 0.4) 0%, transparent 40%),
-            radial-gradient(circle at 90% 80%, rgba(32, 189, 255, 0.4) 0%, transparent 40%),
-            radial-gradient(circle at 50% 50%, rgba(255, 0, 128, 0.2) 0%, transparent 50%);
-        background-color: #0f1115;
-        z-index: -1;
-        pointer-events: none;
-    }
 
-    /* --- Header --- */
-    header {
-      padding: 35px 25px 5px;
-      z-index: 10;
-      flex-shrink: 0;
-    }
-
-    .header {
+    /* --- Top Navigation Area --- */
+    .top-nav {
+      padding: 40px 20px 10px;
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      max-width: 600px;
-      margin: 0 auto;
+      align-items: center;
+      z-index: 10;
+    }
+
+    /* Pill Tabs */
+    .tabs-container {
+      background: var(--tab-bg);
+      border-radius: 30px;
+      padding: 4px;
+      display: flex;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+
+    .tab-btn {
+      padding: 8px 24px;
+      border-radius: 25px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--text-sub);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--tab-active-bg);
+      color: var(--tab-active-text);
+      box-shadow: 0 4px 12px rgba(91, 141, 239, 0.3);
+    }
+
+    /* Top Right Icons */
+    .top-icons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .icon-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--tab-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-blue);
+      font-size: 1.2rem;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+      transition: transform 0.2s;
+    }
+    .icon-circle:active { transform: scale(0.95); }
+
+    /* --- Search & Filters --- */
+    .search-section {
+      padding: 5px 20px 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      z-index: 9;
+    }
+
+    .search-bar-wrapper {
+      position: relative;
       width: 100%;
     }
 
-    .header-left {
-        display: flex;
-        flex-direction: column;
-        gap: 0;
+    .search-input {
+      width: 100%;
+      background: var(--search-bg);
+      border: none;
+      padding: 14px 20px 14px 20px;
+      border-radius: 20px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      color: var(--text-main);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
     }
     
-    /* "LIBRARY" Label */
-    .subtitle {
-        font-size: 0.75rem;
-        letter-spacing: 1.2px;
-        color: var(--text-sub);
-        font-weight: 600;
-        text-transform: uppercase;
-        margin-bottom: 2px;
-    }
-
-    /* Tabs Title */
-    .title-switcher {
-        display: flex;
-        align-items: baseline;
-        gap: 12px;
-    }
-
-    .main-title {
-        font-size: 2rem; /* Large size from ref */
-        font-weight: 700;
-        color: var(--text-main);
-        background: transparent;
-        border: none;
-        padding: 0;
-        cursor: pointer;
-        transition: opacity 0.2s, color 0.2s;
-    }
-    
-    .main-title.inactive {
-        opacity: 1; /* Keep opacity, change color */
-        color: var(--text-sub); /* Greyed out like ref */
-        font-size: 1.8rem;
-    }
-
-    .header-right {
-        display: flex;
-        gap: 15px;
-        margin-top: 10px; /* Align with titles */
-    }
-
-    /* Neumorphic/Glass Button Class */
-    .neu-btn {
-        width: 48px;
-        height: 48px;
-        border-radius: var(--btn-radius);
-        background: var(--card-bg);
-        border: var(--player-border);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-sub);
-        font-size: 1.2rem;
-        cursor: pointer;
-        box-shadow: var(--shadow-dark), var(--shadow-light);
-        backdrop-filter: blur(10px);
-        transition: all 0.2s ease;
-    }
-
-    @media (hover: hover) {
-        .neu-btn:hover { color: var(--accent-deep); }
-        .track:hover .track-play-btn { color: var(--accent-deep); transform: scale(1.05); }
-        .mini-btn:hover { color: var(--accent-deep); }
-    }
-
-    .neu-btn:active, .neu-btn.active {
-        box-shadow: var(--shadow-inset);
-        color: var(--accent-deep);
-    }
-    
-    .neu-btn.primary {
-        color: var(--accent-deep);
-    }
-
-    /* --- Search Bar --- */
-    .search-container {
-        padding: 10px 25px 10px;
-        max-width: 600px;
-        margin: 0 auto;
-        width: 100%;
-        position: relative;
-    }
-
-    .search-bar {
-        width: 100%;
-        padding: 12px 20px 12px 45px;
-        border-radius: 20px;
-        border: none;
-        background: var(--card-bg);
-        box-shadow: var(--shadow-inset);
-        color: var(--text-main);
-        font-family: 'Poppins', sans-serif;
-        font-size: 0.95rem;
-        outline: none;
-    }
-    
-    .search-icon {
+    .mic-icon {
         position: absolute;
-        left: 40px;
+        right: 20px;
         top: 50%;
         transform: translateY(-50%);
         color: var(--text-sub);
-        font-size: 1.1rem;
-        pointer-events: none;
+        font-size: 1.2rem;
     }
 
-    /* --- Music List Area --- */
-    .music-container {
+    .filter-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 20px;
+      padding-right: 10px;
+    }
+    
+    .filter-icon {
+        color: var(--accent-blue);
+        font-size: 1.4rem;
+        cursor: pointer;
+    }
+
+    /* --- Song List --- */
+    .music-list {
       flex: 1;
       overflow-y: auto;
-      padding: 10px 25px 300px; 
-      max-width: 600px;
-      width: 100%;
-      margin: 0 auto;
+      padding: 0 20px 320px; /* Space for large bottom player */
       scrollbar-width: none;
     }
-    .music-container::-webkit-scrollbar { display: none; }
+    .music-list::-webkit-scrollbar { display: none; }
 
-    /* Playlist Controls */
-    .playlist-controls {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 25px;
-        margin-top: 10px;
-    }
-    
-    .text-btn {
-        background: transparent;
-        border: none;
-        color: var(--accent-deep);
-        font-weight: 600;
-        font-size: 0.9rem;
-        cursor: pointer;
-        padding: 5px 10px;
-    }
-
-    /* Track Item */
-    .track {
+    .track-item {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
       cursor: pointer;
+    }
+
+    /* Play Icon Circle */
+    .track-icon {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      background: var(--track-icon-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--track-icon-color);
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-right: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+
+    .track-details {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Visual Hierarchy: Reference Style */
+    .track-artist-small {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    .track-name-large {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Kebab Menu (3 Dots) */
+    .track-menu-btn {
+      padding: 10px;
       background: transparent;
-      transition: transform 0.2s;
+      border: none;
+      color: var(--text-sub);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+
+    /* Active State styling */
+    .track-item.active .track-icon {
+        background: var(--accent-blue);
+        color: #fff;
+        box-shadow: 0 4px 15px rgba(91, 141, 239, 0.4);
     }
     
-    /* Neumorphic Play Circle */
-    .track-play-btn {
-        width: 55px; /* Bigger button from ref */
-        height: 55px;
-        border-radius: 50%;
-        background: var(--card-bg);
-        box-shadow: var(--shadow-dark), var(--shadow-light);
-        border: var(--player-border);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-main);
-        font-size: 1.1rem;
-        flex-shrink: 0;
-        margin-right: 20px;
-        transition: all 0.3s;
+    .track-item.active .track-name-large {
+        color: var(--accent-blue);
     }
 
-    .track.active-track .track-play-btn {
-        box-shadow: var(--shadow-inset);
-        color: var(--accent-deep);
-    }
-
-    .track-info {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        overflow: hidden;
-    }
-
-    .track-artist {
-        font-size: 0.7rem;
-        color: var(--text-sub);
-        font-weight: 700;
-        letter-spacing: 0.8px;
-        text-transform: uppercase;
-        margin-bottom: 2px;
-    }
-    
-    .track-title {
-        font-size: 1rem;
-        color: var(--text-main);
-        font-weight: 700;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    /* The 3 Dots Button */
-    .more-btn {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: transparent;
-        border: none;
-        color: var(--text-sub);
-        font-size: 1.2rem;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-left: 10px;
-    }
-    .more-btn:active { color: var(--accent-deep); }
-
-    /* Select Mode */
-    .select-check {
-        width: 24px;
-        height: 24px;
-        border-radius: 6px;
-        background: var(--card-bg);
-        box-shadow: var(--shadow-inset);
-        margin-right: 20px;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        color: var(--accent-deep);
-    }
-    
-    .track.selection-mode .select-check { display: flex; }
-    .track.selection-mode .track-play-btn { display: none; }
-    
-    .track.selected .select-check {
-        background: var(--accent-deep);
-        box-shadow: none;
-        color: white;
-    }
-
-    .playlist-card {
-        background: var(--card-bg);
-        padding: 20px;
-        border-radius: 20px;
-        margin-bottom: 20px;
-        box-shadow: var(--shadow-dark), var(--shadow-light);
-        border: var(--player-border);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        cursor: pointer;
-    }
-    .playlist-card:active { box-shadow: var(--shadow-inset); }
-
-    /* --- Floating Player (Stacked Layout) --- */
+    /* --- Bottom Player (Floating Card) --- */
     .player-container {
-        position: fixed;
-        bottom: 25px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90%;
-        max-width: 500px;
-        z-index: 100;
-        padding-bottom: env(safe-area-inset-bottom);
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 400px;
+      z-index: 100;
     }
 
-    .player {
-        background: var(--player-bg);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: var(--player-border);
-        border-radius: 35px; /* More rounded */
-        padding: 25px;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.15), var(--shadow-light);
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-    
-    .player-info {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-    
-    /* Artist Top, Title Bottom in Player (Ref Style) */
-    .player-artist {
-        font-size: 0.75rem;
-        color: var(--accent-deep);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 5px;
+    .player-card {
+      background: var(--player-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 35px;
+      padding: 25px 30px;
+      box-shadow: var(--player-shadow);
+      border: var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
     }
 
-    .player-title {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: var(--text-main);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
-        margin-bottom: 10px;
+    .player-title-row {
+      margin-bottom: 20px;
+      width: 100%;
     }
 
-    /* Controls Section */
-    .player-controls {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 15px;
-        margin-bottom: 10px;
+    .p-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .main-play-btn {
-        width: 70px;
-        height: 70px;
-        border-radius: 50%;
-        background: var(--card-bg);
-        border: var(--player-border);
-        box-shadow: var(--shadow-dark), var(--shadow-light);
-        color: var(--text-main);
-        font-size: 2rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-    
-    .main-play-btn:active { box-shadow: var(--shadow-inset); }
-
-    .mini-btn {
-        background: transparent;
-        border: none;
-        color: var(--text-sub);
-        font-size: 1.5rem;
-        cursor: pointer;
-        padding: 10px;
-    }
-    .mini-btn:active { color: var(--accent-deep); transform: scale(0.9); }
-    .mini-btn.active { color: var(--accent-deep); }
-
-    /* Timeline Section */
-    .timeline-container {
-        width: 100%;
-        position: relative;
-        height: 10px;
+    .p-artist {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
+    /* Progress Bar */
+    .progress-area {
+      width: 100%;
+      margin-bottom: 25px;
+      position: relative;
+    }
+
+    .progress-bg {
+      width: 100%;
+      height: 5px;
+      background: rgba(91, 141, 239, 0.15); /* Light blue track */
+      border-radius: 10px;
+    }
+
+    /* Input Range Styling */
     input[type=range] {
-        -webkit-appearance: none;
-        width: 100%;
-        height: 6px;
-        background: rgba(0,0,0,0.05);
-        border-radius: 10px;
-        cursor: pointer;
-        margin: 0;
+      -webkit-appearance: none;
+      width: 100%;
+      height: 5px;
+      background: transparent;
+      position: absolute;
+      top: 0; left: 0;
+      margin: 0;
+      cursor: pointer;
     }
-    
-    body.dark-mode input[type=range] { background: rgba(255,255,255,0.1); }
 
     input[type=range]:focus { outline: none; }
 
     input[type=range]::-webkit-slider-thumb {
         -webkit-appearance: none;
-        height: 16px; 
-        width: 16px; 
+        height: 18px; 
+        width: 18px; 
         border-radius: 50%;
-        background: var(--accent-deep);
+        background: #FFFFFF; /* White knob */
+        border: 1px solid rgba(0,0,0,0.1);
         cursor: pointer;
-        box-shadow: 0 0 0 4px var(--card-bg);
-        margin-top: 0px; 
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        margin-top: -6px; /* Center on track */
     }
     
-    .time-labels {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-        font-size: 0.75rem;
-        color: var(--text-sub);
-        font-weight: 600;
-        margin-top: 5px;
+    /* Fill part logic handled in JS via gradient on input */
+
+    .time-row {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-top: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-sub);
     }
 
-    /* Modals & Menus */
-    .modal-overlay {
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.5);
-        backdrop-filter: blur(5px);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 200;
+    /* Controls */
+    .controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0 10px;
     }
-    
-    .modal {
-        background: var(--card-bg);
-        padding: 30px;
-        border-radius: 30px;
-        width: 85%;
-        max-width: 320px;
-        text-align: center;
-        box-shadow: var(--shadow-dark), var(--shadow-light);
-        border: var(--player-border);
-    }
-    
-    .modal input {
-        width: 100%;
-        padding: 15px;
-        margin: 20px 0;
-        border-radius: 15px;
-        border: none;
-        background: var(--bg-main);
-        box-shadow: var(--shadow-inset);
-        color: var(--text-main);
-        font-family: inherit;
-    }
-    
-    .modal-btns { display: flex; gap: 15px; justify-content: center; }
 
-    /* Bottom Sheet Menu */
-    .bottom-sheet-overlay {
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.4);
-        z-index: 150;
-        display: none;
-        opacity: 0;
-        transition: opacity 0.3s;
+    .ctrl-btn-small {
+      background: transparent;
+      border: none;
+      color: var(--accent-blue);
+      font-size: 1.4rem;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
     }
-    
-    .bottom-sheet {
-        position: fixed;
-        bottom: -100%;
-        left: 0;
-        width: 100%;
-        background: var(--card-bg);
-        border-radius: 30px 30px 0 0;
-        padding: 25px;
-        box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
-        border-top: var(--player-border);
-        transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        z-index: 151;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .sheet-title {
-        text-align: center;
-        font-weight: 700;
-        color: var(--text-main);
-        margin-bottom: 15px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid rgba(0,0,0,0.05);
-        font-size: 1.1rem;
-    }
-    
-    .menu-item {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        padding: 12px;
+    .ctrl-btn-small:hover { opacity: 1; }
+    .ctrl-btn-small.active { opacity: 1; text-shadow: 0 0 10px var(--accent-blue); }
+
+    .ctrl-btn-med {
         background: transparent;
         border: none;
-        font-size: 1rem;
-        color: var(--text-main);
+        color: var(--accent-blue);
+        font-size: 1.8rem;
         cursor: pointer;
-        text-align: left;
-        border-radius: 15px;
-        transition: background 0.2s;
+    }
+
+    .play-btn-large {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-blue);
+      font-size: 2.2rem; /* Big icon */
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .play-btn-large:active { transform: scale(0.95); }
+    
+    /* Dark mode play button tweaks */
+    body.dark-mode .play-btn-large {
+        background: #2C303A;
+        color: #5B8DEF;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+    }
+
+    /* --- Modals & Sheets --- */
+    .overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5); z-index: 200; display: none;
+        align-items: center; justify-content: center;
+        backdrop-filter: blur(4px);
     }
     
-    .menu-item:hover { background: rgba(0,0,0,0.03); }
-    .menu-item i { font-size: 1.3rem; color: var(--text-sub); }
-    .menu-item.danger { color: #ff7675; }
-    .menu-item.danger i { color: #ff7675; }
-
-    a { text-decoration: none; }
-
-    /* Playlist Selection List in Modal */
-    .playlist-select-list {
-        max-height: 200px;
-        overflow-y: auto;
-        margin: 15px 0;
-        text-align: left;
+    .modal-box {
+        background: var(--tab-bg);
+        padding: 30px; border-radius: 25px; width: 85%; max-width: 320px;
+        text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.2);
     }
-    .playlist-option {
-        padding: 10px;
-        border-bottom: 1px solid rgba(0,0,0,0.05);
-        cursor: pointer;
+    .modal-box input {
+        width: 100%; padding: 12px; margin: 15px 0; border-radius: 12px;
+        border: 1px solid rgba(0,0,0,0.1); background: rgba(0,0,0,0.05);
         color: var(--text-main);
     }
-    .playlist-option:hover { color: var(--accent-deep); }
+    .modal-actions { display: flex; gap: 15px; justify-content: center; }
+    
+    /* Bottom Sheet */
+    .bottom-sheet {
+        position: fixed; bottom: -100%; left: 0; width: 100%;
+        background: var(--tab-bg);
+        border-radius: 30px 30px 0 0; padding: 25px 25px 40px;
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+        transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        z-index: 201; display: flex; flex-direction: column; gap: 8px;
+    }
+    .menu-item {
+        padding: 15px; display: flex; gap: 15px; align-items: center;
+        font-size: 1rem; color: var(--text-main); background: transparent;
+        border: none; width: 100%; text-align: left; cursor: pointer;
+        border-radius: 15px;
+    }
+    .menu-item:active { background: rgba(0,0,0,0.05); }
+    .menu-item i { font-size: 1.4rem; color: var(--text-sub); }
+    .menu-item.red i, .menu-item.red { color: #ff6b6b; }
 
-    /* --- Desktop View --- */
+    /* Playlist List inside Modal */
+    .pl-list { max-height: 200px; overflow-y: auto; text-align: left; margin: 10px 0; }
+    .pl-item { padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); cursor: pointer; }
+
+    /* Desktop */
     @media (min-width: 768px) {
-      .player-container { width: 550px; left: auto; right: 40px; bottom: 40px; transform: none; }
-      .header, .music-container, .search-container { max-width: 800px; }
-      
-      .player { flex-direction: row; flex-wrap: wrap; text-align: left; }
-      .player-info { width: 35%; align-items: flex-start; text-align: left; }
-      .timeline-container { width: 100%; order: 3; margin-top: 10px; }
-      .player-controls { width: 60%; justify-content: flex-end; gap: 15px; }
+        .header, .music-list, .player-container { max-width: 800px; margin: 0 auto; }
+        .player-container { bottom: 40px; }
+        .player-card { flex-direction: row; text-align: left; max-width: 700px; }
+        .player-title-row { width: 30%; margin-bottom: 0; }
+        .progress-area { width: 40%; margin-bottom: 0; margin: 0 20px; }
+        .controls-row { width: 30%; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
-  <header>
-    <div class="header">
-        <div class="header-left">
-            <div class="subtitle">LIBRARY</div>
-            <div class="title-switcher">
-                <button class="main-title" onclick="switchTab('all')" id="tab-all">Songs</button>
-                <button class="main-title inactive" onclick="switchTab('playlists')" id="tab-playlists">Playlists</button>
-            </div>
-        </div>
-
-        <div class="header-right">
-            <button class="neu-btn" onclick="toggleTheme()" title="Toggle Theme"><i class="ri-moon-line" id="themeIcon"></i></button>
-            <a href="/postmp3"><button class="neu-btn primary" title="Upload New"><i class="ri-add-line"></i></button></a>
-        </div>
-    </div>
-  </header>
-  
-  <!-- Search Bar -->
-  <div class="search-container" id="searchContainer">
-      <i class="ri-search-line search-icon"></i>
-      <input type="text" id="searchInput" class="search-bar" placeholder="Search songs, artists..." oninput="filterSongs()">
-  </div>
-  
-  <!-- Main List -->
-  <div class="music-container" id="mainContainer">
-    <!-- Tracks injected via JS -->
+  <!-- Top Navigation -->
+  <div class="top-nav">
+      <!-- Tab Switcher -->
+      <div class="tabs-container">
+          <button class="tab-btn active" id="tab-songs" onclick="switchTab('all')">Songs</button>
+          <button class="tab-btn" id="tab-playlists" onclick="switchTab('playlists')">Playlists</button>
+      </div>
+      
+      <!-- Right Icons -->
+      <div class="top-icons">
+          <button class="icon-circle" onclick="toggleTheme()"><i class="ri-moon-line" id="themeIcon"></i></button>
+          <!-- Changed List button to toggle selection mode -->
+          <button class="icon-circle" onclick="toggleSelectionMode(true)"><i class="ri-list-check"></i></button>
+          <!-- Settings Icon (Upload for now) -->
+          <a href="/postmp3" style="text-decoration:none;"><button class="icon-circle"><i class="ri-add-line"></i></button></a>
+      </div>
   </div>
 
-  <!-- Player Card -->
+  <!-- Search & Filter Section -->
+  <div class="search-section" id="searchSection">
+      <div class="search-bar-wrapper">
+          <input type="text" id="searchInput" class="search-input" placeholder="Search" oninput="filterSongs()">
+          <i class="ri-mic-line mic-icon"></i>
+      </div>
+      <div class="filter-row">
+          <i class="ri-filter-3-line filter-icon"></i>
+          <i class="ri-equalizer-line filter-icon"></i>
+      </div>
+  </div>
+
+  <!-- Song List -->
+  <div class="music-list" id="musicContainer">
+      <!-- Items Injected Here -->
+  </div>
+
+  <!-- Bottom Floating Player -->
   <div class="player-container">
-      <div class="player">
-        
-        <div class="player-info">
-            <div class="player-artist" id="currentArtist">NOW PLAYING</div>
-            <div class="player-title" id="currentTrack">Select a track</div>
-        </div>
-        
-        <div class="player-controls">
-            <button class="mini-btn" id="shuffleBtn"><i class="ri-shuffle-line"></i></button>
-            <button class="mini-btn" id="prevBtn"><i class="ri-skip-back-fill"></i></button>
-            
-            <button class="main-play-btn" id="playPauseBtn">
-                <i class="ri-play-fill"></i>
-            </button>
-            
-            <button class="mini-btn" id="nextBtn"><i class="ri-skip-forward-fill"></i></button>
-            <button class="mini-btn" id="loopBtn"><i class="ri-repeat-line"></i></button>
-        </div>
-        
-        <div class="timeline-container">
-            <input type="range" id="seekSlider" value="0" min="0" max="100" step="0.1">
-            <div class="time-labels">
-                <span id="currentTimeText">0:00</span>
-                <span id="totalTimeText">0:00</span>
-            </div>
-        </div>
+      <div class="player-card">
+          
+          <!-- Title & Artist -->
+          <div class="player-title-row">
+              <div class="p-title" id="currentTrack">Select a track</div>
+              <div class="p-artist" id="currentArtist">UNKNOWN</div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="progress-area">
+              <div class="progress-bg"></div> <!-- Visual Track -->
+              <input type="range" id="seekSlider" value="0" min="0" max="100" step="0.1">
+              <div class="time-row">
+                  <span id="currentTimeText">0:00</span>
+                  <span id="totalTimeText">0:00</span>
+              </div>
+          </div>
+
+          <!-- Controls -->
+          <div class="controls-row">
+              <button class="ctrl-btn-small" id="shuffleBtn"><i class="ri-shuffle-line"></i></button>
+              <button class="ctrl-btn-med" id="prevBtn"><i class="ri-skip-back-fill"></i></button>
+              
+              <button class="play-btn-large" id="playPauseBtn">
+                  <i class="ri-play-fill" style="margin-left: 5px;"></i> <!-- Offset for visual center -->
+              </button>
+              
+              <button class="ctrl-btn-med" id="nextBtn"><i class="ri-skip-forward-fill"></i></button>
+              <button class="ctrl-btn-small" id="loopBtn"><i class="ri-repeat-line"></i></button>
+          </div>
 
       </div>
   </div>
 
   <audio id="audioPlayer"></audio>
 
-  <!-- Create Playlist Modal -->
-  <div class="modal-overlay" id="playlistModal">
-      <div class="modal">
-          <h3 style="color: var(--text-main); margin-top:0;">New Playlist</h3>
-          <input type="text" id="playlistNameInput" placeholder="Playlist Name">
-          <div class="modal-btns">
-              <button class="neu-btn" onclick="closeModal()"><i class="ri-close-line"></i></button>
-              <button class="neu-btn primary" onclick="confirmSavePlaylist()"><i class="ri-check-line"></i></button>
-          </div>
-      </div>
-  </div>
+  <!-- --- MODALS & MENUS --- -->
 
-  <!-- Add to Existing Playlist Modal -->
-  <div class="modal-overlay" id="addToPlaylistModal">
-      <div class="modal">
-          <h3 style="color: var(--text-main); margin-top:0;">Add to Playlist</h3>
-          <div class="playlist-select-list" id="playlistSelectList">
-              <!-- JS Populated -->
-          </div>
-          <div class="modal-btns">
-              <button class="neu-btn" onclick="document.getElementById('addToPlaylistModal').style.display='none'"><i class="ri-close-line"></i></button>
-          </div>
-      </div>
-  </div>
-
-  <!-- Track Menu Bottom Sheet -->
-  <div class="bottom-sheet-overlay" id="trackMenuOverlay" onclick="closeTrackMenu()">
-      <div class="bottom-sheet" id="trackMenu" onclick="event.stopPropagation()">
-          <div class="sheet-title" id="menuTitle">Track Options</div>
-          <button class="menu-item" onclick="menuAction('play')"><i class="ri-play-fill"></i> Play Now</button>
-          <button class="menu-item" onclick="menuAction('queue')"><i class="ri-play-list-add-line"></i> Play Next (Queue)</button>
+  <!-- 3 Dots Menu (Bottom Sheet) -->
+  <div class="overlay" id="menuOverlay" onclick="closeMenu()">
+      <div class="bottom-sheet" id="menuSheet" onclick="event.stopPropagation()">
+          <h3 id="menuTitle" style="text-align:center; color:var(--text-main); margin-bottom:10px;">Options</h3>
+          <button class="menu-item" onclick="menuAction('play')"><i class="ri-play-circle-line"></i> Play Now</button>
+          <button class="menu-item" onclick="menuAction('queue')"><i class="ri-play-list-add-line"></i> Play Next</button>
           <button class="menu-item" onclick="menuAction('playlist')"><i class="ri-folder-add-line"></i> Add to Playlist</button>
-          <button class="menu-item" onclick="menuAction('create_playlist')"><i class="ri-add-box-line"></i> Create New Playlist</button>
-          <button class="menu-item danger" onclick="menuAction('delete')"><i class="ri-delete-bin-line"></i> Delete File</button>
+          <button class="menu-item" onclick="menuAction('create')"><i class="ri-add-box-line"></i> Create Playlist</button>
+          <button class="menu-item red" onclick="menuAction('delete')"><i class="ri-delete-bin-line"></i> Delete</button>
+      </div>
+  </div>
+
+  <!-- Create Playlist Modal -->
+  <div class="overlay" id="createModal">
+      <div class="modal-box">
+          <h3 style="margin:0; color:var(--text-main)">New Playlist</h3>
+          <input type="text" id="newPlaylistName" placeholder="Playlist Name">
+          <div class="modal-actions">
+              <button class="tab-btn" onclick="document.getElementById('createModal').style.display='none'">Cancel</button>
+              <button class="tab-btn active" onclick="confirmCreatePlaylist()">Create</button>
+          </div>
+      </div>
+  </div>
+
+  <!-- Add to Playlist Modal -->
+  <div class="overlay" id="addModal">
+      <div class="modal-box">
+          <h3 style="margin:0; color:var(--text-main)">Add to Playlist</h3>
+          <div class="pl-list" id="addToPlaylistList"></div>
+          <button class="tab-btn" onclick="document.getElementById('addModal').style.display='none'" style="margin-top:10px;">Cancel</button>
+      </div>
+  </div>
+
+  <!-- Selection Mode Actions (Shows at bottom when selecting) -->
+  <div class="player-container" id="selectionBar" style="display:none; z-index:101;">
+      <div class="player-card" style="flex-direction:row; justify-content:space-between;">
+          <span id="selectCount" style="font-weight:600; color:var(--text-main)">0 Selected</span>
+          <div style="display:flex; gap:10px;">
+              <button class="tab-btn" onclick="toggleSelectionMode(false)">Cancel</button>
+              <button class="tab-btn active" onclick="openCreateModal()">Save</button>
+          </div>
       </div>
   </div>
 
   <script>
-    // --- Data Initialization ---
+    // --- Data ---
     const rawFiles = <%- JSON.stringify(files) %>;
     
-    // Sort logic
+    // Process Data
     const allFiles = rawFiles.map(file => {
         const rawName = file.originalname.replace(/\.[^.]+$/, '');
-        const parts = rawName.split(/[_-]/);
-        let artist = parts.length > 1 ? parts[0].trim() : "Unknown";
-        let title = parts.length > 1 ? parts.slice(1).join(' ').trim() : parts[0];
+        // Split by common separators to guess Artist - Title
+        const parts = rawName.split(/[-_]/);
+        let artist = "UNKNOWN";
+        let title = rawName;
+        
+        if (parts.length > 1) {
+            artist = parts[0].trim();
+            title = parts.slice(1).join(' ').trim();
+        }
         return { ...file, cleanTitle: title, cleanArtist: artist };
     }).sort((a, b) => a.cleanTitle.localeCompare(b.cleanTitle));
-    
-    // State
-    let displayedFiles = [...allFiles]; // For filtering
-    let currentQueue = [...allFiles]; 
+
+    // --- State ---
+    let currentQueue = [...allFiles];
+    let displayedFiles = [...allFiles]; // For search
     let currentTrackIndex = 0;
     let isPlaying = false;
-    let isShuffleEnabled = false;
-    let isLoopEnabled = false;
+    let isShuffle = false;
+    let isLoop = false;
+    let currentTab = 'all'; // 'all' or 'playlists' or 'single_playlist'
+    let viewingPlaylistId = null;
+    
+    // Selection / Menu State
     let isSelectionMode = false;
     let selectedIndices = new Set();
-    let currentTab = 'all'; 
-    let viewingPlaylistId = null;
-    let selectedTrackForMenu = null; // Stores {index, context, fileId}
+    let menuTargetFile = null; // file object for context menu
 
+    // Local Storage
     let savedPlaylists = JSON.parse(localStorage.getItem('vibePlaylists')) || [];
 
-    // DOM Elements
-    const audioPlayer = document.getElementById("audioPlayer");
-    const currentTrackEl = document.getElementById("currentTrack");
-    const currentArtistEl = document.getElementById("currentArtist");
-    const playPauseBtn = document.getElementById("playPauseBtn");
-    const loopBtn = document.getElementById("loopBtn");
-    const shuffleBtn = document.getElementById("shuffleBtn");
-    const mainContainer = document.getElementById("mainContainer");
-    const themeIcon = document.getElementById("themeIcon");
-    const seekSlider = document.getElementById("seekSlider");
-    const currentTimeText = document.getElementById("currentTimeText");
-    const totalTimeText = document.getElementById("totalTimeText");
-    const searchInput = document.getElementById("searchInput");
-    const searchContainer = document.getElementById("searchContainer");
+    // --- DOM ---
+    const audioPlayer = document.getElementById('audioPlayer');
+    const container = document.getElementById('musicContainer');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const seekSlider = document.getElementById('seekSlider');
+    
+    // --- Render Functions ---
 
-    // --- FILTER LOGIC ---
-    function filterSongs() {
-        const query = searchInput.value.toLowerCase();
-        displayedFiles = allFiles.filter(file => 
-            file.cleanTitle.toLowerCase().includes(query) || 
-            file.cleanArtist.toLowerCase().includes(query)
-        );
-        renderAllSongs();
-    }
+    function renderList() {
+        // Toggle Search Visibility
+        document.getElementById('searchSection').style.display = (currentTab === 'all') ? 'flex' : 'none';
+        
+        container.innerHTML = '';
+        
+        if (displayedFiles.length === 0 && currentTab === 'all') {
+            container.innerHTML = `<p style="text-align:center; color:var(--text-sub); margin-top:50px;">No songs found</p>`;
+            return;
+        }
 
-    // --- RENDER LOGIC ---
-    function renderAllSongs() {
-        let html = '';
-        if(isSelectionMode) {
-            html += `
-            <div class="playlist-controls">
-                <span style="font-weight:600; color:var(--text-sub)">${selectedIndices.size} selected</span>
-                <div style="display:flex; gap:15px;">
-                     <button class="text-btn" onclick="toggleSelectionMode(false)">Cancel</button>
-                     <button class="text-btn" onclick="openSaveModal()">Save</button>
+        const listToRender = (currentTab === 'all') ? displayedFiles : getPlaylistTracks();
+
+        if (currentTab !== 'all' && listToRender.length === 0) {
+             container.innerHTML = `<p style="text-align:center; color:var(--text-sub); margin-top:50px;">Empty Playlist</p>`;
+             if (currentTab === 'single_playlist') {
+                 container.innerHTML += `<div style="text-align:center;"><button class="tab-btn" style="color:red" onclick="deletePlaylist('${viewingPlaylistId}')">Delete Playlist</button></div>`;
+             }
+             return;
+        }
+
+        listToRender.forEach((file, index) => {
+            // Find actual index in main array for selection logic
+            const masterIndex = allFiles.findIndex(f => f.public_id === file.public_id);
+            
+            // Check active state
+            const isCurrent = (currentQueue[currentTrackIndex]?.public_id === file.public_id);
+            const activeClass = isCurrent ? 'active' : '';
+            const icon = (isCurrent && isPlaying) ? '<i class="ri-pause-fill"></i>' : '<i class="ri-play-fill"></i>';
+            
+            // Selection logic
+            const isSelected = selectedIndices.has(masterIndex);
+            const checkIcon = isSelected ? '<i class="ri-checkbox-circle-fill" style="color:var(--accent-blue)"></i>' : '<i class="ri-checkbox-blank-circle-line"></i>';
+
+            let leftIcon = `<div class="track-icon">${icon}</div>`;
+            if (isSelectionMode) {
+                leftIcon = `<div class="track-icon" style="background:transparent; color:var(--text-sub); font-size:1.5rem;">${checkIcon}</div>`;
+            }
+
+            const item = document.createElement('div');
+            item.className = `track-item ${activeClass}`;
+            item.onclick = () => handleItemClick(file, index, masterIndex);
+            
+            item.innerHTML = `
+                ${leftIcon}
+                <div class="track-details">
+                    <div class="track-artist-small">${file.cleanArtist}</div>
+                    <div class="track-name-large">${file.cleanTitle}</div>
                 </div>
-            </div>`;
-        } else {
-            html += `<div style="height:10px;"></div>`;
-        }
-
-        if (displayedFiles.length === 0) {
-            html += `<div style="text-align:center; margin-top:50px; color:var(--text-sub);"><p>No songs found</p></div>`;
-        } else {
-            displayedFiles.forEach((file, index) => {
-                
-                // Map index back to main allFiles array for selection logic
-                const originalIndex = allFiles.findIndex(f => f.public_id === file.public_id);
-                
-                const isSelected = selectedIndices.has(originalIndex) ? 'selected' : '';
-                const selectClass = isSelectionMode ? 'selection-mode' : '';
-                
-                const fileId = file.public_id;
-                const playingId = currentQueue[currentTrackIndex]?.public_id;
-                const isCurrent = (fileId === playingId && currentTab === 'all');
-                
-                const activeClass = isCurrent ? 'active-track' : '';
-                const icon = (isCurrent && isPlaying) ? '<i class="ri-pause-fill"></i>' : '<i class="ri-play-fill"></i>';
-
-                html += `
-                <div class="track ${selectClass} ${isSelected} ${activeClass}" onclick="handleTrackClick(${originalIndex}, 'all')">
-                  <div class="select-check"><i class="ri-check-line"></i></div>
-                  <div class="track-play-btn">${icon}</div>
-                  <div class="track-info">
-                    <div class="track-artist">${file.cleanArtist}</div>
-                    <div class="track-title">${file.cleanTitle}</div>
-                  </div>
-                  <!-- Replaced Duration with 3 Dots Menu Button -->
-                  <button class="more-btn" onclick="openTrackMenu(event, ${originalIndex}, 'all')">
-                    <i class="ri-more-2-fill"></i>
-                  </button>
-                </div>`;
-            });
-        }
-        mainContainer.innerHTML = html;
+                ${!isSelectionMode ? 
+                  `<button class="track-menu-btn" onclick="openMenu(event, '${file.public_id}')">
+                      <i class="ri-more-2-fill"></i>
+                   </button>` : ''}
+            `;
+            container.appendChild(item);
+        });
+        
+        // Add padding at bottom for player
+        const spacer = document.createElement('div');
+        spacer.style.height = '120px';
+        container.appendChild(spacer);
     }
 
-    function renderPlaylistsTab() {
-        let html = `<div class="playlist-controls"><span style="font-weight:700; color:var(--text-main); font-size:1.1rem;">My Playlists</span></div>`;
+    function renderPlaylists() {
+        document.getElementById('searchSection').style.display = 'none';
+        container.innerHTML = '';
+        
         if(savedPlaylists.length === 0) {
-            html += `<div style="text-align:center; margin-top:50px; color:var(--text-sub);"><p>No playlists yet</p></div>`;
-        } else {
-            savedPlaylists.forEach(pl => {
-                html += `
-                <div class="playlist-card" onclick="openPlaylist('${pl.id}')">
-                    <div>
-                        <h3 style="margin:0; font-size:1.1rem; color:var(--text-main);">${pl.name}</h3>
-                        <p style="margin:5px 0 0; font-size:0.8rem; color:var(--text-sub); font-weight:600; text-transform:uppercase;">${pl.fileIds.length} TRACKS</p>
-                    </div>
-                    <div class="neu-btn" style="width:40px; height:40px; font-size:1rem;"><i class="ri-arrow-right-s-line"></i></div>
-                </div>`;
-            });
+            container.innerHTML = `<div style="text-align:center; margin-top:50px; color:var(--text-sub);">
+                <p>No playlists yet</p>
+                <button class="tab-btn active" onclick="openCreateModal()">Create New</button>
+            </div>`;
+            return;
         }
-        mainContainer.innerHTML = html;
+
+        savedPlaylists.forEach(pl => {
+            const div = document.createElement('div');
+            div.className = 'track-item'; // Reuse styling
+            div.onclick = () => openPlaylistView(pl.id);
+            div.innerHTML = `
+                <div class="track-icon" style="background:var(--accent-light); color:var(--accent-blue)">
+                    <i class="ri-play-list-2-fill"></i>
+                </div>
+                <div class="track-details">
+                    <div class="track-artist-small">PLAYLIST</div>
+                    <div class="track-name-large">${pl.name}</div>
+                </div>
+                <div style="font-weight:600; color:var(--text-sub); margin-right:10px;">${pl.fileIds.length} Songs</div>
+                <i class="ri-arrow-right-s-line" style="color:var(--text-sub)"></i>
+            `;
+            container.appendChild(div);
+        });
     }
 
-    function renderSinglePlaylist(id) {
-        const playlist = savedPlaylists.find(p => p.id === id);
-        if(!playlist) return switchTab('playlists');
+    // --- Actions ---
 
-        let html = `
-            <div class="playlist-controls">
-                <button class="neu-btn" onclick="switchTab('playlists')" style="width:40px; height:40px;"><i class="ri-arrow-left-line"></i></button>
-                <button class="text-btn" onclick="deletePlaylist('${id}')" style="color:#ff7675;">Delete</button>
-            </div>
-            <h2 style="margin:0 0 30px; font-size:2rem; color:var(--text-main);">${playlist.name}</h2>
-        `;
-
-        const playlistTracks = playlist.fileIds.map(fileId => allFiles.find(f => f.public_id === fileId)).filter(Boolean);
-
-        if (playlistTracks.length === 0) {
-            html += `<p style="text-align:center; color:var(--text-sub);">No songs in this playlist.</p>`;
-        } else {
-            playlistTracks.forEach((file, i) => {
-                const isCurrent = (currentQueue[currentTrackIndex]?.public_id === file.public_id && currentTab === 'single_playlist' && viewingPlaylistId === id);
-                const activeClass = isCurrent ? 'active-track' : '';
-                const icon = (isCurrent && isPlaying) ? '<i class="ri-pause-fill"></i>' : '<i class="ri-play-fill"></i>';
-
-                html += `
-                <div class="track ${activeClass}" onclick="handleTrackClick(${i}, 'playlist')">
-                  <div class="track-play-btn">${icon}</div>
-                  <div class="track-info">
-                    <div class="track-artist">${file.cleanArtist}</div>
-                    <div class="track-title">${file.cleanTitle}</div>
-                  </div>
-                  <!-- Menu Button for Playlist Tracks too -->
-                  <button class="more-btn" onclick="openTrackMenu(event, ${i}, 'playlist')">
-                    <i class="ri-more-2-fill"></i>
-                  </button>
-                </div>`;
-            });
+    function handleItemClick(file, index, masterIndex) {
+        if (isSelectionMode) {
+            if (selectedIndices.has(masterIndex)) selectedIndices.delete(masterIndex);
+            else selectedIndices.add(masterIndex);
+            document.getElementById('selectCount').textContent = `${selectedIndices.size} Selected`;
+            renderList();
+            return;
         }
-        mainContainer.innerHTML = html;
+        
+        // Play Logic
+        if (currentTab === 'all') {
+            currentQueue = [...displayedFiles];
+            playTrack(index); // Index matches displayedFiles
+        } else if (currentTab === 'single_playlist') {
+            currentQueue = getPlaylistTracks();
+            playTrack(index);
+        }
     }
 
-    // --- MENU SYSTEM ---
-    function openTrackMenu(e, index, context) {
+    function playTrack(index) {
+        if (index < 0 || index >= currentQueue.length) return;
+        currentTrackIndex = index;
+        const song = currentQueue[index];
+        
+        if(audioPlayer.src !== song.url) {
+            audioPlayer.src = song.url;
+            // Also update slider visual to 0 immediately
+            seekSlider.value = 0;
+            updateSliderFill(0);
+        }
+        
+        // Update Player UI
+        document.getElementById('currentTrack').textContent = song.cleanTitle;
+        document.getElementById('currentArtist').textContent = song.cleanArtist;
+        
+        audioPlayer.play().catch(e => console.log("Play error", e));
+        isPlaying = true;
+        updatePlayBtn();
+        renderList(); // Update icons
+    }
+
+    function updatePlayBtn() {
+        playPauseBtn.innerHTML = isPlaying ? 
+            '<i class="ri-pause-fill" style="margin-left:0"></i>' : 
+            '<i class="ri-play-fill" style="margin-left:5px"></i>';
+    }
+
+    // --- Search ---
+    function filterSongs() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        displayedFiles = allFiles.filter(f => f.cleanTitle.toLowerCase().includes(q) || f.cleanArtist.toLowerCase().includes(q));
+        renderList();
+    }
+
+    // --- Menu Logic ---
+    function openMenu(e, id) {
         e.stopPropagation();
+        menuTargetFile = allFiles.find(f => f.public_id === id);
+        if(!menuTargetFile) return;
         
-        let file;
-        if(context === 'all') file = allFiles[index];
-        else if(context === 'playlist') {
-             const playlist = savedPlaylists.find(p => p.id === viewingPlaylistId);
-             const trackId = playlist.fileIds[index];
-             file = allFiles.find(f => f.public_id === trackId);
-        }
-
-        if(!file) return;
-
-        selectedTrackForMenu = { index, context, file };
-        document.getElementById('menuTitle').textContent = file.cleanTitle;
-        
-        const overlay = document.getElementById('trackMenuOverlay');
-        const sheet = document.getElementById('trackMenu');
-        
-        overlay.style.display = 'block';
-        setTimeout(() => {
-            overlay.style.opacity = '1';
-            sheet.style.bottom = '0';
-        }, 10);
+        document.getElementById('menuTitle').textContent = menuTargetFile.cleanTitle;
+        document.getElementById('menuOverlay').style.display = 'flex';
+        setTimeout(() => document.getElementById('menuSheet').style.bottom = '0', 10);
     }
 
-    function closeTrackMenu() {
-        const overlay = document.getElementById('trackMenuOverlay');
-        const sheet = document.getElementById('trackMenu');
-        
-        sheet.style.bottom = '-100%';
-        overlay.style.opacity = '0';
-        setTimeout(() => {
-            overlay.style.display = 'none';
-        }, 300);
+    function closeMenu() {
+        document.getElementById('menuSheet').style.bottom = '-100%';
+        setTimeout(() => document.getElementById('menuOverlay').style.display = 'none', 300);
     }
 
     function menuAction(action) {
-        if(!selectedTrackForMenu) return;
-        const { index, context, file } = selectedTrackForMenu;
-        closeTrackMenu();
+        closeMenu();
+        if (!menuTargetFile) return;
 
-        switch(action) {
-            case 'play':
-                if(context === 'all') {
-                    currentQueue = [...allFiles];
-                    playTrack(index);
-                } else if (context === 'playlist') {
-                    handleTrackClick(index, 'playlist');
-                }
-                break;
-            case 'queue':
-                currentQueue.splice(currentTrackIndex + 1, 0, file);
-                alert("Added to queue for next play");
-                break;
-            case 'delete':
-                if(confirm(`Delete ${file.cleanTitle} permanently?`)) {
-                    window.location.href = `/AllBus/${file.public_id.split('/').pop()}`;
-                }
-                break;
-            case 'create_playlist':
-                selectedIndices.clear();
-                const masterIndex = allFiles.findIndex(f => f.public_id === file.public_id);
-                if(masterIndex > -1) selectedIndices.add(masterIndex);
-                openSaveModal();
-                break;
-            case 'playlist':
-                openAddToPlaylistModal(file.public_id);
-                break;
+        if (action === 'play') {
+            // Play immediately (switch to all context if needed)
+            const idx = allFiles.findIndex(f => f.public_id === menuTargetFile.public_id);
+            currentQueue = [...allFiles];
+            playTrack(idx);
+        } else if (action === 'queue') {
+            currentQueue.splice(currentTrackIndex + 1, 0, menuTargetFile);
+            alert("Added to queue");
+        } else if (action === 'delete') {
+            if(confirm("Delete permanently?")) window.location.href = `/AllBus/${menuTargetFile.public_id.split('/').pop()}`;
+        } else if (action === 'create') {
+            selectedIndices.clear();
+            const idx = allFiles.findIndex(f => f.public_id === menuTargetFile.public_id);
+            selectedIndices.add(idx);
+            openCreateModal();
+        } else if (action === 'playlist') {
+            openAddToPlaylistModal(menuTargetFile.public_id);
         }
     }
 
-    function openAddToPlaylistModal(fileId) {
-        const modal = document.getElementById('addToPlaylistModal');
-        const list = document.getElementById('playlistSelectList');
-        list.innerHTML = '';
-        
-        if(savedPlaylists.length === 0) {
-            list.innerHTML = '<p style="padding:10px; color:var(--text-sub)">No playlists found. Create one first.</p>';
-        } else {
-            savedPlaylists.forEach(pl => {
-                const div = document.createElement('div');
-                div.className = 'playlist-option';
-                div.textContent = pl.name;
-                div.onclick = () => {
-                    pl.fileIds.push(fileId);
-                    localStorage.setItem('vibePlaylists', JSON.stringify(savedPlaylists));
-                    alert(`Added to ${pl.name}`);
-                    modal.style.display = 'none';
-                };
-                list.appendChild(div);
-            });
+    // --- Modal Logic ---
+    function openCreateModal() {
+        document.getElementById('createModal').style.display = 'flex';
+    }
+
+    function confirmCreatePlaylist() {
+        const name = document.getElementById('newPlaylistName').value || "New Playlist";
+        // If selection mode active, use selected indices. Else use menu target if exists.
+        let ids = [];
+        if (isSelectionMode) {
+            ids = Array.from(selectedIndices).map(i => allFiles[i].public_id);
+        } else if (menuTargetFile) {
+            ids = [menuTargetFile.public_id];
+        } else if (savedPlaylists.length === 0 && currentTab === 'playlists') {
+             // Creating empty playlist from empty state
+             ids = []; 
         }
-        modal.style.display = 'flex';
-    }
 
-    // --- LOGIC ---
-    function formatTime(seconds) {
-        if (!seconds || isNaN(seconds)) return "0:00";
-        const m = Math.floor(seconds / 60);
-        const s = Math.floor(seconds % 60);
-        return `${m}:${s.toString().padStart(2, '0')}`;
-    }
-
-    function switchTab(tab) {
-        currentTab = tab;
-        isSelectionMode = false;
-        selectedIndices.clear();
-        document.getElementById('tab-all').classList.toggle('inactive', tab !== 'all');
-        document.getElementById('tab-playlists').classList.toggle('inactive', tab !== 'playlists');
-        
-        // Hide/Show Search
-        searchContainer.style.display = tab === 'all' ? 'block' : 'none';
-        
-        if(tab === 'all') renderAllSongs();
-        else if(tab === 'playlists') renderPlaylistsTab();
-    }
-
-    function handleTrackClick(index, context) {
-        if (isSelectionMode && context === 'all') {
-            if(selectedIndices.has(index)) selectedIndices.delete(index);
-            else selectedIndices.add(index);
-            renderAllSongs();
-            return;
-        }
-        if (context === 'all') {
-            currentQueue = [...allFiles]; // In real search, maybe only play filtered? For now, playing ALL.
-            playTrack(index);
-        } else if (context === 'playlist') {
-            const playlist = savedPlaylists.find(p => p.id === viewingPlaylistId);
-            if(playlist) {
-                const playlistTracks = playlist.fileIds.map(id => allFiles.find(f => f.public_id === id)).filter(Boolean);
-                currentQueue = playlistTracks;
-                playTrack(index); 
-            }
-        }
-    }
-
-    function toggleSelectionMode(active) {
-        isSelectionMode = active;
-        selectedIndices.clear();
-        renderAllSongs();
-    }
-
-    function openSaveModal() {
-        if(selectedIndices.size === 0) return alert("Select songs first");
-        document.getElementById('playlistModal').style.display = 'flex';
-        document.getElementById('playlistNameInput').focus();
-    }
-    function closeModal() { document.getElementById('playlistModal').style.display = 'none'; }
-
-    function confirmSavePlaylist() {
-        const name = document.getElementById('playlistNameInput').value.trim() || "My Playlist";
-        const selectedIds = Array.from(selectedIndices).map(idx => allFiles[idx].public_id);
-        const newPlaylist = { id: Date.now().toString(), name: name, fileIds: selectedIds };
-        savedPlaylists.push(newPlaylist);
+        const newPl = { id: Date.now().toString(), name, fileIds: ids };
+        savedPlaylists.push(newPl);
         localStorage.setItem('vibePlaylists', JSON.stringify(savedPlaylists));
-        closeModal();
+        
+        document.getElementById('createModal').style.display = 'none';
+        toggleSelectionMode(false);
         switchTab('playlists');
     }
 
-    function openPlaylist(id) {
+    function openAddToPlaylistModal(fileId) {
+        if(savedPlaylists.length === 0) return alert("Create a playlist first");
+        const list = document.getElementById('addToPlaylistList');
+        list.innerHTML = '';
+        savedPlaylists.forEach(pl => {
+            const d = document.createElement('div');
+            d.className = 'pl-item';
+            d.textContent = pl.name;
+            d.onclick = () => {
+                pl.fileIds.push(fileId);
+                localStorage.setItem('vibePlaylists', JSON.stringify(savedPlaylists));
+                document.getElementById('addModal').style.display = 'none';
+                alert("Added!");
+            };
+            list.appendChild(d);
+        });
+        document.getElementById('addModal').style.display = 'flex';
+    }
+
+    // --- Tab Switching ---
+    function switchTab(tab) {
+        currentTab = tab;
+        document.getElementById('tab-songs').className = (tab === 'all') ? 'tab-btn active' : 'tab-btn';
+        document.getElementById('tab-playlists').className = (tab === 'playlists' || tab === 'single_playlist') ? 'tab-btn active' : 'tab-btn';
+        
+        // Hide selection bar if switching away
+        if(isSelectionMode) toggleSelectionMode(false);
+
+        if (tab === 'all') renderList();
+        else renderPlaylists();
+    }
+
+    function openPlaylistView(id) {
         viewingPlaylistId = id;
         currentTab = 'single_playlist';
-        renderSinglePlaylist(id);
+        // Add back button logic visually by changing header? 
+        // For simplicity, reusing list container.
+        renderList(); 
+    }
+    
+    function getPlaylistTracks() {
+        const pl = savedPlaylists.find(p => p.id === viewingPlaylistId);
+        if(!pl) return [];
+        return pl.fileIds.map(id => allFiles.find(f => f.public_id === id)).filter(Boolean);
     }
     
     function deletePlaylist(id) {
@@ -1056,84 +907,92 @@
         }
     }
 
-    function playTrack(index) {
-        if(index < 0 || index >= currentQueue.length) return;
-        currentTrackIndex = index;
-        const song = currentQueue[index];
-        if(audioPlayer.src !== song.url) audioPlayer.src = song.url;
-        currentTrackEl.textContent = song.cleanTitle;
-        currentArtistEl.textContent = song.cleanArtist;
-        audioPlayer.play().catch(e => console.log("User interaction needed"));
-        isPlaying = true;
-        updatePlayBtnUI();
-        if(currentTab === 'all') renderAllSongs();
-        if(currentTab === 'single_playlist') renderSinglePlaylist(viewingPlaylistId);
+    // --- Selection Mode ---
+    function toggleSelectionMode(forceState) {
+        isSelectionMode = forceState;
+        selectedIndices.clear();
+        document.getElementById('selectionBar').style.display = isSelectionMode ? 'block' : 'none';
+        // Hide player if selecting to make room? Or overlap.
+        // Let's hide main player during selection to avoid clutter
+        document.querySelector('.player-container:not(#selectionBar)').style.display = isSelectionMode ? 'none' : 'block';
+        renderList();
     }
 
-    function updatePlayBtnUI() {
-        playPauseBtn.innerHTML = isPlaying ? '<i class="ri-pause-fill"></i>' : '<i class="ri-play-fill"></i>';
-    }
+    // --- Audio Events ---
+    playPauseBtn.onclick = () => {
+        if (!audioPlayer.src && currentQueue.length > 0) playTrack(0);
+        else if (isPlaying) { audioPlayer.pause(); isPlaying = false; }
+        else { audioPlayer.play(); isPlaying = true; }
+        updatePlayBtn();
+        renderList();
+    };
 
-    function togglePlayPause() {
-        if (!audioPlayer.src && currentQueue.length > 0) { playTrack(0); return; }
-        if (isPlaying) audioPlayer.pause(); else audioPlayer.play();
-        isPlaying = !isPlaying;
-        updatePlayBtnUI();
-        if(currentTab === 'all') renderAllSongs();
-        if(currentTab === 'single_playlist') renderSinglePlaylist(viewingPlaylistId);
-    }
-
-    function nextTrack() {
-        if(isLoopEnabled) { audioPlayer.currentTime = 0; audioPlayer.play(); return; }
-        if (isShuffleEnabled) currentTrackIndex = Math.floor(Math.random() * currentQueue.length);
-        else currentTrackIndex = (currentTrackIndex + 1) % currentQueue.length;
-        playTrack(currentTrackIndex);
-    }
-
-    function prevTrack() {
-        if (audioPlayer.currentTime > 3) { audioPlayer.currentTime = 0; return; }
-        currentTrackIndex = (currentTrackIndex - 1 + currentQueue.length) % currentQueue.length;
-        playTrack(currentTrackIndex);
-    }
-
-    loopBtn.onclick = () => { isLoopEnabled = !isLoopEnabled; loopBtn.classList.toggle('active', isLoopEnabled); };
-    shuffleBtn.onclick = () => { isShuffleEnabled = !isShuffleEnabled; shuffleBtn.classList.toggle('active', isShuffleEnabled); };
-    playPauseBtn.onclick = togglePlayPause;
-    document.getElementById("nextBtn").onclick = nextTrack;
-    document.getElementById("prevBtn").onclick = prevTrack;
-    audioPlayer.onended = nextTrack;
+    document.getElementById('nextBtn').onclick = () => {
+        let next = isShuffle ? Math.floor(Math.random()*currentQueue.length) : (currentTrackIndex + 1) % currentQueue.length;
+        playTrack(next);
+    };
     
-    // --- TIMELINE LOGIC ---
-    audioPlayer.onloadedmetadata = () => { totalTimeText.textContent = formatTime(audioPlayer.duration); };
+    document.getElementById('prevBtn').onclick = () => {
+        let prev = (currentTrackIndex - 1 + currentQueue.length) % currentQueue.length;
+        playTrack(prev);
+    };
+
+    document.getElementById('shuffleBtn').onclick = function() {
+        isShuffle = !isShuffle;
+        this.className = isShuffle ? 'ctrl-btn-small active' : 'ctrl-btn-small';
+    };
+    document.getElementById('loopBtn').onclick = function() {
+        isLoop = !isLoop;
+        this.className = isLoop ? 'ctrl-btn-small active' : 'ctrl-btn-small';
+    };
+
+    audioPlayer.onended = () => {
+        if(isLoop) { audioPlayer.currentTime = 0; audioPlayer.play(); }
+        else document.getElementById('nextBtn').click();
+    };
+
+    // Timeline
     audioPlayer.ontimeupdate = () => {
-        if(audioPlayer.duration) {
-            const percent = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-            seekSlider.value = percent;
-            updateSliderStyle(percent);
-            currentTimeText.textContent = formatTime(audioPlayer.currentTime);
+        if (audioPlayer.duration) {
+            const pct = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+            seekSlider.value = pct;
+            updateSliderFill(pct);
+            document.getElementById('currentTimeText').innerText = formatTime(audioPlayer.currentTime);
+            document.getElementById('totalTimeText').innerText = formatTime(audioPlayer.duration);
         }
     };
+    
     seekSlider.oninput = () => {
-        const seekTime = (seekSlider.value / 100) * audioPlayer.duration;
-        audioPlayer.currentTime = seekTime;
-        updateSliderStyle(seekSlider.value);
-        currentTimeText.textContent = formatTime(seekTime);
+        const time = (seekSlider.value / 100) * audioPlayer.duration;
+        audioPlayer.currentTime = time;
+        updateSliderFill(seekSlider.value);
     };
-    function updateSliderStyle(value) {
-        const accent = getComputedStyle(document.body).getPropertyValue('--accent-deep').trim();
-        const bg = `linear-gradient(to right, ${accent} 0%, ${accent} ${value}%, rgba(0,0,0,0.05) ${value}%, rgba(0,0,0,0.05) 100%)`;
-        seekSlider.style.background = bg;
+
+    function updateSliderFill(val) {
+        // Gradient fill for input range
+        const blue = getComputedStyle(document.body).getPropertyValue('--accent-blue').trim();
+        seekSlider.style.background = `linear-gradient(to right, ${blue} 0%, ${blue} ${val}%, rgba(91,141,239,0.15) ${val}%, rgba(91,141,239,0.15) 100%)`;
     }
 
+    function formatTime(s) {
+        if(!s) return "0:00";
+        const m = Math.floor(s/60);
+        const sec = Math.floor(s%60);
+        return m + ":" + (sec < 10 ? "0"+sec : sec);
+    }
+
+    // Theme Toggle
     function toggleTheme() {
         document.body.classList.toggle('dark-mode');
         const isDark = document.body.classList.contains('dark-mode');
-        themeIcon.className = isDark ? 'ri-sun-line' : 'ri-moon-line';
+        document.getElementById('themeIcon').className = isDark ? 'ri-sun-fill' : 'ri-moon-fill';
         localStorage.setItem('vibeTheme', isDark ? 'dark' : 'light');
     }
-    if(localStorage.getItem('vibeTheme') === 'dark') toggleTheme();
+    if (localStorage.getItem('vibeTheme') === 'dark') toggleTheme();
 
-    renderAllSongs();
+    // Init
+    renderList();
+
   </script>
 </body>
 </html>
