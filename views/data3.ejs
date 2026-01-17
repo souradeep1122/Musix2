@@ -623,22 +623,35 @@
 
     // --- METADATA PARSER HELPER ---
     function parseMetadata(filename) {
-        // 1. Remove Extension
+        // 1. Decode URI components (fixes %E2%80%93 etc.)
+        try {
+            filename = decodeURIComponent(filename);
+        } catch (e) {
+            // If decoding fails, keep original
+        }
+
+        // 2. Remove Extension
         let name = filename.replace(/\.[^.]+$/, '');
-        
-        // 2. Common Cleaners (Regex) - Removes "junk" metadata
+
+        // 3. Fix Encoding/Mojibake Errors & Normalize Dashes
+        // Replaces corrupted dashes (â) and fancy unicode dashes (–, —) with standard hyphen (-)
+        name = name.replace(/â/g, '-').replace(/â/g, '-'); 
+        name = name.replace(/[\u2013\u2014\u2212]/g, '-');
+
+        // 4. Advanced Cleaners (Regex) - Removes "junk" metadata
         const cleaners = [
-            /\s*[\(\[]\s*\d+k\w*\s*[\)\]]/gi, // (256k), [128kbps]
-            /\s*\d+kbps/gi,                   // 320kbps
-            /\s*\(?\d{4}\)?/g,                // Years like 2017 or (2017)
-            /\s*official\s*video/gi,
-            /\s*official\s*audio/gi,
-            /\s*official\s*music\s*video/gi,
-            /\s*lyric\s*video/gi,
-            /\s*official/gi,
-            /\s*love\s*song/gi,               // Specific to your example
+            /\s*[\(\[]\s*\d+k\w*\s*[\)\]]/gi,     // (256k), [128kbps]
+            /\s*\d+kbps/gi,                       // 320kbps
+            /\s*\(?\d{4}\)?/g,                    // Years like 2017 or (2017)
+            /\(?(?:official)?\s*(?:music)?\s*video\)?/gi, // Video, Official Video, Music Video
+            /\(?(?:official)?\s*lyric\s*(?:video)?\)?/gi, // Lyrics, Lyric Video, Lyrical
+            /\(?visuali[sz]er\)?/gi,              // Visualizer
+            /\(?official\s*audio\)?/gi,           // Official Audio
+            /\(?(?:with)?\s*lyrics\)?/gi,         // with Lyrics
+            /\s*love\s*song/gi,                   // Love Song
             /\s*full\s*song/gi,
             /\s*hd\s*/gi,
+            /\s*hq\s*/gi,
             /\s*[\(\[]\s*clean\s*[\)\]]/gi,
         ];
         
@@ -646,20 +659,37 @@
             name = name.replace(regex, '');
         });
 
-        // 3. Clean up double spaces, punctuation, or leftover brackets
+        // 5. Clean up double spaces, punctuation, or leftover brackets
         name = name.replace(/\s+/g, ' ').trim();
+        name = name.replace(/^\s*-\s*/, ''); // Remove leading dashes
+        name = name.replace(/\s*-\s*$/, ''); // Remove trailing dashes
         name = name.replace(/\(\s*\)/g, '').trim();
         name = name.replace(/\[\s*\]/g, '').trim();
 
-        // 4. Split Logic
+        // 6. Split Logic
         let artist = "UNKNOWN";
         let title = name;
 
         // Separator: " - " (Standard: Artist - Title)
+        // We look for the first occurrence of " - "
         if (name.includes(' - ')) {
             const parts = name.split(' - ');
+            // Heuristic: If part 1 is shorter, usually Artist. 
+            // If file is "Song - Artist", it's hard to distinguish without DB.
+            // We assume standard "Artist - Title" or "Title - Artist" depending on folder preference,
+            // but usually splitting simply is best.
+            
+            // For the specific examples like "Bayaan - Nahein Milta" or "HASEEN - TALWIINDER"
+            // Usually the first part is the Song or Artist. 
+            // Let's stick to the convention: Part 0 = Artist, Part 1 = Title 
+            // UNLESS user specific patterns suggest otherwise. 
+            // But for a generic player, we store both.
+            
             artist = parts[0].trim();
             title = parts.slice(1).join(' - ').trim();
+            
+            // Swap check: If "artist" looks like a song title (very long) and "title" is short (name), maybe swap?
+            // For now, simple split is most reliable.
         } 
         // Separator: " by " (Common: Title by Artist)
         else if (name.includes(' by ')) {
@@ -667,20 +697,7 @@
             title = parts[0].trim();
             artist = parts[1].trim();
         }
-        // Separator: "_" (Common: Artist_Title)
-        else if (name.includes('_')) {
-             const parts = name.split('_');
-             if(parts.length > 1) {
-                 artist = parts[0].trim();
-                 title = parts.slice(1).join(' ').trim();
-             }
-        }
         
-        // Note: For files like "Ye Baarish Darshan Raval" (Space separated), 
-        // it is impossible to programmatically split them 100% correctly without a database.
-        // However, the 'title' variable now holds the cleaned string "Ye Baarish Darshan Raval",
-        // which is much better than the original raw filename!
-
         return { artist, title };
     }
 
