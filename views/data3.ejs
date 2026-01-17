@@ -619,6 +619,7 @@
 
   <script>
     const rawFiles = <%- JSON.stringify(files) %>;
+    const visitCount = <%= typeof visitorCount !== 'undefined' ? visitorCount : '0' %>;
 
     const allFiles = rawFiles.map(file => {
         const rawName = file.originalname.replace(/\.[^.]+$/, '');
@@ -751,8 +752,6 @@
              // Visitor footer only on main list
              const footer = document.createElement('div');
              footer.className = 'visitor-footer';
-             // Fallback for mock preview
-             const visitCount = (typeof visitorCount !== 'undefined') ? visitorCount : '0';
              footer.innerHTML = `Vibe Player • ${visitCount} Total Visits`;
              container.appendChild(footer);
         }
