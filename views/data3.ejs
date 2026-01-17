@@ -621,17 +621,72 @@
     const rawFiles = <%- JSON.stringify(files) %>;
     const visitCount = <%= typeof visitorCount !== 'undefined' ? visitorCount : '0' %>;
 
-    const allFiles = rawFiles.map(file => {
-        const rawName = file.originalname.replace(/\.[^.]+$/, '');
-        const parts = rawName.split(/[-_]/);
-        let artist = "UNKNOWN";
-        let title = rawName;
+    // --- METADATA PARSER HELPER ---
+    function parseMetadata(filename) {
+        // 1. Remove Extension
+        let name = filename.replace(/\.[^.]+$/, '');
         
-        if (parts.length > 1) {
+        // 2. Common Cleaners (Regex) - Removes "junk" metadata
+        const cleaners = [
+            /\s*[\(\[]\s*\d+k\w*\s*[\)\]]/gi, // (256k), [128kbps]
+            /\s*\d+kbps/gi,                   // 320kbps
+            /\s*\(?\d{4}\)?/g,                // Years like 2017 or (2017)
+            /\s*official\s*video/gi,
+            /\s*official\s*audio/gi,
+            /\s*official\s*music\s*video/gi,
+            /\s*lyric\s*video/gi,
+            /\s*official/gi,
+            /\s*love\s*song/gi,               // Specific to your example
+            /\s*full\s*song/gi,
+            /\s*hd\s*/gi,
+            /\s*[\(\[]\s*clean\s*[\)\]]/gi,
+        ];
+        
+        cleaners.forEach(regex => {
+            name = name.replace(regex, '');
+        });
+
+        // 3. Clean up double spaces, punctuation, or leftover brackets
+        name = name.replace(/\s+/g, ' ').trim();
+        name = name.replace(/\(\s*\)/g, '').trim();
+        name = name.replace(/\[\s*\]/g, '').trim();
+
+        // 4. Split Logic
+        let artist = "UNKNOWN";
+        let title = name;
+
+        // Separator: " - " (Standard: Artist - Title)
+        if (name.includes(' - ')) {
+            const parts = name.split(' - ');
             artist = parts[0].trim();
-            title = parts.slice(1).join(' ').trim();
+            title = parts.slice(1).join(' - ').trim();
+        } 
+        // Separator: " by " (Common: Title by Artist)
+        else if (name.includes(' by ')) {
+            const parts = name.split(' by ');
+            title = parts[0].trim();
+            artist = parts[1].trim();
         }
-        return { ...file, cleanTitle: title, cleanArtist: artist };
+        // Separator: "_" (Common: Artist_Title)
+        else if (name.includes('_')) {
+             const parts = name.split('_');
+             if(parts.length > 1) {
+                 artist = parts[0].trim();
+                 title = parts.slice(1).join(' ').trim();
+             }
+        }
+        
+        // Note: For files like "Ye Baarish Darshan Raval" (Space separated), 
+        // it is impossible to programmatically split them 100% correctly without a database.
+        // However, the 'title' variable now holds the cleaned string "Ye Baarish Darshan Raval",
+        // which is much better than the original raw filename!
+
+        return { artist, title };
+    }
+
+    const allFiles = rawFiles.map(file => {
+        const meta = parseMetadata(file.originalname);
+        return { ...file, cleanTitle: meta.title, cleanArtist: meta.artist };
     }).sort((a, b) => a.cleanTitle.localeCompare(b.cleanTitle));
 
     // --- STATE MANAGEMENT ---
