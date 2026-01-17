@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Music Player</title>
+  <title>Vibe Music Player</title>
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet"/>
   <!-- Poppins font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -90,6 +90,19 @@
       justify-content: space-between;
       align-items: center;
       z-index: 10;
+    }
+
+    .header-left {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .song-count-badge {
+        font-size: 0.75rem;
+        color: var(--text-sub);
+        font-weight: 600;
+        margin-top: 4px;
+        margin-left: 8px;
     }
 
     /* Pill Tabs */
@@ -182,6 +195,7 @@
       align-items: center;
       margin-bottom: 20px;
       cursor: pointer;
+      position: relative;
     }
 
     /* Play Icon Circle */
@@ -232,6 +246,45 @@
       color: var(--text-sub);
       font-size: 1.4rem;
       cursor: pointer;
+    }
+    
+    .playlist-header-card {
+        background: var(--accent-light);
+        padding: 20px;
+        border-radius: 25px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .playlist-info h2 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: var(--text-main);
+    }
+    .playlist-info p {
+        margin: 5px 0 0;
+        font-size: 0.8rem;
+        color: var(--text-sub);
+    }
+    
+    .playlist-actions {
+        display: flex;
+        gap: 10px;
+    }
+    .pl-action-btn {
+        background: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        color: var(--text-sub);
+        font-size: 1.2rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .track-item.active .track-icon {
@@ -444,7 +497,7 @@
     .menu-item.red i, .menu-item.red { color: #ff6b6b; }
 
     .pl-list { max-height: 200px; overflow-y: auto; text-align: left; margin: 10px 0; }
-    .pl-item { padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); cursor: pointer; }
+    .pl-item { padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); cursor: pointer; color: var(--text-main); }
 
     /* Desktop Fix */
     @media (min-width: 768px) {
@@ -462,9 +515,12 @@
 
   <!-- Top Navigation -->
   <div class="top-nav">
-      <div class="tabs-container">
-          <button class="tab-btn active" id="tab-songs" onclick="switchTab('all')">Songs</button>
-          <button class="tab-btn" id="tab-playlists" onclick="switchTab('playlists')">Playlists</button>
+      <div class="header-left">
+        <div class="tabs-container">
+            <button class="tab-btn active" id="tab-songs" onclick="switchTab('all')">Songs</button>
+            <button class="tab-btn" id="tab-playlists" onclick="switchTab('playlists')">Playlists</button>
+        </div>
+        <div class="song-count-badge" id="totalSongsCount">0 Songs</div>
       </div>
       
       <div class="top-icons">
@@ -522,28 +578,37 @@
 
   <!-- --- MODALS & MENUS --- -->
 
+  <!-- Dynamic Bottom Menu -->
   <div class="overlay" id="menuOverlay" onclick="closeMenu()">
       <div class="bottom-sheet" id="menuSheet" onclick="event.stopPropagation()">
           <h3 id="menuTitle" style="text-align:center; color:var(--text-main); margin-bottom:10px;">Options</h3>
-          <button class="menu-item" onclick="menuAction('play')"><i class="ri-play-circle-line"></i> Play Now</button>
-          <button class="menu-item" onclick="menuAction('queue')"><i class="ri-play-list-add-line"></i> Play Next</button>
-          <button class="menu-item" onclick="menuAction('playlist')"><i class="ri-folder-add-line"></i> Add to Playlist</button>
-          <button class="menu-item" onclick="menuAction('create')"><i class="ri-add-box-line"></i> Create Playlist</button>
-          <button class="menu-item red" onclick="menuAction('delete')"><i class="ri-delete-bin-line"></i> Delete</button>
+          
+          <button class="menu-item" onclick="menuAction('play')">
+            <i class="ri-play-circle-line"></i> Play Now
+          </button>
+          <button class="menu-item" onclick="menuAction('queue')">
+            <i class="ri-play-list-add-line"></i> Play Next
+          </button>
+          
+          <!-- Context Aware Buttons -->
+          <div id="contextMenuOptions"></div>
+
       </div>
   </div>
 
+  <!-- Create/Rename Playlist Modal -->
   <div class="overlay" id="createModal">
       <div class="modal-box">
-          <h3 style="margin:0; color:var(--text-main)">New Playlist</h3>
+          <h3 style="margin:0; color:var(--text-main)" id="createModalTitle">New Playlist</h3>
           <input type="text" id="newPlaylistName" placeholder="Playlist Name">
           <div class="modal-actions">
               <button class="tab-btn" onclick="document.getElementById('createModal').style.display='none'">Cancel</button>
-              <button class="tab-btn active" onclick="confirmCreatePlaylist()">Create</button>
+              <button class="tab-btn active" onclick="confirmPlaylistAction()">Save</button>
           </div>
       </div>
   </div>
 
+  <!-- Add To Playlist Modal -->
   <div class="overlay" id="addModal">
       <div class="modal-box">
           <h3 style="margin:0; color:var(--text-main)">Add to Playlist</h3>
@@ -554,7 +619,7 @@
 
   <script>
     const rawFiles = <%- JSON.stringify(files) %>;
-    
+
     const allFiles = rawFiles.map(file => {
         const rawName = file.originalname.replace(/\.[^.]+$/, '');
         const parts = rawName.split(/[-_]/);
@@ -568,6 +633,7 @@
         return { ...file, cleanTitle: title, cleanArtist: artist };
     }).sort((a, b) => a.cleanTitle.localeCompare(b.cleanTitle));
 
+    // --- STATE MANAGEMENT ---
     let currentQueue = [...allFiles];
     let displayedFiles = [...allFiles]; 
     let currentTrackIndex = 0;
@@ -576,43 +642,97 @@
     let isLoop = false;
     let currentTab = 'all'; 
     let viewingPlaylistId = null;
-    
     let menuTargetFile = null; 
+    let playlistActionMode = 'create'; // 'create' or 'rename'
 
     let savedPlaylists = JSON.parse(localStorage.getItem('vibePlaylists')) || [];
 
+    // --- DOM ELEMENTS ---
     const audioPlayer = document.getElementById('audioPlayer');
     const container = document.getElementById('musicContainer');
     const playPauseBtn = document.getElementById('playPauseBtn');
     const seekSlider = document.getElementById('seekSlider');
+    const totalCountEl = document.getElementById('totalSongsCount');
     
+    // --- INITIALIZATION ---
+    function updateGlobalSongCount() {
+        totalCountEl.textContent = `${allFiles.length} Songs`;
+    }
+
+    // --- CORE RENDERING ---
     function renderList() {
+        // Toggle Search Visibility
         document.getElementById('searchSection').style.display = (currentTab === 'all') ? 'flex' : 'none';
         container.innerHTML = '';
         
-        if (displayedFiles.length === 0 && currentTab === 'all') {
-            container.innerHTML = `<p style="text-align:center; color:var(--text-sub); margin-top:50px;">No songs found</p>`;
-            return;
+        // 1. ALL SONGS VIEW
+        if (currentTab === 'all') {
+            updateGlobalSongCount();
+            if (displayedFiles.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:var(--text-sub); margin-top:50px;">No songs found</p>`;
+                return;
+            }
+            renderTracks(displayedFiles);
+        } 
+        
+        // 2. PLAYLIST LIST VIEW
+        else if (currentTab === 'playlists') {
+            totalCountEl.textContent = `${savedPlaylists.length} Playlists`;
+            renderPlaylistsView();
+        } 
+        
+        // 3. SINGLE PLAYLIST DETAILS VIEW
+        else if (currentTab === 'single_playlist') {
+            const pl = savedPlaylists.find(p => p.id === viewingPlaylistId);
+            if (!pl) { switchTab('playlists'); return; } // Safety
+            
+            const plTracks = getPlaylistTracks(pl.id);
+            totalCountEl.textContent = `${plTracks.length} Songs`;
+
+            // Render Playlist Header
+            const header = document.createElement('div');
+            header.className = 'playlist-header-card';
+            header.innerHTML = `
+                <div class="playlist-info">
+                    <h2>${pl.name}</h2>
+                    <p>${plTracks.length} Tracks • Local Playlist</p>
+                </div>
+                <div class="playlist-actions">
+                    <button class="pl-action-btn" onclick="openRenameModal('${pl.id}')"><i class="ri-edit-2-line"></i></button>
+                    <button class="pl-action-btn" style="color:#ff6b6b" onclick="deletePlaylist('${pl.id}')"><i class="ri-delete-bin-line"></i></button>
+                </div>
+            `;
+            container.appendChild(header);
+
+            if (plTracks.length === 0) {
+                container.innerHTML += `<div style="text-align:center; padding: 40px; color:var(--text-sub);">
+                    <i class="ri-music-2-line" style="font-size: 3rem; opacity:0.3"></i>
+                    <p>Playlist is empty</p>
+                    <button class="tab-btn active" onclick="switchTab('all')">Add Songs</button>
+                </div>`;
+            } else {
+                renderTracks(plTracks);
+            }
         }
 
-        const listToRender = (currentTab === 'all') ? displayedFiles : getPlaylistTracks();
+        // Add Spacer for Bottom Player
+        const spacer = document.createElement('div');
+        spacer.style.height = '120px';
+        container.appendChild(spacer);
+    }
 
-        if (currentTab !== 'all' && listToRender.length === 0) {
-             container.innerHTML = `<p style="text-align:center; color:var(--text-sub); margin-top:50px;">Empty Playlist</p>`;
-             if (currentTab === 'single_playlist') {
-                 container.innerHTML += `<div style="text-align:center;"><button class="tab-btn" style="color:red" onclick="deletePlaylist('${viewingPlaylistId}')">Delete Playlist</button></div>`;
-             }
-             return;
-        }
-
-        listToRender.forEach((file, index) => {
+    function renderTracks(list) {
+        list.forEach((file, index) => {
+            // Check if this specific file is the currently playing one
+            // We compare IDs because index changes between playlists/all views
             const isCurrent = (currentQueue[currentTrackIndex]?.public_id === file.public_id);
             const activeClass = isCurrent ? 'active' : '';
             const icon = (isCurrent && isPlaying) ? '<i class="ri-pause-fill"></i>' : '<i class="ri-play-fill"></i>';
             
             const item = document.createElement('div');
             item.className = `track-item ${activeClass}`;
-            item.onclick = () => handleItemClick(file, index);
+            // Use closure to capture the correct file object for playing
+            item.onclick = () => handleItemClick(file); 
             
             item.innerHTML = `
                 <div class="track-icon">${icon}</div>
@@ -626,26 +746,22 @@
             `;
             container.appendChild(item);
         });
-        
-        // VISITOR TRACKER FOOTER
-        const footer = document.createElement('div');
-        footer.className = 'visitor-footer';
-        // Using real EJS variable from backend, fallback to 0 if rendering static
-        const count = <%= typeof visitorCount !== 'undefined' ? visitorCount : '0' %>;
-        footer.innerHTML = `Vibe Player • ${count} Total Visits`;
-        container.appendChild(footer);
 
-        const spacer = document.createElement('div');
-        spacer.style.height = '120px';
-        container.appendChild(spacer);
+        if (currentTab === 'all') {
+             // Visitor footer only on main list
+             const footer = document.createElement('div');
+             footer.className = 'visitor-footer';
+             // Fallback for mock preview
+             const visitCount = (typeof visitorCount !== 'undefined') ? visitorCount : '0';
+             footer.innerHTML = `Vibe Player • ${visitCount} Total Visits`;
+             container.appendChild(footer);
+        }
     }
 
-    function renderPlaylists() {
-        document.getElementById('searchSection').style.display = 'none';
-        container.innerHTML = '';
-        
+    function renderPlaylistsView() {
         if(savedPlaylists.length === 0) {
             container.innerHTML = `<div style="text-align:center; margin-top:50px; color:var(--text-sub);">
+                <i class="ri-play-list-add-line" style="font-size: 3rem; opacity:0.3; margin-bottom:10px; display:block"></i>
                 <p>No playlists yet</p>
                 <button class="tab-btn active" onclick="openCreateModal()">Create New</button>
             </div>`;
@@ -671,14 +787,20 @@
         });
     }
 
-    function handleItemClick(file, index) {
-        if (currentTab === 'all') {
-            currentQueue = [...displayedFiles];
-            playTrack(index);
-        } else if (currentTab === 'single_playlist') {
-            currentQueue = getPlaylistTracks();
-            playTrack(index);
-        }
+    // --- LOGIC: CLICK & PLAY ---
+    function handleItemClick(file) {
+        // If clicking inside a playlist, we want the queue to be that playlist
+        // If clicking in 'all', queue is all
+        
+        let newQueue = [];
+        if (currentTab === 'all') newQueue = [...displayedFiles];
+        else if (currentTab === 'single_playlist') newQueue = getPlaylistTracks(viewingPlaylistId);
+        
+        // Find index in the NEW queue
+        const idx = newQueue.findIndex(f => f.public_id === file.public_id);
+        
+        currentQueue = newQueue;
+        playTrack(idx);
     }
 
     function playTrack(index) {
@@ -698,27 +820,43 @@
         audioPlayer.play().catch(e => console.log("Play error", e));
         isPlaying = true;
         updatePlayBtn();
-        renderList(); 
+        renderList(); // Re-render to show active state
     }
 
-    function updatePlayBtn() {
-        playPauseBtn.innerHTML = isPlaying ? 
-            '<i class="ri-pause-fill" style="margin-left:0"></i>' : 
-            '<i class="ri-play-fill" style="margin-left:5px"></i>';
-    }
-
-    function filterSongs() {
-        const q = document.getElementById('searchInput').value.toLowerCase();
-        displayedFiles = allFiles.filter(f => f.cleanTitle.toLowerCase().includes(q) || f.cleanArtist.toLowerCase().includes(q));
-        renderList();
-    }
-
+    // --- MENU SYSTEM ---
     function openMenu(e, id) {
         e.stopPropagation();
         menuTargetFile = allFiles.find(f => f.public_id === id);
         if(!menuTargetFile) return;
         
         document.getElementById('menuTitle').textContent = menuTargetFile.cleanTitle;
+        
+        // Inject Context-Aware Options
+        const ctxContainer = document.getElementById('contextMenuOptions');
+        ctxContainer.innerHTML = '';
+        
+        if (currentTab === 'single_playlist') {
+            // We are in a playlist -> Show Remove Option
+            ctxContainer.innerHTML += `
+                <button class="menu-item red" onclick="menuAction('remove_from_pl')">
+                    <i class="ri-indeterminate-circle-line"></i> Remove from Playlist
+                </button>
+            `;
+        } else {
+            // We are in All Songs -> Show Add & Delete Option
+            ctxContainer.innerHTML += `
+                <button class="menu-item" onclick="menuAction('playlist')">
+                    <i class="ri-folder-add-line"></i> Add to Playlist
+                </button>
+                <button class="menu-item" onclick="menuAction('create')">
+                    <i class="ri-add-box-line"></i> Create New Playlist
+                </button>
+                <button class="menu-item red" onclick="menuAction('delete_file')">
+                    <i class="ri-delete-bin-line"></i> Delete File
+                </button>
+            `;
+        }
+        
         document.getElementById('menuOverlay').style.display = 'flex';
         setTimeout(() => document.getElementById('menuSheet').style.bottom = '0', 10);
     }
@@ -733,38 +871,82 @@
         if (!menuTargetFile) return;
 
         if (action === 'play') {
-            const idx = allFiles.findIndex(f => f.public_id === menuTargetFile.public_id);
-            currentQueue = [...allFiles];
-            playTrack(idx);
+            const idx = currentQueue.findIndex(f => f.public_id === menuTargetFile.public_id);
+            if (idx !== -1) playTrack(idx);
+            else {
+                // Force play even if not in current queue (plays alone)
+                currentQueue = [menuTargetFile];
+                playTrack(0);
+            }
         } else if (action === 'queue') {
             currentQueue.splice(currentTrackIndex + 1, 0, menuTargetFile);
             alert("Added to queue");
-        } else if (action === 'delete') {
-            if(confirm("Delete permanently?")) window.location.href = `/AllBus/${menuTargetFile.public_id.split('/').pop()}`;
+        } else if (action === 'delete_file') {
+            if(confirm("Delete this file permanently from the server?")) {
+                window.location.href = `/AllBus/${menuTargetFile.public_id.split('/').pop()}`;
+            }
         } else if (action === 'create') {
             openCreateModal();
         } else if (action === 'playlist') {
             openAddToPlaylistModal(menuTargetFile.public_id);
+        } else if (action === 'remove_from_pl') {
+            removeSongFromPlaylist(viewingPlaylistId, menuTargetFile.public_id);
         }
+    }
+
+    // --- PLAYLIST LOGIC ---
+
+    function getPlaylistTracks(plId) {
+        const pl = savedPlaylists.find(p => p.id === plId);
+        if(!pl) return [];
+        // Map IDs to actual file objects, filtering out any deleted files
+        return pl.fileIds.map(id => allFiles.find(f => f.public_id === id)).filter(Boolean);
     }
 
     function openCreateModal() {
+        playlistActionMode = 'create';
+        document.getElementById('createModalTitle').textContent = "New Playlist";
+        document.getElementById('newPlaylistName').value = "";
         document.getElementById('createModal').style.display = 'flex';
+        document.getElementById('newPlaylistName').focus();
+    }
+    
+    function openRenameModal(plId) {
+        playlistActionMode = 'rename';
+        const pl = savedPlaylists.find(p => p.id === plId);
+        document.getElementById('createModalTitle').textContent = "Rename Playlist";
+        document.getElementById('newPlaylistName').value = pl.name;
+        document.getElementById('createModal').style.display = 'flex';
+        document.getElementById('newPlaylistName').focus();
     }
 
-    function confirmCreatePlaylist() {
-        const name = document.getElementById('newPlaylistName').value || "New Playlist";
-        let ids = [];
-        if (menuTargetFile) {
-            ids = [menuTargetFile.public_id];
+    function confirmPlaylistAction() {
+        const name = document.getElementById('newPlaylistName').value.trim() || "My Playlist";
+        
+        if (playlistActionMode === 'create') {
+            // Create New
+            let ids = [];
+            if (menuTargetFile) ids = [menuTargetFile.public_id]; // If created from menu
+            
+            const newPl = { id: Date.now().toString(), name, fileIds: ids };
+            savedPlaylists.push(newPl);
+            saveToStorage();
+            
+            if (menuTargetFile) alert("Created & Added!");
+            else switchTab('playlists');
+            
+        } else if (playlistActionMode === 'rename') {
+            // Rename Existing
+            const pl = savedPlaylists.find(p => p.id === viewingPlaylistId);
+            if(pl) {
+                pl.name = name;
+                saveToStorage();
+                renderList(); // Update header
+            }
         }
-
-        const newPl = { id: Date.now().toString(), name, fileIds: ids };
-        savedPlaylists.push(newPl);
-        localStorage.setItem('vibePlaylists', JSON.stringify(savedPlaylists));
         
         document.getElementById('createModal').style.display = 'none';
-        switchTab('playlists');
+        menuTargetFile = null; // Reset
     }
 
     function openAddToPlaylistModal(fileId) {
@@ -774,25 +956,56 @@
         savedPlaylists.forEach(pl => {
             const d = document.createElement('div');
             d.className = 'pl-item';
-            d.textContent = pl.name;
+            d.innerHTML = `<span>${pl.name}</span> <span style="font-size:0.8rem; opacity:0.6">${pl.fileIds.length} songs</span>`;
             d.onclick = () => {
-                pl.fileIds.push(fileId);
-                localStorage.setItem('vibePlaylists', JSON.stringify(savedPlaylists));
+                if(!pl.fileIds.includes(fileId)) {
+                    pl.fileIds.push(fileId);
+                    saveToStorage();
+                    alert(`Added to ${pl.name}`);
+                } else {
+                    alert("Song already in playlist");
+                }
                 document.getElementById('addModal').style.display = 'none';
-                alert("Added!");
             };
             list.appendChild(d);
         });
         document.getElementById('addModal').style.display = 'flex';
     }
 
+    function removeSongFromPlaylist(plId, songId) {
+        const pl = savedPlaylists.find(p => p.id === plId);
+        if(!pl) return;
+        
+        // Remove only the first instance of this ID to be safe, or filter all
+        // Usually removing via filter is best for unique lists
+        pl.fileIds = pl.fileIds.filter(id => id !== songId);
+        saveToStorage();
+        renderList(); // Re-render the playlist view
+    }
+
+    function deletePlaylist(id) {
+        if(confirm("Are you sure you want to delete this playlist? This action cannot be undone.")) {
+            savedPlaylists = savedPlaylists.filter(p => p.id !== id);
+            saveToStorage();
+            switchTab('playlists');
+        }
+    }
+    
+    function saveToStorage() {
+        localStorage.setItem('vibePlaylists', JSON.stringify(savedPlaylists));
+    }
+
+    // --- VIEW NAVIGATION ---
     function switchTab(tab) {
         currentTab = tab;
         document.getElementById('tab-songs').className = (tab === 'all') ? 'tab-btn active' : 'tab-btn';
         document.getElementById('tab-playlists').className = (tab === 'playlists' || tab === 'single_playlist') ? 'tab-btn active' : 'tab-btn';
         
-        if (tab === 'all') renderList();
-        else renderPlaylists();
+        if (tab === 'all' || tab === 'playlists') {
+            menuTargetFile = null; // Clear context
+        }
+        
+        renderList();
     }
 
     function openPlaylistView(id) {
@@ -800,19 +1013,18 @@
         currentTab = 'single_playlist';
         renderList(); 
     }
-    
-    function getPlaylistTracks() {
-        const pl = savedPlaylists.find(p => p.id === viewingPlaylistId);
-        if(!pl) return [];
-        return pl.fileIds.map(id => allFiles.find(f => f.public_id === id)).filter(Boolean);
+
+    function filterSongs() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        displayedFiles = allFiles.filter(f => f.cleanTitle.toLowerCase().includes(q) || f.cleanArtist.toLowerCase().includes(q));
+        renderList();
     }
-    
-    function deletePlaylist(id) {
-        if(confirm("Delete playlist?")) {
-            savedPlaylists = savedPlaylists.filter(p => p.id !== id);
-            localStorage.setItem('vibePlaylists', JSON.stringify(savedPlaylists));
-            switchTab('playlists');
-        }
+
+    // --- PLAYER CONTROLS ---
+    function updatePlayBtn() {
+        playPauseBtn.innerHTML = isPlaying ? 
+            '<i class="ri-pause-fill" style="margin-left:0"></i>' : 
+            '<i class="ri-play-fill" style="margin-left:5px"></i>';
     }
 
     playPauseBtn.onclick = () => {
@@ -820,7 +1032,6 @@
         else if (isPlaying) { audioPlayer.pause(); isPlaying = false; }
         else { audioPlayer.play(); isPlaying = true; }
         updatePlayBtn();
-        renderList();
     };
 
     document.getElementById('nextBtn').onclick = () => {
@@ -885,6 +1096,6 @@
 
     renderList();
 
-  </script>
+  </script>
 </body>
 </html>
