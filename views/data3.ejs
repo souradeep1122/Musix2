@@ -95,6 +95,7 @@
     .header-left {
         display: flex;
         flex-direction: column;
+        overflow: hidden; /* For tab scroll containment */
     }
     
     .song-count-badge {
@@ -105,14 +106,19 @@
         margin-left: 8px;
     }
 
-    /* Pill Tabs */
+    /* Pill Tabs - SCROLLABLE NOW */
     .tabs-container {
       background: var(--tab-bg);
       border-radius: 30px;
       padding: 4px;
       display: flex;
       box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+      overflow-x: auto;
+      white-space: nowrap;
+      max-width: 60vw; /* Prevent overlap with icons on small screens */
+      scrollbar-width: none;
     }
+    .tabs-container::-webkit-scrollbar { display: none; }
 
     .tab-btn {
       padding: 8px 24px;
@@ -124,6 +130,7 @@
       color: var(--text-sub);
       cursor: pointer;
       transition: all 0.3s ease;
+      flex-shrink: 0; /* Don't squash buttons */
     }
 
     .tab-btn.active {
@@ -136,6 +143,7 @@
     .top-icons {
       display: flex;
       gap: 12px;
+      flex-shrink: 0;
     }
 
     .icon-circle {
@@ -519,6 +527,7 @@
         <div class="tabs-container">
             <button class="tab-btn active" id="tab-songs" onclick="switchTab('all')">Songs</button>
             <button class="tab-btn" id="tab-playlists" onclick="switchTab('playlists')">Playlists</button>
+            <button class="tab-btn" id="tab-artists" onclick="switchTab('artists')">Artists</button>
         </div>
         <div class="song-count-badge" id="totalSongsCount">0 Songs</div>
       </div>
@@ -716,6 +725,7 @@
     let isLoop = false;
     let currentTab = 'all'; 
     let viewingPlaylistId = null;
+    let viewingArtistName = null;
     let menuTargetFile = null; 
     let playlistActionMode = 'create'; // 'create' or 'rename'
 
@@ -788,6 +798,32 @@
                 renderTracks(plTracks);
             }
         }
+        
+        // 4. ARTISTS VIEW (New)
+        else if (currentTab === 'artists') {
+            renderArtistsView();
+        }
+
+        // 5. SINGLE ARTIST VIEW (New)
+        else if (currentTab === 'single_artist') {
+            const artistTracks = getArtistTracks(viewingArtistName);
+            totalCountEl.textContent = `${artistTracks.length} Songs`;
+            
+            // Header
+            const header = document.createElement('div');
+            header.className = 'playlist-header-card';
+            header.innerHTML = `
+                <div class="playlist-info">
+                    <h2>${viewingArtistName}</h2>
+                    <p>${artistTracks.length} Tracks • Artist Collection</p>
+                </div>
+                <div class="playlist-actions">
+                     <!-- Could add specific artist actions here -->
+                </div>
+            `;
+            container.appendChild(header);
+            renderTracks(artistTracks);
+        }
 
         // Add Spacer for Bottom Player
         const spacer = document.createElement('div');
@@ -859,14 +895,65 @@
         });
     }
 
+    function renderArtistsView() {
+        // Group songs by artist
+        const artistMap = {};
+        allFiles.forEach(file => {
+            const name = file.cleanArtist;
+            // You can decide if you want to include "UNKNOWN"
+            if (name === "UNKNOWN") return; 
+
+            if (!artistMap[name]) artistMap[name] = 0;
+            artistMap[name]++;
+        });
+
+        // Convert to array and Filter: Must have at least 3 songs
+        const artists = Object.keys(artistMap)
+            .map(name => ({ name: name, count: artistMap[name] }))
+            .filter(a => a.count >= 3)
+            .sort((a,b) => a.name.localeCompare(b.name));
+            
+        totalCountEl.textContent = `${artists.length} Artists`;
+
+        if (artists.length === 0) {
+            container.innerHTML = `<div style="text-align:center; margin-top:50px; color:var(--text-sub);">
+                <i class="ri-mic-line" style="font-size: 3rem; opacity:0.3; margin-bottom:10px; display:block"></i>
+                <p>No artists with 3+ songs found</p>
+            </div>`;
+            return;
+        }
+
+        artists.forEach(artist => {
+            const div = document.createElement('div');
+            div.className = 'track-item'; 
+            div.onclick = () => openArtistView(artist.name);
+            div.innerHTML = `
+                <div class="track-icon" style="background:var(--accent-light); color:var(--accent-blue)">
+                    <i class="ri-mic-fill"></i>
+                </div>
+                <div class="track-details">
+                    <div class="track-artist-small">ARTIST</div>
+                    <div class="track-name-large">${artist.name}</div>
+                </div>
+                <div style="font-weight:600; color:var(--text-sub); margin-right:10px;">${artist.count} Songs</div>
+                <i class="ri-arrow-right-s-line" style="color:var(--text-sub)"></i>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function getArtistTracks(name) {
+        return allFiles.filter(f => f.cleanArtist === name);
+    }
+
     // --- LOGIC: CLICK & PLAY ---
     function handleItemClick(file) {
-        // If clicking inside a playlist, we want the queue to be that playlist
-        // If clicking in 'all', queue is all
+        // If clicking inside a playlist/artist view, we want the queue to be that subset
         
         let newQueue = [];
         if (currentTab === 'all') newQueue = [...displayedFiles];
         else if (currentTab === 'single_playlist') newQueue = getPlaylistTracks(viewingPlaylistId);
+        else if (currentTab === 'single_artist') newQueue = getArtistTracks(viewingArtistName);
         
         // Find index in the NEW queue
         const idx = newQueue.findIndex(f => f.public_id === file.public_id);
@@ -1072,8 +1159,9 @@
         currentTab = tab;
         document.getElementById('tab-songs').className = (tab === 'all') ? 'tab-btn active' : 'tab-btn';
         document.getElementById('tab-playlists').className = (tab === 'playlists' || tab === 'single_playlist') ? 'tab-btn active' : 'tab-btn';
+        document.getElementById('tab-artists').className = (tab === 'artists' || tab === 'single_artist') ? 'tab-btn active' : 'tab-btn';
         
-        if (tab === 'all' || tab === 'playlists') {
+        if (tab === 'all' || tab === 'playlists' || tab === 'artists') {
             menuTargetFile = null; // Clear context
         }
         
@@ -1084,6 +1172,12 @@
         viewingPlaylistId = id;
         currentTab = 'single_playlist';
         renderList(); 
+    }
+
+    function openArtistView(name) {
+        viewingArtistName = name;
+        currentTab = 'single_artist';
+        renderList();
     }
 
     function filterSongs() {
