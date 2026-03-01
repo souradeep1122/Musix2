@@ -61,6 +61,29 @@
         .view{display:none;padding:16px}
         .view.active{display:block}
 
+        /* GRID FOR ARTISTS */
+        .artist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .artist-card {
+            text-align: center;
+            cursor: pointer;
+        }
+        .artist-thumb {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 8px;
+            background: var(--s2);
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .artist-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .artist-name { font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
         /* LIST ITEMS */
         .tl-item{display:flex;align-items:center;gap:14px;padding:10px 0;cursor:pointer;border-radius:8px;transition:0.12s}
         .tl-item:active{background:rgba(255,255,255,0.05);transform:scale(0.98)}
@@ -195,6 +218,13 @@
             <!-- HOME VIEW -->
             <div class="view active" id="view-home">
                 <h2 style="margin:8px 0 20px; font-size:24px; font-weight:800;">Good evening 👋</h2>
+                
+                <div id="artist-album-section" style="display:none;">
+                    <h3 style="font-size:18px; font-weight:700; color:var(--text2); margin-bottom:14px; text-transform:uppercase; letter-spacing:1px;">Artist Collections</h3>
+                    <div class="artist-grid" id="artist-grid"></div>
+                </div>
+
+                <h3 style="font-size:18px; font-weight:700; color:var(--text2); margin-bottom:14px; text-transform:uppercase; letter-spacing:1px;">Recents</h3>
                 <div id="home-list"></div>
                 <div id="home-visitor-footer" class="visitor-footer"></div>
             </div>
@@ -222,6 +252,16 @@
                     <p id="pl-meta" style="color:var(--text2); font-size:14px; font-weight:600; margin-top:5px;">0 songs</p>
                 </div>
                 <div id="pl-list"></div>
+            </div>
+
+             <!-- ARTIST DETAIL VIEW -->
+             <div class="view" id="view-artist-detail">
+                <div id="ad-hdr" style="margin-bottom:24px; text-align:center;">
+                    <div id="ad-thumb" style="width:140px; height:140px; background:var(--s2); border-radius:50%; margin:0 auto 15px; overflow:hidden; box-shadow:0 15px 40px rgba(0,0,0,0.5);"></div>
+                    <h2 id="ad-name" style="font-size:28px; font-weight:800;">Artist Name</h2>
+                    <p id="ad-meta" style="color:var(--text2); font-size:14px; font-weight:600; margin-top:5px;">Collection</p>
+                </div>
+                <div id="ad-list"></div>
             </div>
         </section>
 
@@ -307,7 +347,6 @@
 
 <script>
     // --- DATA & METADATA PARSER ---
-    // Note: rawFiles and visitCount should be injected by the server
     const rawFiles = <%- typeof files !== 'undefined' ? JSON.stringify(files) : '[]' %>;
     const visitCount = <%= typeof visitorCount !== 'undefined' ? visitorCount : '0' %>;
 
@@ -330,10 +369,30 @@
 
     const allSongs = rawFiles.map((f, i) => {
         const meta = parseMetadata(f.originalname);
-        // Using public_id as a seed for the random image
-        const imgUrl = `https://picsum.photos/seed/${f.public_id || i}/200`;
+        // Using distinct seeds for diverse random images
+        // We use a mix of Nature, People, and Abstract to vary visuals
+        const categories = ['nature', 'people', 'abstract', 'technics', 'nightlife'];
+        const cat = categories[i % categories.length];
+        const imgUrl = `https://picsum.photos/seed/${f.public_id || i}_${cat}/300`;
+        
         return { ...f, title: meta.title, artist: meta.artist, imgUrl };
     }).sort((a,b) => a.title.localeCompare(b.title));
+
+    // Grouping Artists automatically if > 3 songs
+    const artistMap = {};
+    allSongs.forEach(s => {
+        if (!artistMap[s.artist]) artistMap[s.artist] = [];
+        artistMap[s.artist].push(s);
+    });
+
+    const artistAlbums = Object.entries(artistMap)
+        .filter(([name, tracks]) => tracks.length >= 3 && name !== "Unknown Artist")
+        .map(([name, tracks]) => ({
+            name,
+            tracks,
+            id: 'artist_' + btoa(name).substring(0, 10),
+            imgUrl: tracks[0].imgUrl
+        }));
 
     // --- STATE ---
     const S = {
@@ -346,6 +405,7 @@
         playlists: JSON.parse(localStorage.getItem('auraPlaylists')) || [],
         tab: 'home',
         activePlId: null,
+        activeArtistId: null,
         targetSongId: null
     };
 
@@ -355,12 +415,14 @@
     function nav(name) {
         S.tab = name;
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.getElementById('view-' + name).classList.add('active');
+        const targetView = document.getElementById('view-' + name);
+        if (targetView) targetView.classList.add('active');
+        
         document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.onclick.toString().includes(`'${name}'`)));
         document.querySelectorAll('.sd-btn').forEach(b => b.classList.toggle('active', b.onclick.toString().includes(`'${name}'`)));
         
-        const displayTitle = name.charAt(0).toUpperCase() + name.slice(1);
-        document.getElementById('tb-title').textContent = displayTitle;
+        const displayTitle = name.split('-')[0];
+        document.getElementById('tb-title').textContent = displayTitle.charAt(0).toUpperCase() + displayTitle.slice(1);
         render();
     }
 
@@ -369,21 +431,40 @@
         nav('playlist');
     }
 
+    function openArtistDetail(id) {
+        S.activeArtistId = id;
+        nav('artist-detail');
+    }
+
     // --- CORE RENDERING ---
     function render() {
-        // Update track count at top
         document.getElementById('tb-count').textContent = `${allSongs.length} Tracks`;
         
         if (S.tab === 'home') renderHome();
         if (S.tab === 'search') renderSearch();
         if (S.tab === 'library') renderLibrary();
         if (S.tab === 'playlist') renderPlaylistView();
+        if (S.tab === 'artist-detail') renderArtistDetailView();
         renderSidebarPlaylists();
     }
 
     function renderHome() {
         const list = document.getElementById('home-list');
-        list.innerHTML = allSongs.slice(0, 50).map(s => tlHTML(s)).join('');
+        list.innerHTML = allSongs.slice(0, 20).map(s => tlHTML(s)).join('');
+        
+        // Artist Album Section
+        const artistSection = document.getElementById('artist-album-section');
+        const grid = document.getElementById('artist-grid');
+        if (artistAlbums.length > 0) {
+            artistSection.style.display = 'block';
+            grid.innerHTML = artistAlbums.map(aa => `
+                <div class="artist-card" onclick="openArtistDetail('${aa.id}')">
+                    <div class="artist-thumb"><img src="${aa.imgUrl}" loading="lazy"></div>
+                    <div class="artist-name">${aa.name}</div>
+                </div>
+            `).join('');
+        }
+
         document.getElementById('home-visitor-footer').textContent = `Total Visits: ${visitCount}`;
     }
 
@@ -438,6 +519,16 @@
         document.getElementById('pl-list').innerHTML = songs.map(s => tlHTML(s)).join('');
     }
 
+    function renderArtistDetailView() {
+        const aa = artistAlbums.find(a => a.id === S.activeArtistId);
+        if (!aa) return nav('home');
+
+        document.getElementById('ad-name').textContent = aa.name;
+        document.getElementById('ad-meta').textContent = `${aa.tracks.length} songs in Collection`;
+        document.getElementById('ad-thumb').innerHTML = `<img src="${aa.imgUrl}" style="width:100%; height:100%; object-fit:cover;">`;
+        document.getElementById('ad-list').innerHTML = aa.tracks.map(s => tlHTML(s)).join('');
+    }
+
     function renderSidebarPlaylists() {
         const el = document.getElementById('sd-pl-list');
         el.innerHTML = S.playlists.map(pl => `
@@ -449,10 +540,11 @@
 
     function tlHTML(s) {
         const active = S.queue[S.idx]?.public_id === s.public_id;
+        const fallback = "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=200&auto=format&fit=crop";
         return `
             <div class="tl-item" onclick="playSong('${s.public_id}')">
                 <div class="tl-thumb">
-                    <img src="${s.imgUrl}" alt="art" onerror="this.innerHTML='🎶'; this.tagName='DIV';">
+                    <img src="${s.imgUrl}" alt="art" onerror="this.src='${fallback}'">
                 </div>
                 <div class="tl-info">
                     <div class="tl-name ${active ? 'active' : ''}">${s.title}</div>
@@ -481,7 +573,7 @@
         
         document.getElementById('mini-player').classList.add('show');
         updateUI();
-        render(); // Refresh list to show active color
+        render();
     }
 
     function togglePlay(e) {
@@ -516,8 +608,9 @@
         document.getElementById('fp-title').textContent = track.title;
         document.getElementById('fp-artist').textContent = track.artist;
         
-        document.getElementById('mp-thumb-container').innerHTML = `<img src="${track.imgUrl}" style="width:100%; height:100%; object-fit:cover;">`;
-        document.getElementById('fp-art').innerHTML = `<img src="${track.imgUrl}" alt="art">`;
+        const fallback = "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=200&auto=format&fit=crop";
+        document.getElementById('mp-thumb-container').innerHTML = `<img src="${track.imgUrl}" onerror="this.src='${fallback}'" style="width:100%; height:100%; object-fit:cover;">`;
+        document.getElementById('fp-art').innerHTML = `<img src="${track.imgUrl}" onerror="this.src='${fallback}'" alt="art">`;
 
         const liked = S.liked.has(track.public_id);
         document.getElementById('fp-like-btn').innerHTML = liked ? '<i class="ri-heart-fill" style="color:var(--green)"></i>' : '<i class="ri-heart-line"></i>';
@@ -595,13 +688,14 @@
         const sheet = document.getElementById('sheet');
         const body = document.getElementById('sheet-body');
         
+        const fallback = "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=200&auto=format&fit=crop";
         body.innerHTML = `
             <div class="sheet-track">
-                <div class="st-thumb"><img src="${song.imgUrl}"></div>
+                <div class="st-thumb"><img src="${song.imgUrl}" onerror="this.src='${fallback}'"></div>
                 <div><div style="font-weight:700;">${song.title}</div><div style="color:var(--text2); font-size:13px;">${song.artist}</div></div>
             </div>
             <div class="sheet-item" onclick="addToPlaylistMenu()"><i class="ri-folder-add-line"></i> Add to Playlist</div>
-            <div class="sheet-item" style="color:#ff6b6b"><i class="ri-delete-bin-line"></i> Delete File</div>
+            <!-- Delete option removed per user request -->
         `;
         
         document.getElementById('sheet-bg').style.display = 'block';
