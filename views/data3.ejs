@@ -25,7 +25,7 @@
 
         #app{display:flex;height:100dvh;overflow:hidden;position:relative}
 
-        /* SIDEBAR */
+        /* SIDEBAR (Desktop) */
         #sidebar{
             width:260px;background:#000;border-right:1px solid var(--border);
             display:none;flex-direction:column;height:100dvh;flex-shrink:0;
@@ -48,7 +48,7 @@
         .sd-pl-wrap{flex:1;overflow-y:auto;padding:8px;min-height:0}
         .sd-section-lbl{font-size:11px;font-weight:700;letter-spacing:1.2px;color:var(--text3);text-transform:uppercase;padding:16px 14px 8px}
         
-        /* MAIN */
+        /* MAIN CONTENT */
         #main-col{display:flex;flex-direction:column;flex:1;overflow:hidden;min-width:0;position:relative}
         #topbar{height:var(--topbar-h);background:rgba(18,18,18,0.8);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:10}
         .tb-title-group{display:flex; flex-direction:column;}
@@ -61,7 +61,7 @@
         .view{display:none;padding:16px}
         .view.active{display:block}
 
-        /* GRID FOR ARTISTS */
+        /* ARTIST GRID */
         .artist-grid {
             display: flex;
             gap: 16px;
@@ -76,8 +76,8 @@
             cursor: pointer;
         }
         .artist-thumb {
-            width: 100px;
-            height: 100px;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
             margin: 0 auto 10px;
             background: var(--s2);
@@ -86,7 +86,7 @@
             border: 2px solid var(--border);
         }
         .artist-thumb img { width: 100%; height: 100%; object-fit: cover; }
-        .artist-name { font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 5px;}
+        .artist-name { font-size: 12px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 5px;}
 
         /* LIST ITEMS */
         .tl-item{display:flex;align-items:center;gap:14px;padding:10px 0;cursor:pointer;border-radius:8px;transition:0.12s}
@@ -110,7 +110,7 @@
         .mp-prog{position:absolute;bottom:0;left:12px;right:12px;height:2px;background:rgba(255,255,255,0.1);border-radius:1px}
         .mp-fill{height:100%;background:var(--text);border-radius:1px;width:0%}
 
-        /* FULL PLAYER SCREEN */
+        /* FULL PLAYER */
         #full-player{
             position:fixed;inset:0;background:linear-gradient(180deg,#333 0%,#121212 100%);
             z-index:100;display:flex;flex-direction:column;transform:translateY(100%);
@@ -142,7 +142,7 @@
         .nav-item i{font-size:24px}
         .nav-item span{font-size:10px}
 
-        /* MODALS */
+        /* OVERLAYS */
         .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
         .modal{background:var(--s2);border-radius:16px;padding:24px;width:100%;max-width:340px;text-align:center}
         .modal input{width:100%;background:var(--s3);border:1px solid var(--border);border-radius:8px;padding:12px;color:#fff;margin:16px 0;font-size:16px}
@@ -151,7 +151,6 @@
         .m-btn.primary{background:var(--green);color:#000}
         .m-btn.secondary{background:var(--s3);color:#fff}
 
-        /* BOTTOM SHEET */
         .sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:210;display:none}
         .sheet{position:fixed;bottom:0;left:0;right:0;background:#282828;border-radius:16px 16px 0 0;z-index:220;transform:translateY(100%);transition:0.3s ease;padding:10px 0 calc(20px + var(--sib))}
         .sheet.open{transform:translateY(0)}
@@ -170,7 +169,7 @@
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             opacity: 0.8;
         }
     </style>
@@ -193,7 +192,7 @@
         <button class="sd-btn" onclick="openModal('playlist')"><i class="ri-add-box-fill"></i> Create New</button>
     </aside>
 
-    <!-- MAIN -->
+    <!-- MAIN COLUMN -->
     <main id="main-col">
         <header id="topbar">
             <div class="tb-title-group">
@@ -218,7 +217,7 @@
                     <div class="artist-grid" id="artist-grid"></div>
                 </div>
 
-                <h3 style="font-size:16px; font-weight:700; color:var(--text2); margin-bottom:14px; text-transform:uppercase; letter-spacing:1.5px;">Recent Songs</h3>
+                <h3 style="font-size:16px; font-weight:700; color:var(--text2); margin-bottom:14px; text-transform:uppercase; letter-spacing:1.5px;">Recently Updated</h3>
                 <div id="home-list"></div>
                 <div id="home-visitor-footer" class="visitor-footer"></div>
             </div>
@@ -280,7 +279,7 @@
     </main>
 </div>
 
-<!-- FULL PLAYER -->
+<!-- FULL PLAYER SCREEN -->
 <div id="full-player">
     <div class="fp-hdr">
         <button class="ico-btn" onclick="closeFullPlayer()"><i class="ri-arrow-down-s-line" style="font-size:30px;"></i></button>
@@ -365,49 +364,70 @@
     const rawFilesFromEnv = <%- typeof files !== 'undefined' ? JSON.stringify(files) : '[]' %>;
     const visitCount = <%= typeof visitorCount !== 'undefined' ? visitorCount : '0' %>;
 
+    // Fixed Visual Assets to avoid "Mess"
+    const CARD_IMAGES = [
+        "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop", // Music Desk
+        "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=400&auto=format&fit=crop", // Concert
+        "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400&auto=format&fit=crop", // Headphones
+        "https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=400&auto=format&fit=crop"  // Crowd
+    ];
+
     // --- DATA PROCESSING ---
-    function processTrackString(str) {
+    function cleanMetadata(str) {
         if (!str) return { title: "Unknown", artist: "Various" };
-        let parts = str.split(' — ');
-        if (parts.length === 2) return { title: parts[0].trim(), artist: parts[1].trim() };
-        parts = str.split(' - ');
-        if (parts.length === 2) return { title: parts[1].trim(), artist: parts[0].trim() };
-        return { title: str.trim(), artist: "Unknown" };
+        // Handle common formats
+        let title = "", artist = "";
+        if (str.includes(' — ')) {
+            const parts = str.split(' — ');
+            title = parts[0].trim();
+            artist = parts[1].trim();
+        } else if (str.includes(' - ')) {
+            const parts = str.split(' - ');
+            // Try to guess if Artist is first
+            artist = parts[0].trim();
+            title = parts[1].trim();
+        } else {
+            title = str.trim();
+            artist = "Aura Artist";
+        }
+        return { title, artist };
     }
 
     const allSongs = [];
     
-    // 1. Process Raw Files (Uploaded)
-    rawFilesFromEnv.forEach(f => {
-        const meta = processTrackString(f.originalname.replace(/\.[^.]+$/, ''));
-        const public_id = f.public_id;
+    // Process Inputs
+    const sourceData = rawFilesFromEnv.length > 0 ? rawFilesFromEnv : RAW_MUSIC_DATA;
+
+    sourceData.forEach((item, i) => {
+        let meta;
+        let public_id, url;
+
+        if (typeof item === 'string') {
+            meta = cleanMetadata(item);
+            public_id = 'sample_' + i;
+            url = "#";
+        } else {
+            meta = cleanMetadata(item.originalname.replace(/\.[^.]+$/, ''));
+            public_id = item.public_id;
+            url = item.url;
+        }
+
+        // Assign one of the 4 rotating images
+        const imgUrl = CARD_IMAGES[i % CARD_IMAGES.length];
+        // Generate a Demo Icon for the artist
+        const artistImgUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(meta.artist)}&backgroundColor=1db954&fontSize=40`;
+        
         allSongs.push({
-            ...f,
             title: meta.title,
             artist: meta.artist,
             public_id,
-            imgUrl: `https://picsum.photos/seed/${public_id}/400`,
-            artistImgUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(meta.artist)}&backgroundColor=1db954`
+            url,
+            imgUrl,
+            artistImgUrl
         });
     });
 
-    // 2. Process Sample Tracks (if library is empty or as filler)
-    if (allSongs.length === 0) {
-        RAW_MUSIC_DATA.forEach((s, i) => {
-            const meta = processTrackString(s);
-            const id = 'sample_' + i;
-            allSongs.push({
-                title: meta.title,
-                artist: meta.artist,
-                public_id: id,
-                url: "#",
-                imgUrl: `https://picsum.photos/seed/${id}/400`,
-                artistImgUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(meta.artist)}&backgroundColor=1db954`
-            });
-        });
-    }
-
-    // Artist Grouping
+    // Auto-Group Artist Albums (if name appears >= 2 times as requested)
     const artistMap = {};
     allSongs.forEach(s => {
         if (!artistMap[s.artist]) artistMap[s.artist] = [];
@@ -415,11 +435,11 @@
     });
 
     const artistAlbums = Object.entries(artistMap)
-        .filter(([name, tracks]) => tracks.length >= 3)
+        .filter(([name, tracks]) => tracks.length >= 2 && name !== "Unknown")
         .map(([name, tracks]) => ({
             name,
             tracks,
-            id: 'artist_' + btoa(name).substring(0, 10),
+            id: 'artist_' + btoa(name).substring(0, 8),
             imgUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}&backgroundColor=1db954`
         }));
 
@@ -440,25 +460,27 @@
 
     const aud = document.getElementById('aud');
 
-    // --- LOGIC ---
+    // --- NAVIGATION ---
     function nav(name) {
         S.tab = name;
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        const v = document.getElementById('view-' + name);
-        if (v) v.classList.add('active');
+        const targetView = document.getElementById('view-' + name);
+        if (targetView) targetView.classList.add('active');
         
-        document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.onclick.toString().includes(`'${name}'`)));
-        document.querySelectorAll('.sd-btn').forEach(b => b.classList.toggle('active', b.onclick.toString().includes(`'${name}'`)));
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.getAttribute('onclick')?.includes(`'${name}'`)));
+        document.querySelectorAll('.sd-btn').forEach(b => b.classList.toggle('active', b.getAttribute('onclick')?.includes(`'${name}'`)));
         
-        document.getElementById('tb-title').textContent = name.charAt(0).toUpperCase() + name.slice(1);
+        document.getElementById('tb-title').textContent = name.split('-')[0].charAt(0).toUpperCase() + name.split('-')[0].slice(1);
         render();
     }
 
     function openPlaylist(id) { S.activePlId = id; nav('playlist'); }
     function openArtistDetail(id) { S.activeArtistId = id; nav('artist-detail'); }
 
+    // --- RENDERING ---
     function render() {
         document.getElementById('tb-count').textContent = `${allSongs.length} Tracks`;
+        
         if (S.tab === 'home') renderHome();
         if (S.tab === 'search') renderSearch();
         if (S.tab === 'library') renderLibrary();
@@ -485,13 +507,15 @@
         document.getElementById('home-visitor-footer').textContent = `Total Visits: ${visitCount}`;
     }
 
-    function renderSearch() { filterSongs(); }
+    function renderSearch() {
+        filterSongs();
+    }
 
     function filterSongs() {
         const q = document.getElementById('search-inp').value.toLowerCase();
         const list = document.getElementById('search-list');
-        const res = allSongs.filter(s => s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q));
-        list.innerHTML = res.map(s => tlHTML(s)).join('');
+        const results = allSongs.filter(s => s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q));
+        list.innerHTML = results.map(s => tlHTML(s)).join('');
     }
 
     function renderLibrary() {
@@ -502,28 +526,33 @@
                 <div class="tl-info"><div class="tl-name">Liked Songs</div><div class="tl-artist">Playlist • ${S.liked.size} tracks</div></div>
             </div>
         `;
+        // Playlists
         html += S.playlists.map(pl => `
             <div class="tl-item" onclick="openPlaylist('${pl.id}')">
                 <div class="tl-thumb" style="background:var(--s3); color:var(--text2);"><i class="ri-play-list-2-line"></i></div>
                 <div class="tl-info"><div class="tl-name">${pl.name}</div><div class="tl-artist">Playlist • ${pl.tracks.length} tracks</div></div>
             </div>
         `).join('');
+        // Artists
         html += artistAlbums.map(aa => `
             <div class="tl-item" onclick="openArtistDetail('${aa.id}')">
                 <div class="tl-thumb" style="border-radius: 50%;"><img src="${aa.imgUrl}"></div>
                 <div class="tl-info"><div class="tl-name">${aa.name}</div><div class="tl-artist">Artist Collection</div></div>
             </div>
         `).join('');
+        
         list.innerHTML = html;
     }
 
     function renderPlaylistView() {
         const pl = S.activePlId === 'liked' 
-            ? { name: 'Liked Songs', tracks: Array.from(S.liked), thumbIcon: "ri-heart-fill", thumbBg: "linear-gradient(135deg, #450af5, #c4efd9)" }
+            ? { name: 'Liked Songs', tracks: Array.from(S.liked) }
             : S.playlists.find(p => p.id == S.activePlId);
+        
         if (!pl) return nav('library');
         document.getElementById('pl-name').textContent = pl.name;
         document.getElementById('pl-meta').textContent = `${pl.tracks.length} songs`;
+        
         const songs = pl.tracks.map(id => allSongs.find(s => s.public_id === id)).filter(Boolean);
         document.getElementById('pl-list').innerHTML = songs.map(s => tlHTML(s)).join('');
     }
@@ -532,7 +561,7 @@
         const aa = artistAlbums.find(a => a.id === S.activeArtistId);
         if (!aa) return nav('home');
         document.getElementById('ad-name').textContent = aa.name;
-        document.getElementById('ad-meta').textContent = `${aa.tracks.length} tracks in Collection`;
+        document.getElementById('ad-meta').textContent = `${aa.tracks.length} tracks found`;
         document.getElementById('ad-thumb').innerHTML = `<img src="${aa.imgUrl}" style="width:100%; height:100%; object-fit:cover;">`;
         document.getElementById('ad-list').innerHTML = aa.tracks.map(s => tlHTML(s)).join('');
     }
@@ -560,6 +589,7 @@
         `;
     }
 
+    // --- PLAYER LOGIC ---
     function playSong(id) {
         const index = S.queue.findIndex(s => s.public_id === id);
         if (index === -1) {
@@ -567,10 +597,12 @@
             S.queue = [s, ...allSongs.filter(x => x.public_id !== id)];
             S.idx = 0;
         } else { S.idx = index; }
+        
         const track = S.queue[S.idx];
-        if (track.url !== "#") aud.src = track.url; 
+        if (track.url !== "#") aud.src = track.url;
         aud.play().catch(() => {});
         S.playing = true;
+        
         document.getElementById('mini-player').classList.add('show');
         updateUI();
         render();
@@ -632,6 +664,7 @@
     function toggleShuffle() { S.shuffle = !S.shuffle; document.getElementById('fp-shuf').style.color = S.shuffle ? 'var(--green)' : ''; }
     function toggleLoop() { S.loop = !S.loop; document.getElementById('fp-loop').style.color = S.loop ? 'var(--green)' : ''; }
 
+    // --- MODALS ---
     function openModal(type, songId) { document.getElementById('modal-bg').style.display = 'flex'; S.targetSongId = songId; }
     function closeModal() { document.getElementById('modal-bg').style.display = 'none'; }
     function confirmModal() {
@@ -693,6 +726,7 @@
     function openFullPlayer() { document.getElementById('full-player').classList.add('open'); }
     function closeFullPlayer() { document.getElementById('full-player').classList.remove('open'); }
 
+    // Init
     nav('home');
 </script>
 </body>
