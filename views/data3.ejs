@@ -376,26 +376,35 @@
     function cleanMetadata(str) {
         if (!str) return { title: "Unknown", artist: "Aura Artist" };
         
-        // 1. Remove Underscores first
-        let name = str.replace(/_/g, ' ');
-
-        // 2. Remove bitrates like (256k), (128kbps), (HQ), (Official Video), etc.
-        name = name.replace(/\s*[(\[][^)\]]*(official|video|lyrics|audio|kbps|\d+k|www\.|@)[^)\]]*[)\]]/gi, '');
+        let name = str;
         
-        // 3. Clean up common YouTube artifacts and extra whitespace
+        // 1. Strip out website patterns in parentheses like (PagalWorldi.com.co)
+        name = name.replace(/\(.*?\)/g, '');
+
+        // 2. Handle specific complex separators like "-Mp3-Song-by-" or "-by-"
+        name = name.replace(/-Mp3-Song-by-/gi, ' by ');
+        name = name.replace(/Mp3-Song-by-/gi, ' by ');
+        name = name.replace(/-by-/gi, ' by ');
+        name = name.replace(/Mp3 Song by/gi, ' by ');
+
+        // 3. Replace all remaining underscores and dashes with spaces
+        name = name.replace(/[_-]/g, ' ');
+
+        // 4. Remove bitrates and other unwanted artifacts
+        name = name.replace(/\s*[(\[][^)\]]*(official|video|lyrics|audio|kbps|\d+k|www\.|@|hq|com|co)[^)\]]*[)\]]/gi, '');
+        
+        // 5. Cleanup extra whitespace
         name = name.replace(/\s+/g, ' ').trim();
 
-        let title = "", artist = "";
+        let title = "", artist = "Aura Artist";
         
-        // Try multiple splitters
-        const separators = [' — ', ' - ', ' -', '- '];
+        // Try multiple splitters to find Artist
+        const separators = [/ by /i, / — /, / - /];
         let found = false;
         
         for (let sep of separators) {
-            if (name.includes(sep)) {
+            if (name.match(sep)) {
                 const parts = name.split(sep);
-                // Usually "Title - Artist" or "Artist - Title"
-                // For Aura files, we'll try to keep the first part as Title unless it's a known singer
                 title = parts[0].trim();
                 artist = parts[1].trim();
                 found = true;
@@ -405,7 +414,6 @@
 
         if (!found) {
             title = name;
-            artist = "Aura Artist";
         }
         
         return { title, artist };
