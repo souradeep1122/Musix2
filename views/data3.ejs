@@ -110,7 +110,7 @@
         .mp-prog{position:absolute;bottom:0;left:12px;right:12px;height:2px;background:rgba(255,255,255,0.1);border-radius:1px}
         .mp-fill{height:100%;background:var(--text);border-radius:1px;width:0%}
 
-        /* FULL PLAYER */
+        /* FULL PLAYER SCREEN */
         #full-player{
             position:fixed;inset:0;background:linear-gradient(180deg,#333 0%,#121212 100%);
             z-index:100;display:flex;flex-direction:column;transform:translateY(100%);
@@ -176,7 +176,7 @@
 </head>
 <body>
 <div id="app">
-    <!-- SIDEBAR (Desktop) -->
+    <!-- SIDEBAR -->
     <aside id="sidebar">
         <div class="sd-logo">
             <div class="sd-logo-mark"><i class="ri-music-fill"></i></div>
@@ -192,7 +192,7 @@
         <button class="sd-btn" onclick="openModal('playlist')"><i class="ri-add-box-fill"></i> Create New</button>
     </aside>
 
-    <!-- MAIN COLUMN -->
+    <!-- MAIN -->
     <main id="main-col">
         <header id="topbar">
             <div class="tb-title-group">
@@ -217,7 +217,7 @@
                     <div class="artist-grid" id="artist-grid"></div>
                 </div>
 
-                <h3 style="font-size:16px; font-weight:700; color:var(--text2); margin-bottom:14px; text-transform:uppercase; letter-spacing:1.5px;">Recently Updated</h3>
+                <h3 style="font-size:16px; font-weight:700; color:var(--text2); margin-bottom:14px; text-transform:uppercase; letter-spacing:1.5px;">Recent Songs</h3>
                 <div id="home-list"></div>
                 <div id="home-visitor-footer" class="visitor-footer"></div>
             </div>
@@ -364,38 +364,54 @@
     const rawFilesFromEnv = <%- typeof files !== 'undefined' ? JSON.stringify(files) : '[]' %>;
     const visitCount = <%= typeof visitorCount !== 'undefined' ? visitorCount : '0' %>;
 
-    // Fixed Visual Assets to avoid "Mess"
+    // Visual Assets
     const CARD_IMAGES = [
-        "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop", // Music Desk
-        "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=400&auto=format&fit=crop", // Concert
-        "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400&auto=format&fit=crop", // Headphones
-        "https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=400&auto=format&fit=crop"  // Crowd
+        "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=400&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=400&auto=format&fit=crop"
     ];
 
-    // --- DATA PROCESSING ---
+    // --- CLEANING LOGIC ---
     function cleanMetadata(str) {
-        if (!str) return { title: "Unknown", artist: "Various" };
-        // Handle common formats
+        if (!str) return { title: "Unknown", artist: "Aura Artist" };
+        
+        // 1. Remove Underscores first
+        let name = str.replace(/_/g, ' ');
+
+        // 2. Remove bitrates like (256k), (128kbps), (HQ), (Official Video), etc.
+        name = name.replace(/\s*[(\[][^)\]]*(official|video|lyrics|audio|kbps|\d+k|www\.|@)[^)\]]*[)\]]/gi, '');
+        
+        // 3. Clean up common YouTube artifacts and extra whitespace
+        name = name.replace(/\s+/g, ' ').trim();
+
         let title = "", artist = "";
-        if (str.includes(' — ')) {
-            const parts = str.split(' — ');
-            title = parts[0].trim();
-            artist = parts[1].trim();
-        } else if (str.includes(' - ')) {
-            const parts = str.split(' - ');
-            // Try to guess if Artist is first
-            artist = parts[0].trim();
-            title = parts[1].trim();
-        } else {
-            title = str.trim();
+        
+        // Try multiple splitters
+        const separators = [' — ', ' - ', ' -', '- '];
+        let found = false;
+        
+        for (let sep of separators) {
+            if (name.includes(sep)) {
+                const parts = name.split(sep);
+                // Usually "Title - Artist" or "Artist - Title"
+                // For Aura files, we'll try to keep the first part as Title unless it's a known singer
+                title = parts[0].trim();
+                artist = parts[1].trim();
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            title = name;
             artist = "Aura Artist";
         }
+        
         return { title, artist };
     }
 
     const allSongs = [];
-    
-    // Process Inputs
     const sourceData = rawFilesFromEnv.length > 0 ? rawFilesFromEnv : RAW_MUSIC_DATA;
 
     sourceData.forEach((item, i) => {
@@ -407,27 +423,23 @@
             public_id = 'sample_' + i;
             url = "#";
         } else {
+            // Clean the original filename
             meta = cleanMetadata(item.originalname.replace(/\.[^.]+$/, ''));
             public_id = item.public_id;
             url = item.url;
         }
 
-        // Assign one of the 4 rotating images
-        const imgUrl = CARD_IMAGES[i % CARD_IMAGES.length];
-        // Generate a Demo Icon for the artist
-        const artistImgUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(meta.artist)}&backgroundColor=1db954&fontSize=40`;
-        
         allSongs.push({
             title: meta.title,
             artist: meta.artist,
             public_id,
             url,
-            imgUrl,
-            artistImgUrl
+            imgUrl: CARD_IMAGES[i % CARD_IMAGES.length],
+            artistImgUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(meta.artist)}&backgroundColor=1db954&fontSize=40`
         });
     });
 
-    // Auto-Group Artist Albums (if name appears >= 2 times as requested)
+    // Auto-Group Artist Albums (appeared >= 2 times)
     const artistMap = {};
     allSongs.forEach(s => {
         if (!artistMap[s.artist]) artistMap[s.artist] = [];
@@ -435,7 +447,7 @@
     });
 
     const artistAlbums = Object.entries(artistMap)
-        .filter(([name, tracks]) => tracks.length >= 2 && name !== "Unknown")
+        .filter(([name, tracks]) => tracks.length >= 2 && name !== "Aura Artist")
         .map(([name, tracks]) => ({
             name,
             tracks,
@@ -460,7 +472,7 @@
 
     const aud = document.getElementById('aud');
 
-    // --- NAVIGATION ---
+    // --- NAV ---
     function nav(name) {
         S.tab = name;
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -477,10 +489,9 @@
     function openPlaylist(id) { S.activePlId = id; nav('playlist'); }
     function openArtistDetail(id) { S.activeArtistId = id; nav('artist-detail'); }
 
-    // --- RENDERING ---
+    // --- RENDER ---
     function render() {
         document.getElementById('tb-count').textContent = `${allSongs.length} Tracks`;
-        
         if (S.tab === 'home') renderHome();
         if (S.tab === 'search') renderSearch();
         if (S.tab === 'library') renderLibrary();
@@ -492,7 +503,6 @@
     function renderHome() {
         const list = document.getElementById('home-list');
         list.innerHTML = allSongs.slice(0, 15).map(s => tlHTML(s)).join('');
-        
         const artistSection = document.getElementById('artist-album-section');
         const grid = document.getElementById('artist-grid');
         if (artistAlbums.length > 0) {
@@ -507,10 +517,7 @@
         document.getElementById('home-visitor-footer').textContent = `Total Visits: ${visitCount}`;
     }
 
-    function renderSearch() {
-        filterSongs();
-    }
-
+    function renderSearch() { filterSongs(); }
     function filterSongs() {
         const q = document.getElementById('search-inp').value.toLowerCase();
         const list = document.getElementById('search-list');
@@ -520,39 +527,17 @@
 
     function renderLibrary() {
         const list = document.getElementById('lib-list');
-        let html = `
-            <div class="tl-item" onclick="openPlaylist('liked')">
-                <div class="tl-thumb" style="background:linear-gradient(135deg, #450af5, #c4efd9); color:#fff;"><i class="ri-heart-fill"></i></div>
-                <div class="tl-info"><div class="tl-name">Liked Songs</div><div class="tl-artist">Playlist • ${S.liked.size} tracks</div></div>
-            </div>
-        `;
-        // Playlists
-        html += S.playlists.map(pl => `
-            <div class="tl-item" onclick="openPlaylist('${pl.id}')">
-                <div class="tl-thumb" style="background:var(--s3); color:var(--text2);"><i class="ri-play-list-2-line"></i></div>
-                <div class="tl-info"><div class="tl-name">${pl.name}</div><div class="tl-artist">Playlist • ${pl.tracks.length} tracks</div></div>
-            </div>
-        `).join('');
-        // Artists
-        html += artistAlbums.map(aa => `
-            <div class="tl-item" onclick="openArtistDetail('${aa.id}')">
-                <div class="tl-thumb" style="border-radius: 50%;"><img src="${aa.imgUrl}"></div>
-                <div class="tl-info"><div class="tl-name">${aa.name}</div><div class="tl-artist">Artist Collection</div></div>
-            </div>
-        `).join('');
-        
+        let html = `<div class="tl-item" onclick="openPlaylist('liked')"><div class="tl-thumb" style="background:linear-gradient(135deg, #450af5, #c4efd9); color:#fff;"><i class="ri-heart-fill"></i></div><div class="tl-info"><div class="tl-name">Liked Songs</div><div class="tl-artist">Playlist • ${S.liked.size} tracks</div></div></div>`;
+        html += S.playlists.map(pl => `<div class="tl-item" onclick="openPlaylist('${pl.id}')"><div class="tl-thumb" style="background:var(--s3); color:var(--text2);"><i class="ri-play-list-2-line"></i></div><div class="tl-info"><div class="tl-name">${pl.name}</div><div class="tl-artist">Playlist • ${pl.tracks.length} tracks</div></div></div>`).join('');
+        html += artistAlbums.map(aa => `<div class="tl-item" onclick="openArtistDetail('${aa.id}')"><div class="tl-thumb" style="border-radius: 50%;"><img src="${aa.imgUrl}"></div><div class="tl-info"><div class="tl-name">${aa.name}</div><div class="tl-artist">Artist Collection</div></div></div>`).join('');
         list.innerHTML = html;
     }
 
     function renderPlaylistView() {
-        const pl = S.activePlId === 'liked' 
-            ? { name: 'Liked Songs', tracks: Array.from(S.liked) }
-            : S.playlists.find(p => p.id == S.activePlId);
-        
+        const pl = S.activePlId === 'liked' ? { name: 'Liked Songs', tracks: Array.from(S.liked) } : S.playlists.find(p => p.id == S.activePlId);
         if (!pl) return nav('library');
         document.getElementById('pl-name').textContent = pl.name;
         document.getElementById('pl-meta').textContent = `${pl.tracks.length} songs`;
-        
         const songs = pl.tracks.map(id => allSongs.find(s => s.public_id === id)).filter(Boolean);
         document.getElementById('pl-list').innerHTML = songs.map(s => tlHTML(s)).join('');
     }
@@ -568,28 +553,15 @@
 
     function renderSidebarPlaylists() {
         const el = document.getElementById('sd-pl-list');
-        el.innerHTML = S.playlists.map(pl => `
-            <button class="sd-btn ${S.activePlId == pl.id ? 'active' : ''}" onclick="openPlaylist('${pl.id}')">
-                <i class="ri-music-line"></i> ${pl.name}
-            </button>
-        `).join('');
+        el.innerHTML = S.playlists.map(pl => `<button class="sd-btn ${S.activePlId == pl.id ? 'active' : ''}" onclick="openPlaylist('${pl.id}')"><i class="ri-music-line"></i> ${pl.name}</button>`).join('');
     }
 
     function tlHTML(s) {
         const active = S.queue[S.idx]?.public_id === s.public_id;
-        return `
-            <div class="tl-item" onclick="playSong('${s.public_id}')">
-                <div class="tl-thumb"><img src="${s.imgUrl}" alt="art"></div>
-                <div class="tl-info">
-                    <div class="tl-name ${active ? 'active' : ''}">${s.title}</div>
-                    <div class="tl-artist">${s.artist}</div>
-                </div>
-                <button class="tl-more" onclick="openSheet(event, '${s.public_id}')"><i class="ri-more-2-fill"></i></button>
-            </div>
-        `;
+        return `<div class="tl-item" onclick="playSong('${s.public_id}')"><div class="tl-thumb"><img src="${s.imgUrl}" alt="art"></div><div class="tl-info"><div class="tl-name ${active ? 'active' : ''}">${s.title}</div><div class="tl-artist">${s.artist}</div></div><button class="tl-more" onclick="openSheet(event, '${s.public_id}')"><i class="ri-more-2-fill"></i></button></div>`;
     }
 
-    // --- PLAYER LOGIC ---
+    // --- PLAYER ---
     function playSong(id) {
         const index = S.queue.findIndex(s => s.public_id === id);
         if (index === -1) {
@@ -597,12 +569,10 @@
             S.queue = [s, ...allSongs.filter(x => x.public_id !== id)];
             S.idx = 0;
         } else { S.idx = index; }
-        
         const track = S.queue[S.idx];
         if (track.url !== "#") aud.src = track.url;
         aud.play().catch(() => {});
         S.playing = true;
-        
         document.getElementById('mini-player').classList.add('show');
         updateUI();
         render();
@@ -615,17 +585,8 @@
         updateUI();
     }
 
-    function nextTrack() {
-        if (S.queue.length === 0) return;
-        S.idx = (S.idx + 1) % S.queue.length;
-        playSong(S.queue[S.idx].public_id);
-    }
-
-    function prevTrack() {
-        if (S.queue.length === 0) return;
-        S.idx = (S.idx - 1 + S.queue.length) % S.queue.length;
-        playSong(S.queue[S.idx].public_id);
-    }
+    function nextTrack() { if (S.queue.length > 0) { S.idx = (S.idx + 1) % S.queue.length; playSong(S.queue[S.idx].public_id); } }
+    function prevTrack() { if (S.queue.length > 0) { S.idx = (S.idx - 1 + S.queue.length) % S.queue.length; playSong(S.queue[S.idx].public_id); } }
 
     function updateUI() {
         const track = S.queue[S.idx];
@@ -664,7 +625,6 @@
     function toggleShuffle() { S.shuffle = !S.shuffle; document.getElementById('fp-shuf').style.color = S.shuffle ? 'var(--green)' : ''; }
     function toggleLoop() { S.loop = !S.loop; document.getElementById('fp-loop').style.color = S.loop ? 'var(--green)' : ''; }
 
-    // --- MODALS ---
     function openModal(type, songId) { document.getElementById('modal-bg').style.display = 'flex'; S.targetSongId = songId; }
     function closeModal() { document.getElementById('modal-bg').style.display = 'none'; }
     function confirmModal() {
@@ -686,17 +646,10 @@
     }
 
     function openSheet(e, id) {
-        e.stopPropagation();
-        S.targetSongId = id;
+        e.stopPropagation(); S.targetSongId = id;
         const song = allSongs.find(s => s.public_id === id);
         const body = document.getElementById('sheet-body');
-        body.innerHTML = `
-            <div class="sheet-track">
-                <div class="st-thumb"><img src="${song.imgUrl}"></div>
-                <div><div style="font-weight:700;">${song.title}</div><div style="color:var(--text2); font-size:13px;">${song.artist}</div></div>
-            </div>
-            <div class="sheet-item" onclick="addToPlaylistMenu()"><i class="ri-folder-add-line"></i> Add to Playlist</div>
-        `;
+        body.innerHTML = `<div class="sheet-track"><div class="st-thumb"><img src="${song.imgUrl}"></div><div><div style="font-weight:700;">${song.title}</div><div style="color:var(--text2); font-size:13px;">${song.artist}</div></div></div><div class="sheet-item" onclick="addToPlaylistMenu()"><i class="ri-folder-add-line"></i> Add to Playlist</div>`;
         document.getElementById('sheet-bg').style.display = 'block';
         document.getElementById('sheet').classList.add('open');
     }
@@ -726,7 +679,6 @@
     function openFullPlayer() { document.getElementById('full-player').classList.add('open'); }
     function closeFullPlayer() { document.getElementById('full-player').classList.remove('open'); }
 
-    // Init
     nav('home');
 </script>
 </body>
