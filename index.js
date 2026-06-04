@@ -1,28 +1,38 @@
+const dns = require("dns");
+dns.setDefaultResultOrder("ipv4first");
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
+
 const path = require("path");
 const express = require("express");
 const app = express();
-require("dotenv").config();
-var morgan = require("morgan");
-app.use(morgan("tiny"));
-const Mongo = require("./user"); // Your existing Music Schema
-const Visitor = require("./visitor"); // The new Visitor Schema
 
+require("dotenv").config();
+
+const morgan = require("morgan");
+const mongoose = require("mongoose");
 const multer = require("multer");
+
 const { v2: cloudinary } = require("cloudinary");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
-const mongoose = require("mongoose");
+
+const Mongo = require("./user");
+const Visitor = require("./visitor");
+
+app.use(morgan("tiny"));
 
 // Database Connection
-mongoose.connect("mongodb+srv://souradeep418saha:HGNIErfgHHnMt4r3@aiavengerdb.je1poyy.mongodb.net/?retryWrites=true&w=majority")
+mongoose
+  .connect(process.env.mongo)
   .then(() => console.log("MongoDB Connected"))
-  .catch(err => console.log("DB Connection Error: ", err));
+  .catch((err) => console.log("DB Connection Error:", err));
+
 mongoose.set("strictQuery", false);
 
-// Configure Cloudinary via env or hardcoded (as you provided)
+// Cloudinary Config
 cloudinary.config({
-  cloud_name: "dzcf32qac",
-  api_key: "983461817852631",
-  api_secret: "lKzveCmrBIOTEENfohkMwMVRrd4",
+  cloud_name: process.env.cloud_name,
+  api_key: process.env.api_key,
+  api_secret: process.env.api_secret,
 });
 
 const storage = new CloudinaryStorage({
@@ -42,31 +52,26 @@ const upload = multer({ storage });
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
+
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public"))); // Serve static files if needed
+app.use(express.static(path.join(__dirname, "public")));
 
-// --- ROUTES ---
-
-// Home: List Music + Visitor Tracker
+// Home Route
 app.get("/", async (req, res) => {
   try {
-    // 1. Visitor Tracker Logic
     let visitorData = await Visitor.findOne({ id: "main_counter" });
-    
+
     if (!visitorData) {
-      // Initialize if not exists
       visitorData = new Visitor({ id: "main_counter", count: 1 });
-      await visitorData.save();
     } else {
-      // Increment count
       visitorData.count += 1;
-      await visitorData.save();
     }
 
-    // 2. Fetch Music Files
+    await visitorData.save();
+
     const files2 = await Mongo.find({})
-      .sort({ created_at: -1 }) // Note: Schema says created_at, make sure sorting key matches
+      .sort({ created_at: -1 })
       .limit(200);
 
     const formattedFiles = files2.map((file) => ({
@@ -79,36 +84,29 @@ app.get("/", async (req, res) => {
       duration: file.duration,
     }));
 
-    // 3. Render with both Music List and Visitor Count
-    // Ensure your view file is named 'data3.ejs' inside the 'views' folder
-    res.render("data3", { 
-        files: formattedFiles, 
-        visitorCount: visitorData.count 
+    res.render("data3", {
+      files: formattedFiles,
+      visitorCount: visitorData.count,
     });
-
   } catch (err) {
     console.error("Server Error:", err);
     res.status(500).send("Internal Server Error");
   }
 });
 
-// Handle MP3 upload
+// Upload MP3
 app.post("/upload", upload.single("music_file"), async (req, res) => {
   try {
-    console.log("Successfully Uploaded to Cloudinary");
-
-    // Save metadata to MongoDB
     const musicFile = new Mongo({
       public_id: req.file.filename,
       OriginalName: req.file.originalname,
-      format: req.file.format || "mp3", // Cloudinary might not always send format for raw
+      format: req.file.format || "mp3",
       url: req.file.path,
       bytes: req.file.size,
-      duration: 0, // Duration isn't auto-extracted by raw upload without extra Cloudinary settings, defaulting to 0 or null
+      duration: 0,
     });
 
     await musicFile.save();
-    console.log("Saved to MongoDB");
 
     return res.redirect("/");
   } catch (err) {
@@ -117,21 +115,17 @@ app.post("/upload", upload.single("music_file"), async (req, res) => {
   }
 });
 
-// Delete a track
-app.get("/AllBus/:id", async function (req, res) {
+// Delete Track
+app.get("/AllBus/:id", async (req, res) => {
   try {
     const publicId = req.params.id;
-    const fullId = `music_uploads/${publicId}`; // Construct full public_id if strictly stored that way
 
-    // Delete from Cloudinary
-    await cloudinary.uploader.destroy(fullId, { resource_type: "raw" });
+    await cloudinary.uploader.destroy(publicId, {
+      resource_type: "raw",
+    });
 
-    // Delete from MongoDB
-    await Mongo.deleteOne({ public_id: req.params.id }); // Note: Check if you stored "music_uploads/..." or just filename in DB
-    // If your DB stores "music_uploads/filename", use `fullId`. If just "filename", use `req.params.id`. 
-    // Based on your upload code: `public_id: req.file.filename` usually includes folder.
+    await Mongo.deleteOne({ public_id: publicId });
 
-    console.log("Deleted:", fullId);
     return res.redirect("/");
   } catch (err) {
     console.error("Deletion Error:", err);
@@ -139,9 +133,11 @@ app.get("/AllBus/:id", async function (req, res) {
   }
 });
 
-// Render Upload Page
+// Upload Page
 app.get("/postmp3", (req, res) => {
-  res.render("post"); // Make sure 'views/post.ejs' exists (use the upload.html code there)
+  res.render("post");
 });
 
-app.listen(3000, () => console.log("Server running on port 3000"));
+app.listen(3000, () => {
+  console.log("Server running on port 3000");
+});

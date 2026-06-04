@@ -47,7 +47,7 @@
         .sd-btn:hover,.sd-btn.active{background:var(--s2);color:var(--text)}
         .sd-pl-wrap{flex:1;overflow-y:auto;padding:8px;min-height:0}
         .sd-section-lbl{font-size:11px;font-weight:700;letter-spacing:1.2px;color:var(--text3);text-transform:uppercase;padding:16px 14px 8px}
-        
+
         /* MAIN CONTENT */
         #main-col{display:flex;flex-direction:column;flex:1;overflow:hidden;min-width:0;position:relative}
         #topbar{height:var(--topbar-h);background:rgba(18,18,18,0.8);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:10}
@@ -62,42 +62,34 @@
         .view.active{display:block}
 
         /* ARTIST GRID */
-        .artist-grid {
-            display: flex;
-            gap: 16px;
-            overflow-x: auto;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-        }
-        .artist-card {
-            flex-shrink: 0;
-            width: 110px;
-            text-align: center;
-            cursor: pointer;
-        }
-        .artist-thumb {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            margin: 0 auto 10px;
-            background: var(--s2);
-            overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-            border: 2px solid var(--border);
-        }
-        .artist-thumb img { width: 100%; height: 100%; object-fit: cover; }
-        .artist-name { font-size: 12px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 5px;}
+        .artist-grid{display:flex;gap:16px;overflow-x:auto;padding-bottom:15px;margin-bottom:25px}
+        .artist-card{flex-shrink:0;width:110px;text-align:center;cursor:pointer}
+        .artist-thumb{width:90px;height:90px;border-radius:50%;margin:0 auto 10px;background:var(--s2);overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,0.5);border:2px solid var(--border)}
+        .artist-thumb img{width:100%;height:100%;object-fit:cover}
+        .artist-name{font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 5px}
 
         /* LIST ITEMS */
         .tl-item{display:flex;align-items:center;gap:14px;padding:10px 0;cursor:pointer;border-radius:8px;transition:0.12s}
         .tl-item:active{background:rgba(255,255,255,0.05);transform:scale(0.98)}
-        .tl-thumb{width:56px;height:56px;border-radius:var(--rs);background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--green);flex-shrink:0;position:relative;overflow:hidden;box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
-        .tl-thumb img{width:100%; height:100%; object-fit:cover;}
+        .tl-thumb{width:56px;height:56px;border-radius:var(--rs);background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--green);flex-shrink:0;position:relative;overflow:hidden;box-shadow:0 4px 10px rgba(0,0,0,0.3)}
+        .tl-thumb img{width:100%;height:100%;object-fit:cover}
         .tl-info{flex:1;min-width:0}
         .tl-name{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         .tl-name.active{color:var(--green)}
         .tl-artist{font-size:13px;color:var(--text2);margin-top:2px}
         .tl-more{color:var(--text3);padding:10px}
+
+        /* OFFLINE BADGE on track thumbnail */
+        .offline-badge{
+            position:absolute;bottom:3px;right:3px;
+            background:var(--green);border-radius:50%;
+            width:16px;height:16px;
+            display:flex;align-items:center;justify-content:center;
+            font-size:9px;color:#000;font-weight:900;
+            box-shadow:0 1px 4px rgba(0,0,0,0.5);
+        }
+        .offline-badge.caching{background:#f0a500;animation:pulse 1s infinite;}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
 
         /* MINI PLAYER */
         #mini-player{
@@ -109,6 +101,8 @@
         #mini-player.show{display:flex}
         .mp-prog{position:absolute;bottom:0;left:12px;right:12px;height:2px;background:rgba(255,255,255,0.1);border-radius:1px}
         .mp-fill{height:100%;background:var(--text);border-radius:1px;width:0%}
+        .mp-context{font-size:10px;color:var(--green);font-weight:700;letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;display:none}
+        .mp-context.show{display:block}
 
         /* FULL PLAYER SCREEN */
         #full-player{
@@ -119,8 +113,8 @@
         #full-player.open{transform:translateY(0)}
         .fp-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px}
         .fp-art-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:20px}
-        .fp-art{width:80vw;max-width:320px;aspect-ratio:1;background:var(--s2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:100px;box-shadow:0 20px 50px rgba(0,0,0,0.5); overflow:hidden;}
-        .fp-art img{width:100%; height:100%; object-fit:cover;}
+        .fp-art{width:80vw;max-width:320px;aspect-ratio:1;background:var(--s2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:100px;box-shadow:0 20px 50px rgba(0,0,0,0.5);overflow:hidden}
+        .fp-art img{width:100%;height:100%;object-fit:cover}
         .fp-info{padding:0 30px 20px}
         .fp-title{font-size:24px;font-weight:800;margin-bottom:4px}
         .fp-artist{font-size:16px;color:var(--text2);font-weight:500}
@@ -130,6 +124,22 @@
         .fp-time{display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--text2);font-weight:600}
         .fp-controls{display:flex;align-items:center;justify-content:space-between;padding:10px 30px 40px}
         .fp-btn-main{width:64px;height:64px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#000;font-size:30px}
+
+        /* Offline status pill in full player */
+        #fp-offline-status{
+            display:none;
+            align-items:center;gap:6px;
+            margin: -10px 30px 16px;
+            padding:6px 12px;
+            border-radius:20px;
+            font-size:11px;
+            font-weight:700;
+            letter-spacing:0.5px;
+            width:fit-content;
+        }
+        #fp-offline-status.available{display:flex;background:rgba(29,185,84,0.15);color:var(--green);}
+        #fp-offline-status.caching{display:flex;background:rgba(240,165,0,0.15);color:#f0a500;}
+        #fp-offline-status i{font-size:13px;}
 
         /* BOTTOM NAV */
         #bottom-nav{
@@ -159,19 +169,48 @@
         .sheet-item:active{background:rgba(255,255,255,0.05)}
         .sheet-item i{font-size:22px;color:var(--text2)}
         .sheet-track{display:flex;align-items:center;gap:14px;padding:10px 24px 20px;border-bottom:1px solid var(--border);margin-bottom:10px}
-        .st-thumb{width:48px;height:48px;border-radius:6px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:20px; overflow:hidden;}
-        .st-thumb img{width:100%; height:100%; object-fit:cover;}
+        .st-thumb{width:48px;height:48px;border-radius:6px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden}
+        .st-thumb img{width:100%;height:100%;object-fit:cover}
 
-        .visitor-footer {
-            padding: 40px 20px 20px;
-            text-align: center;
-            color: var(--text3);
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            opacity: 0.8;
+        /* OFFLINE MANAGER PANEL */
+        #offline-panel{
+            position:fixed;bottom:calc(var(--nav-h) + var(--sib) + 82px);
+            left:8px;right:8px;
+            background:#1e1e1e;
+            border:1px solid var(--border);
+            border-radius:14px;
+            padding:16px;
+            z-index:45;
+            transform:translateY(20px);
+            opacity:0;
+            pointer-events:none;
+            transition:0.25s ease;
+            box-shadow:0 -8px 30px rgba(0,0,0,0.5);
         }
+        #offline-panel.show{transform:translateY(0);opacity:1;pointer-events:all;}
+        @media(min-width:768px){
+            #offline-panel{left:276px; bottom:calc(var(--mini-h) + 16px + var(--sib));}
+        }
+        .op-title{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+        .op-stat{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--text)}
+        .op-stat i{font-size:16px;color:var(--green)}
+        .op-divider{height:1px;background:var(--border);margin:12px 0}
+        .op-action{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:14px;font-weight:600;cursor:pointer;color:var(--text2)}
+        .op-action:hover{color:var(--text)}
+        .op-action i{font-size:18px}
+
+        .visitor-footer{padding:40px 20px 20px;text-align:center;color:var(--text3);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;opacity:0.8}
+
+        /* Toast */
+        #toast{
+            position:fixed;bottom:calc(var(--nav-h) + var(--sib) + 85px);
+            left:50%;transform:translateX(-50%) translateY(10px);
+            background:rgba(255,255,255,0.12);backdrop-filter:blur(20px);
+            color:#fff;padding:10px 20px;border-radius:50px;
+            font-size:13px;font-weight:700;white-space:nowrap;
+            opacity:0;transition:0.25s;pointer-events:none;z-index:300;
+        }
+        #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     </style>
 </head>
 <body>
@@ -190,6 +229,12 @@
         <div class="sd-section-lbl">Your Playlists</div>
         <div class="sd-pl-wrap" id="sd-pl-list"></div>
         <button class="sd-btn" onclick="openModal('playlist')"><i class="ri-add-box-fill"></i> Create New</button>
+        <div style="padding:8px;">
+            <button class="sd-btn" onclick="toggleOfflinePanel()" id="sd-offline-btn">
+                <i class="ri-wifi-off-line"></i> Offline
+                <span id="sd-offline-count" style="margin-left:auto; background:var(--s3); border-radius:10px; padding:2px 8px; font-size:11px; color:var(--text2);"></span>
+            </button>
+        </div>
     </aside>
 
     <!-- MAIN -->
@@ -200,6 +245,9 @@
                 <div class="tb-subtitle" id="tb-count">0 Tracks</div>
             </div>
             <div style="display:flex; gap:8px;">
+                <button class="ico-btn" onclick="toggleOfflinePanel()" title="Offline Music">
+                    <i class="ri-wifi-off-line" style="font-size:22px;" id="topbar-offline-ico"></i>
+                </button>
                 <a href="/postmp3" style="text-decoration:none;">
                     <button class="ico-btn"><i class="ri-add-line" style="font-size:22px;"></i></button>
                 </a>
@@ -211,7 +259,7 @@
             <!-- HOME VIEW -->
             <div class="view active" id="view-home">
                 <h2 style="margin:8px 0 20px; font-size:24px; font-weight:800;">Good evening 👋</h2>
-                
+
                 <div id="artist-album-section" style="display:none;">
                     <h3 style="font-size:16px; font-weight:700; color:var(--text2); margin-bottom:14px; text-transform:uppercase; letter-spacing:1.5px;">Artist Collections</h3>
                     <div class="artist-grid" id="artist-grid"></div>
@@ -243,12 +291,18 @@
                     <div id="pl-thumb" style="width:160px; height:160px; background:var(--s2); border-radius:12px; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:60px; box-shadow:0 15px 40px rgba(0,0,0,0.5); overflow:hidden;">🎶</div>
                     <h2 id="pl-name" style="font-size:28px; font-weight:800;">Playlist Name</h2>
                     <p id="pl-meta" style="color:var(--text2); font-size:14px; font-weight:600; margin-top:5px;">0 songs</p>
+                    <div id="pl-offline-bar" style="display:flex; align-items:center; justify-content:center; gap:10px; margin-top:12px;">
+                        <button id="pl-dl-btn" onclick="cachePlaylist()" style="display:none; background:var(--s3); color:var(--text); border-radius:20px; padding:7px 16px; font-size:13px; font-weight:700; gap:6px; align-items:center;">
+                            <i class="ri-download-line"></i> Make Available Offline
+                        </button>
+                        <span id="pl-offline-count" style="font-size:12px; color:var(--green); font-weight:700; display:none;"></span>
+                    </div>
                 </div>
                 <div id="pl-list"></div>
             </div>
 
-             <!-- ARTIST DETAIL VIEW -->
-             <div class="view" id="view-artist-detail">
+            <!-- ARTIST DETAIL VIEW -->
+            <div class="view" id="view-artist-detail">
                 <div id="ad-hdr" style="margin-bottom:24px; text-align:center;">
                     <div id="ad-thumb" style="width:140px; height:140px; background:var(--s2); border-radius:50%; margin:0 auto 15px; overflow:hidden; box-shadow:0 15px 40px rgba(0,0,0,0.5); border: 3px solid var(--border);"></div>
                     <h2 id="ad-name" style="font-size:28px; font-weight:800;">Artist Name</h2>
@@ -265,6 +319,7 @@
             <div style="flex:1; min-width:0;">
                 <div id="mp-title" style="font-size:14px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">No song playing</div>
                 <div id="mp-artist" style="font-size:12px; color:var(--text2); font-weight:600;">—</div>
+                <div id="mp-context" class="mp-context"></div>
             </div>
             <button class="ico-btn" onclick="togglePlay(event)" style="font-size:28px; color:#fff;"><i class="ri-play-fill" id="mp-play-ico"></i></button>
         </div>
@@ -274,16 +329,41 @@
             <button class="nav-item active" onclick="nav('home')"><i class="ri-home-5-fill"></i><span>Home</span></button>
             <button class="nav-item" onclick="nav('search')"><i class="ri-search-line"></i><span>Search</span></button>
             <button class="nav-item" onclick="nav('library')"><i class="ri-play-list-2-line"></i><span>Library</span></button>
-            <button class="nav-item" onclick="openModal('playlist')"><i class="ri-add-box-line"></i><span>Create</span></button>
+            <button class="nav-item" onclick="toggleOfflinePanel()"><i class="ri-wifi-off-line"></i><span>Offline</span></button>
         </nav>
     </main>
+</div>
+
+<!-- OFFLINE PANEL -->
+<div id="offline-panel">
+    <div class="op-title">
+        Offline Music
+        <button class="ico-btn" onclick="toggleOfflinePanel()" style="font-size:18px; padding:4px;"><i class="ri-close-line"></i></button>
+    </div>
+    <div class="op-stat"><i class="ri-hard-drive-2-line"></i> <span id="op-size">Calculating...</span></div>
+    <div class="op-stat" style="margin-top:6px;"><i class="ri-music-2-line"></i> <span id="op-count">0 tracks cached</span></div>
+    <div class="op-divider"></div>
+    <div class="op-action" onclick="cacheAllPlaylistSongs()">
+        <i class="ri-download-cloud-line"></i> Cache all playlist songs
+    </div>
+    <div class="op-action" onclick="clearAllCache()">
+        <i class="ri-delete-bin-line"></i> Clear all offline data
+    </div>
+    <div style="margin-top:8px; padding:8px; background:var(--s3); border-radius:8px;">
+        <div style="font-size:11px; color:var(--text3); font-weight:600; line-height:1.6;">
+            ℹ️ Songs added to any playlist are eligible for offline caching. Cached songs play without internet and use compressed browser storage.
+        </div>
+    </div>
 </div>
 
 <!-- FULL PLAYER SCREEN -->
 <div id="full-player">
     <div class="fp-hdr">
         <button class="ico-btn" onclick="closeFullPlayer()"><i class="ri-arrow-down-s-line" style="font-size:30px;"></i></button>
-        <span style="font-size:12px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">Now Playing</span>
+        <div style="text-align:center;">
+            <div style="font-size:12px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">Now Playing</div>
+            <div id="fp-context-label" style="font-size:10px; color:var(--green); font-weight:700; margin-top:2px; display:none;"></div>
+        </div>
         <button class="ico-btn"><i class="ri-more-2-fill" style="font-size:24px;"></i></button>
     </div>
     <div class="fp-art-wrap">
@@ -297,6 +377,11 @@
             </div>
             <button class="ico-btn" onclick="toggleLike()" id="fp-like-btn" style="font-size:28px;"><i class="ri-heart-line"></i></button>
         </div>
+    </div>
+    <!-- Offline status indicator -->
+    <div id="fp-offline-status">
+        <i class="ri-checkbox-circle-line"></i>
+        <span id="fp-offline-text">Available offline</span>
     </div>
     <div class="fp-prog-wrap">
         <div class="fp-bar-bg" onclick="seekAt(event)">
@@ -364,54 +449,38 @@
     const rawFilesFromEnv = <%- typeof files !== 'undefined' ? JSON.stringify(files) : '[]' %>;
     const visitCount = <%= typeof visitorCount !== 'undefined' ? visitorCount : '0' %>;
 
-    // Visual Assets
     const CARD_IMAGES = [
         "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400&auto=format&fit=crop",
-        "https://plus.unsplash.com/premium_photo-1677589330308-935750583375?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OTR8fG11c2ljJTIwd2FsbHBhcGVyfGVufDB8fDB8fHww",
-        "https://plus.unsplash.com/premium_photo-1723924899327-48f529ba853b?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTh8fG11c2ljJTIwd2FsbHBhcGVyfGVufDB8fDB8fHww",
-        "https://plus.unsplash.com/premium_photo-1682125511152-549a67b66c4a?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTE0fHxtdXNpYyUyMHdhbGxwYXBlcnxlbnwwfHwwfHx8MA%3D%3D",
-        "https://plus.unsplash.com/premium_photo-1677155842676-8e13e7053844?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjA0fHxtdXNpYyUyMHdhbGxwYXBlcnxlbnwwfHwwfHx8MA%3D%3D",
-        "https://images.unsplash.com/photo-1631246974502-73131bdaa3cf?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjIzfHxtdXNpYyUyMHdhbGxwYXBlcnxlbnwwfHwwfHx8MA%3D%3D",
-        "https://images.unsplash.com/photo-1599351430174-1cb440fadb07?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjI1fHxtdXNpYyUyMHdhbGxwYXBlcnxlbnwwfHwwfHx8MA%3D%3D",
-        "https://images.unsplash.com/photo-1650472740228-e83ea26961a5?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjM4fHxtdXNpYyUyMHdhbGxwYXBlcnxlbnwwfHwwfHx8MA%3D%3D",
-        "https://plus.unsplash.com/premium_photo-1677159499898-b061fb5bd2d7?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjU4fHxtdXNpYyUyMHdhbGxwYXBlcnxlbnwwfHwwfHx8MA%3D%3D",
-        "https://plus.unsplash.com/premium_photo-1679864782395-cc5697bf614f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjY2fHxtdXNpYyUyMHdhbGxwYXBlcnxlbnwwfHwwfHx8MA%3D%3D",
-        "https://images.unsplash.com/photo-1707201927404-bf631c937ac5?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mzc4fHxtdXNpYyUyMHdhbGxwYXBlcnxlbnwwfHwwfHx8MA%3D%3D",
-        "https://plus.unsplash.com/premium_photo-1767993206413-e4f6c06bedfc?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTQyfHxtdXNpYyUyMHdhbGxwYXBlcnxlbnwwfHwwfHx8MA%3D%3D",
-        "https://images.unsplash.com/photo-1518893883800-45cd0954574b?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTk4fHxtdXNpYyUyMHdhbGxwYXBlcnxlbnwwfHwwfHx8MA%3D%3D",
+        "https://plus.unsplash.com/premium_photo-1677589330308-935750583375?w=800&auto=format&fit=crop&q=60",
+        "https://plus.unsplash.com/premium_photo-1723924899327-48f529ba853b?w=800&auto=format&fit=crop&q=60",
+        "https://plus.unsplash.com/premium_photo-1682125511152-549a67b66c4a?w=800&auto=format&fit=crop&q=60",
+        "https://plus.unsplash.com/premium_photo-1677155842676-8e13e7053844?w=800&auto=format&fit=crop&q=60",
+        "https://images.unsplash.com/photo-1631246974502-73131bdaa3cf?w=800&auto=format&fit=crop&q=60",
+        "https://images.unsplash.com/photo-1599351430174-1cb440fadb07?w=800&auto=format&fit=crop&q=60",
+        "https://images.unsplash.com/photo-1650472740228-e83ea26961a5?w=800&auto=format&fit=crop&q=60",
+        "https://plus.unsplash.com/premium_photo-1677159499898-b061fb5bd2d7?w=800&auto=format&fit=crop&q=60",
+        "https://plus.unsplash.com/premium_photo-1679864782395-cc5697bf614f?w=800&auto=format&fit=crop&q=60",
+        "https://images.unsplash.com/photo-1707201927404-bf631c937ac5?w=800&auto=format&fit=crop&q=60",
+        "https://plus.unsplash.com/premium_photo-1767993206413-e4f6c06bedfc?w=800&auto=format&fit=crop&q=60",
+        "https://images.unsplash.com/photo-1518893883800-45cd0954574b?w=800&auto=format&fit=crop&q=60",
     ];
 
     // --- CLEANING LOGIC ---
     function cleanMetadata(str) {
         if (!str) return { title: "Unknown", artist: "Aura Artist" };
-        
         let name = str;
-        
-        // 1. Strip out website patterns in parentheses like (PagalWorldi.com.co)
         name = name.replace(/\(.*?\)/g, '');
-
-        // 2. Handle specific complex separators like "-Mp3-Song-by-" or "-by-"
         name = name.replace(/-Mp3-Song-by-/gi, ' by ');
         name = name.replace(/Mp3-Song-by-/gi, ' by ');
         name = name.replace(/-by-/gi, ' by ');
         name = name.replace(/Mp3 Song by/gi, ' by ');
-
-        // 3. Replace all remaining underscores and dashes with spaces
         name = name.replace(/[_-]/g, ' ');
-
-        // 4. Remove bitrates and other unwanted artifacts
         name = name.replace(/\s*[(\[][^)\]]*(official|video|lyrics|audio|kbps|\d+k|www\.|@|hq|com|co)[^)\]]*[)\]]/gi, '');
-        
-        // 5. Cleanup extra whitespace
         name = name.replace(/\s+/g, ' ').trim();
-
         let title = "", artist = "Aura Artist";
-        
-        // Try multiple splitters to find Artist
         const separators = [/ by /i, / — /, / - /];
         let found = false;
-        
         for (let sep of separators) {
             if (name.match(sep)) {
                 const parts = name.split(sep);
@@ -421,11 +490,7 @@
                 break;
             }
         }
-
-        if (!found) {
-            title = name;
-        }
-        
+        if (!found) title = name;
         return { title, artist };
     }
 
@@ -433,20 +498,16 @@
     const sourceData = rawFilesFromEnv.length > 0 ? rawFilesFromEnv : RAW_MUSIC_DATA;
 
     sourceData.forEach((item, i) => {
-        let meta;
-        let public_id, url;
-
+        let meta, public_id, url;
         if (typeof item === 'string') {
             meta = cleanMetadata(item);
             public_id = 'sample_' + i;
             url = "#";
         } else {
-            // Clean the original filename
             meta = cleanMetadata(item.originalname.replace(/\.[^.]+$/, ''));
             public_id = item.public_id;
             url = item.url;
         }
-
         allSongs.push({
             title: meta.title,
             artist: meta.artist,
@@ -457,7 +518,6 @@
         });
     });
 
-    // Auto-Group Artist Albums (appeared >= 2 times)
     const artistMap = {};
     allSongs.forEach(s => {
         if (!artistMap[s.artist]) artistMap[s.artist] = [];
@@ -467,39 +527,235 @@
     const artistAlbums = Object.entries(artistMap)
         .filter(([name, tracks]) => tracks.length >= 2 && name !== "Aura Artist")
         .map(([name, tracks]) => ({
-            name,
-            tracks,
-            id: 'artist_' + btoa(name).substring(0, 8),
+            name, tracks,
+            id: 'artist_' + btoa(unescape(encodeURIComponent(name))).substring(0, 8),
             imgUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}&backgroundColor=1db954`
         }));
 
     // --- APP STATE ---
     const S = {
-        queue: [...allSongs],
+        queue: [...allSongs],       // Active playback queue (scoped to context)
         idx: -1,
         playing: false,
         shuffle: false,
         loop: false,
-        liked: new Set(JSON.parse(localStorage.getItem('auraLikes')) || []),
-        playlists: JSON.parse(localStorage.getItem('auraPlaylists')) || [],
+        liked: new Set(JSON.parse(localStorage.getItem('auraLikes') || '[]')),
+        playlists: JSON.parse(localStorage.getItem('auraPlaylists') || '[]'),
         tab: 'home',
         activePlId: null,
         activeArtistId: null,
-        targetSongId: null
+        targetSongId: null,
+        offlinePanelOpen: false,
+        // Playback context: null = full library, otherwise { type, label, songs[] }
+        context: null
     };
 
     const aud = document.getElementById('aud');
 
-    // --- NAV ---
+    // =============================================
+    // SERVICE WORKER + OFFLINE CACHE SYSTEM
+    // =============================================
+
+    let swReady = false;
+    let cachedUrls = new Set(); // URLs currently in cache
+    let swMessageCallbacks = {};
+
+    function initServiceWorker() {
+        if (!('serviceWorker' in navigator) || !('caches' in window)) {
+            console.warn('Offline not supported in this browser');
+            return;
+        }
+        navigator.serviceWorker.register('/sw.js').then(reg => {
+            swReady = true;
+            console.log('SW registered');
+            refreshCacheStatus();
+        }).catch(err => {
+            console.warn('SW registration failed:', err);
+        });
+
+        // Listen for messages from SW
+        navigator.serviceWorker.addEventListener('message', (event) => {
+            const { type, trackId, url, cachedUrls: urls, bytes, count, alreadyCached } = event.data;
+
+            if (type === 'CACHE_SUCCESS') {
+                cachedUrls.add(url);
+                // Update badge on track
+                const badge = document.querySelector(`[data-offline-id="${trackId}"]`);
+                if (badge) { badge.className = 'offline-badge'; badge.textContent = '✓'; }
+                updateOfflinePanelStats();
+                updateFPOfflineStatus();
+                render();
+                if (!alreadyCached) toast('✓ Saved for offline');
+            }
+
+            if (type === 'CACHE_ERROR') {
+                const badge = document.querySelector(`[data-offline-id="${trackId}"]`);
+                if (badge) badge.remove();
+                toast('Offline save failed');
+            }
+
+            if (type === 'REMOVE_SUCCESS') {
+                updateOfflinePanelStats();
+                render();
+            }
+
+            if (type === 'CACHE_STATUS') {
+                cachedUrls = new Set(urls);
+                updateOfflinePanelStats();
+                updateFPOfflineStatus();
+                render();
+            }
+
+            if (type === 'CACHE_SIZE') {
+                const el = document.getElementById('op-size');
+                if (el) el.textContent = formatBytes(bytes) + ' used';
+                const el2 = document.getElementById('op-count');
+                if (el2) el2.textContent = `${count} track${count !== 1 ? 's' : ''} cached`;
+                const sdc = document.getElementById('sd-offline-count');
+                if (sdc) sdc.textContent = count > 0 ? count : '';
+            }
+        });
+    }
+
+    function sendSW(msg) {
+        if (!swReady || !navigator.serviceWorker.controller) return;
+        navigator.serviceWorker.controller.postMessage(msg);
+    }
+
+    function refreshCacheStatus() {
+        sendSW({ type: 'GET_CACHE_STATUS' });
+        sendSW({ type: 'GET_CACHE_SIZE' });
+    }
+
+    function cacheTrack(song) {
+        if (!swReady) { toast('Offline not available'); return; }
+        if (!song.url || song.url === '#') { toast('No audio URL for this track'); return; }
+        if (cachedUrls.has(song.url)) { toast('Already cached'); return; }
+
+        // Show caching badge immediately
+        const badge = document.querySelector(`[data-offline-id="${song.public_id}"]`);
+        if (badge) { badge.className = 'offline-badge caching'; badge.textContent = '↓'; }
+
+        sendSW({ type: 'CACHE_AUDIO', url: song.url, trackId: song.public_id });
+        toast('Saving for offline…');
+    }
+
+    function removeCachedTrack(song) {
+        if (!song.url || song.url === '#') return;
+        cachedUrls.delete(song.url);
+        sendSW({ type: 'REMOVE_AUDIO', url: song.url, trackId: song.public_id });
+        toast('Removed from offline');
+        render();
+    }
+
+    function isCached(song) {
+        return song.url && song.url !== '#' && cachedUrls.has(song.url);
+    }
+
+    // Cache all songs in current playlist
+    function cachePlaylist() {
+        const pl = S.activePlId === 'liked'
+            ? { tracks: Array.from(S.liked) }
+            : S.playlists.find(p => p.id == S.activePlId);
+        if (!pl) return;
+        const songs = pl.tracks.map(id => allSongs.find(s => s.public_id === id)).filter(Boolean);
+        let queued = 0;
+        songs.forEach(s => {
+            if (s.url && s.url !== '#' && !cachedUrls.has(s.url)) {
+                cacheTrack(s);
+                queued++;
+            }
+        });
+        if (queued === 0) toast('All songs already cached!');
+        else toast(`Caching ${queued} song${queued > 1 ? 's' : ''}…`);
+    }
+
+    // Cache all songs across all playlists
+    function cacheAllPlaylistSongs() {
+        const allPlTrackIds = new Set();
+        S.playlists.forEach(pl => pl.tracks.forEach(id => allPlTrackIds.add(id)));
+        Array.from(S.liked).forEach(id => allPlTrackIds.add(id));
+
+        let queued = 0;
+        allPlTrackIds.forEach(id => {
+            const s = allSongs.find(x => x.public_id === id);
+            if (s && s.url && s.url !== '#' && !cachedUrls.has(s.url)) {
+                setTimeout(() => cacheTrack(s), queued * 300); // stagger requests
+                queued++;
+            }
+        });
+        if (queued === 0) toast('All playlist songs already cached!');
+        else toast(`Queuing ${queued} song${queued > 1 ? 's' : ''} for offline…`);
+        toggleOfflinePanel();
+    }
+
+    function clearAllCache() {
+        caches.delete('aura-audio-v1').then(() => {
+            cachedUrls.clear();
+            updateOfflinePanelStats();
+            render();
+            toast('Offline data cleared');
+        });
+        toggleOfflinePanel();
+    }
+
+    function updateOfflinePanelStats() {
+        sendSW({ type: 'GET_CACHE_SIZE' });
+    }
+
+    function updateFPOfflineStatus() {
+        const track = S.queue[S.idx];
+        const el = document.getElementById('fp-offline-status');
+        const txt = document.getElementById('fp-offline-text');
+        if (!track || !el) return;
+        if (isCached(track)) {
+            el.className = 'available';
+            txt.textContent = 'Available offline';
+        } else {
+            el.className = '';
+            el.style.display = 'none';
+        }
+    }
+
+    function toggleOfflinePanel() {
+        S.offlinePanelOpen = !S.offlinePanelOpen;
+        document.getElementById('offline-panel').classList.toggle('show', S.offlinePanelOpen);
+        if (S.offlinePanelOpen) refreshCacheStatus();
+    }
+
+    function formatBytes(bytes) {
+        if (bytes === 0) return '0 B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    // Auto-cache when added to playlist
+    function cacheTrackSilent(songId) {
+        const song = allSongs.find(s => s.public_id === songId);
+        if (song && song.url && song.url !== '#' && !cachedUrls.has(song.url)) {
+            // Delay slightly to not block UI
+            setTimeout(() => {
+                sendSW({ type: 'CACHE_AUDIO', url: song.url, trackId: song.public_id });
+            }, 500);
+        }
+    }
+
+    // Init SW on load
+    initServiceWorker();
+
+    // =============================================
+    // NAV
+    // =============================================
+
     function nav(name) {
         S.tab = name;
+        // Close offline panel when navigating
+        if (S.offlinePanelOpen) toggleOfflinePanel();
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         const targetView = document.getElementById('view-' + name);
         if (targetView) targetView.classList.add('active');
-        
         document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.getAttribute('onclick')?.includes(`'${name}'`)));
         document.querySelectorAll('.sd-btn').forEach(b => b.classList.toggle('active', b.getAttribute('onclick')?.includes(`'${name}'`)));
-        
         document.getElementById('tb-title').textContent = name.split('-')[0].charAt(0).toUpperCase() + name.split('-')[0].slice(1);
         render();
     }
@@ -507,7 +763,10 @@
     function openPlaylist(id) { S.activePlId = id; nav('playlist'); }
     function openArtistDetail(id) { S.activeArtistId = id; nav('artist-detail'); }
 
-    // --- RENDER ---
+    // =============================================
+    // RENDER
+    // =============================================
+
     function render() {
         document.getElementById('tb-count').textContent = `${allSongs.length} Tracks`;
         if (S.tab === 'home') renderHome();
@@ -520,7 +779,8 @@
 
     function renderHome() {
         const list = document.getElementById('home-list');
-        list.innerHTML = allSongs.slice(0, 15).map(s => tlHTML(s)).join('');
+        const homeSongs = allSongs.slice(0, 15);
+        list.innerHTML = homeSongs.map(s => tlHTML(s, null, null)).join('');
         const artistSection = document.getElementById('artist-album-section');
         const grid = document.getElementById('artist-grid');
         if (artistAlbums.length > 0) {
@@ -538,9 +798,8 @@
     function renderSearch() { filterSongs(); }
     function filterSongs() {
         const q = document.getElementById('search-inp').value.toLowerCase();
-        const list = document.getElementById('search-list');
         const results = allSongs.filter(s => s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q));
-        list.innerHTML = results.map(s => tlHTML(s)).join('');
+        document.getElementById('search-list').innerHTML = results.map(s => tlHTML(s, null, null)).join('');
     }
 
     function renderLibrary() {
@@ -552,12 +811,34 @@
     }
 
     function renderPlaylistView() {
-        const pl = S.activePlId === 'liked' ? { name: 'Liked Songs', tracks: Array.from(S.liked) } : S.playlists.find(p => p.id == S.activePlId);
+        const pl = S.activePlId === 'liked'
+            ? { name: 'Liked Songs', tracks: Array.from(S.liked) }
+            : S.playlists.find(p => p.id == S.activePlId);
         if (!pl) return nav('library');
         document.getElementById('pl-name').textContent = pl.name;
         document.getElementById('pl-meta').textContent = `${pl.tracks.length} songs`;
         const songs = pl.tracks.map(id => allSongs.find(s => s.public_id === id)).filter(Boolean);
-        document.getElementById('pl-list').innerHTML = songs.map(s => tlHTML(s)).join('');
+
+        // Show cache button and count
+        const dlBtn = document.getElementById('pl-dl-btn');
+        const offCount = document.getElementById('pl-offline-count');
+        const cachedInPl = songs.filter(s => isCached(s)).length;
+        const realSongs = songs.filter(s => s.url && s.url !== '#');
+        if (realSongs.length > 0) {
+            dlBtn.style.display = 'flex';
+            if (cachedInPl > 0) {
+                offCount.style.display = 'inline';
+                offCount.textContent = `✓ ${cachedInPl}/${realSongs.length} offline`;
+            } else {
+                offCount.style.display = 'none';
+            }
+        } else {
+            dlBtn.style.display = 'none';
+            offCount.style.display = 'none';
+        }
+
+        // Pass playlist songs as context so playback is scoped
+        document.getElementById('pl-list').innerHTML = songs.map(s => tlHTML(s, songs, pl.name)).join('');
     }
 
     function renderArtistDetailView() {
@@ -566,7 +847,7 @@
         document.getElementById('ad-name').textContent = aa.name;
         document.getElementById('ad-meta').textContent = `${aa.tracks.length} tracks found`;
         document.getElementById('ad-thumb').innerHTML = `<img src="${aa.imgUrl}" style="width:100%; height:100%; object-fit:cover;">`;
-        document.getElementById('ad-list').innerHTML = aa.tracks.map(s => tlHTML(s)).join('');
+        document.getElementById('ad-list').innerHTML = aa.tracks.map(s => tlHTML(s, aa.tracks, aa.name)).join('');
     }
 
     function renderSidebarPlaylists() {
@@ -574,19 +855,73 @@
         el.innerHTML = S.playlists.map(pl => `<button class="sd-btn ${S.activePlId == pl.id ? 'active' : ''}" onclick="openPlaylist('${pl.id}')"><i class="ri-music-line"></i> ${pl.name}</button>`).join('');
     }
 
-    function tlHTML(s) {
+    // contextSongs: the song list of the current view (for scoped playback)
+    function tlHTML(s, contextSongs, contextLabel) {
         const active = S.queue[S.idx]?.public_id === s.public_id;
-        return `<div class="tl-item" onclick="playSong('${s.public_id}')"><div class="tl-thumb"><img src="${s.imgUrl}" alt="art"></div><div class="tl-info"><div class="tl-name ${active ? 'active' : ''}">${s.title}</div><div class="tl-artist">${s.artist}</div></div><button class="tl-more" onclick="openSheet(event, '${s.public_id}')"><i class="ri-more-2-fill"></i></button></div>`;
+        const cached = isCached(s);
+        const hasUrl = s.url && s.url !== '#';
+        const badgeHtml = hasUrl
+            ? `<div class="offline-badge ${cached ? '' : 'hidden'}" data-offline-id="${s.public_id}" style="${cached ? '' : 'display:none'}">${cached ? '✓' : '↓'}</div>`
+            : '';
+        // Encode context for onclick — pass as JSON via data attr trick using index
+        const ctxAttr = contextSongs
+            ? `data-ctx-label="${(contextLabel||'').replace(/"/g,'&quot;')}" data-ctx-songs='${JSON.stringify(contextSongs.map(x=>x.public_id))}'`
+            : '';
+        return `<div class="tl-item" onclick="playSongInContext('${s.public_id}', this)" ${ctxAttr}>
+            <div class="tl-thumb">
+                <img src="${s.imgUrl}" alt="art">
+                ${badgeHtml}
+            </div>
+            <div class="tl-info">
+                <div class="tl-name ${active ? 'active' : ''}">${s.title}</div>
+                <div class="tl-artist">${s.artist}</div>
+            </div>
+            <button class="tl-more" onclick="openSheet(event, '${s.public_id}')"><i class="ri-more-2-fill"></i></button>
+        </div>`;
     }
 
-    // --- PLAYER ---
+    // =============================================
+    // PLAYER
+    // =============================================
+
+    // Called when user taps a track in a list. Reads context from the DOM element.
+    function playSongInContext(id, el) {
+        // Read context from data attributes set by tlHTML
+        const ctxSongsJson = el.dataset.ctxSongs;
+        const ctxLabel = el.dataset.ctxLabel || null;
+
+        if (ctxSongsJson) {
+            // Build scoped queue from the context song ID list
+            const ids = JSON.parse(ctxSongsJson);
+            const contextSongs = ids.map(i => allSongs.find(s => s.public_id === i)).filter(Boolean);
+            setContext(contextSongs, ctxLabel);
+        } else {
+            // No context — full library
+            setContext(allSongs, null);
+        }
+
+        playSong(id);
+    }
+
+    // Set the active playback context (scopes queue, next/prev/shuffle to these songs)
+    function setContext(songs, label) {
+        S.context = songs && songs.length > 0 ? { songs, label } : null;
+        S.queue = S.context ? [...S.context.songs] : [...allSongs];
+    }
+
     function playSong(id) {
-        const index = S.queue.findIndex(s => s.public_id === id);
-        if (index === -1) {
-            const s = allSongs.find(x => x.public_id === id);
-            S.queue = [s, ...allSongs.filter(x => x.public_id !== id)];
-            S.idx = 0;
-        } else { S.idx = index; }
+        // Make sure queue is in sync with context
+        const pool = S.context ? S.context.songs : allSongs;
+
+        let idx = S.queue.findIndex(s => s.public_id === id);
+        if (idx === -1) {
+            // Song not in current queue — add it at front (shouldn't normally happen with context)
+            const s = pool.find(x => x.public_id === id) || allSongs.find(x => x.public_id === id);
+            S.queue = [s, ...pool.filter(x => x.public_id !== id)];
+            idx = 0;
+        }
+        S.idx = idx;
+
         const track = S.queue[S.idx];
         if (track.url !== "#") aud.src = track.url;
         aud.play().catch(() => {});
@@ -603,8 +938,34 @@
         updateUI();
     }
 
-    function nextTrack() { if (S.queue.length > 0) { S.idx = (S.idx + 1) % S.queue.length; playSong(S.queue[S.idx].public_id); } }
-    function prevTrack() { if (S.queue.length > 0) { S.idx = (S.idx - 1 + S.queue.length) % S.queue.length; playSong(S.queue[S.idx].public_id); } }
+    function nextTrack() {
+        if (S.queue.length === 0) return;
+        if (S.shuffle) {
+            // Random within current queue, not same song
+            let newIdx;
+            do { newIdx = Math.floor(Math.random() * S.queue.length); }
+            while (S.queue.length > 1 && newIdx === S.idx);
+            S.idx = newIdx;
+        } else {
+            S.idx = (S.idx + 1) % S.queue.length;
+        }
+        playSong(S.queue[S.idx].public_id);
+    }
+
+    function prevTrack() {
+        if (S.queue.length === 0) return;
+        // If more than 3s in, restart current track instead of going back
+        if (aud.currentTime > 3) { aud.currentTime = 0; return; }
+        if (S.shuffle) {
+            let newIdx;
+            do { newIdx = Math.floor(Math.random() * S.queue.length); }
+            while (S.queue.length > 1 && newIdx === S.idx);
+            S.idx = newIdx;
+        } else {
+            S.idx = (S.idx - 1 + S.queue.length) % S.queue.length;
+        }
+        playSong(S.queue[S.idx].public_id);
+    }
 
     function updateUI() {
         const track = S.queue[S.idx];
@@ -620,6 +981,22 @@
         document.getElementById('fp-art').innerHTML = `<img src="${track.imgUrl}" alt="art">`;
         const liked = S.liked.has(track.public_id);
         document.getElementById('fp-like-btn').innerHTML = liked ? '<i class="ri-heart-fill" style="color:var(--green)"></i>' : '<i class="ri-heart-line"></i>';
+
+        // Context label in mini + full player
+        const label = S.context?.label || null;
+        const mpCtx = document.getElementById('mp-context');
+        const fpCtx = document.getElementById('fp-context-label');
+        if (label) {
+            mpCtx.textContent = '▶ ' + label;
+            mpCtx.classList.add('show');
+            fpCtx.textContent = 'From: ' + label;
+            fpCtx.style.display = 'block';
+        } else {
+            mpCtx.classList.remove('show');
+            fpCtx.style.display = 'none';
+        }
+
+        updateFPOfflineStatus();
     }
 
     aud.ontimeupdate = () => {
@@ -640,8 +1017,20 @@
         aud.currentTime = pct * aud.duration;
     }
 
-    function toggleShuffle() { S.shuffle = !S.shuffle; document.getElementById('fp-shuf').style.color = S.shuffle ? 'var(--green)' : ''; }
-    function toggleLoop() { S.loop = !S.loop; document.getElementById('fp-loop').style.color = S.loop ? 'var(--green)' : ''; }
+    function toggleShuffle() {
+        S.shuffle = !S.shuffle;
+        document.getElementById('fp-shuf').style.color = S.shuffle ? 'var(--green)' : '';
+        toast(S.shuffle ? 'Shuffle on' : 'Shuffle off');
+    }
+    function toggleLoop() {
+        S.loop = !S.loop;
+        document.getElementById('fp-loop').style.color = S.loop ? 'var(--green)' : '';
+        toast(S.loop ? 'Repeat on' : 'Repeat off');
+    }
+
+    // =============================================
+    // PLAYLISTS & SHEETS
+    // =============================================
 
     function openModal(type, songId) { document.getElementById('modal-bg').style.display = 'flex'; S.targetSongId = songId; }
     function closeModal() { document.getElementById('modal-bg').style.display = 'none'; }
@@ -651,14 +1040,22 @@
         const newPl = { id: Date.now(), name, tracks: S.targetSongId ? [S.targetSongId] : [] };
         S.playlists.push(newPl);
         localStorage.setItem('auraPlaylists', JSON.stringify(S.playlists));
+        // Auto-cache the seed song if present
+        if (S.targetSongId) cacheTrackSilent(S.targetSongId);
         closeModal(); render(); toast("Playlist created!");
     }
 
     function toggleLike() {
         const track = S.queue[S.idx];
         if (!track) return;
-        if (S.liked.has(track.public_id)) S.liked.delete(track.public_id);
-        else S.liked.add(track.public_id);
+        if (S.liked.has(track.public_id)) {
+            S.liked.delete(track.public_id);
+        } else {
+            S.liked.add(track.public_id);
+            // Auto-cache when liked
+            cacheTrackSilent(track.public_id);
+            toast('❤️ Added & saving offline…');
+        }
         localStorage.setItem('auraLikes', JSON.stringify(Array.from(S.liked)));
         updateUI();
     }
@@ -666,14 +1063,28 @@
     function openSheet(e, id) {
         e.stopPropagation(); S.targetSongId = id;
         const song = allSongs.find(s => s.public_id === id);
+        const isOffline = isCached(song);
+        const hasUrl = song.url && song.url !== '#';
         const body = document.getElementById('sheet-body');
-        body.innerHTML = `<div class="sheet-track"><div class="st-thumb"><img src="${song.imgUrl}"></div><div><div style="font-weight:700;">${song.title}</div><div style="color:var(--text2); font-size:13px;">${song.artist}</div></div></div><div class="sheet-item" onclick="addToPlaylistMenu()"><i class="ri-folder-add-line"></i> Add to Playlist</div>`;
+        body.innerHTML = `
+            <div class="sheet-track">
+                <div class="st-thumb"><img src="${song.imgUrl}"></div>
+                <div><div style="font-weight:700;">${song.title}</div><div style="color:var(--text2); font-size:13px;">${song.artist}</div></div>
+            </div>
+            <div class="sheet-item" onclick="addToPlaylistMenu()"><i class="ri-folder-add-line"></i> Add to Playlist</div>
+            ${hasUrl && !isOffline ? `<div class="sheet-item" onclick="cacheTrack(allSongs.find(s=>s.public_id==='${id}')); closeSheet();"><i class="ri-download-line"></i> Save for Offline</div>` : ''}
+            ${hasUrl && isOffline ? `<div class="sheet-item" onclick="removeCachedTrack(allSongs.find(s=>s.public_id==='${id}')); closeSheet();"><i class="ri-delete-bin-line"></i> Remove Offline Copy</div>` : ''}
+            ${isOffline ? `<div class="sheet-item" style="pointer-events:none; opacity:0.5;"><i class="ri-checkbox-circle-line" style="color:var(--green)"></i> Available Offline</div>` : ''}
+        `;
         document.getElementById('sheet-bg').style.display = 'block';
         document.getElementById('sheet').classList.add('open');
     }
 
-    function closeSheet() { document.getElementById('sheet').classList.remove('open'); setTimeout(() => document.getElementById('sheet-bg').style.display = 'none', 300); }
-    
+    function closeSheet() {
+        document.getElementById('sheet').classList.remove('open');
+        setTimeout(() => document.getElementById('sheet-bg').style.display = 'none', 300);
+    }
+
     function addToPlaylistMenu() {
         const body = document.getElementById('sheet-body');
         let html = '<div style="padding:10px 24px; font-weight:800; opacity:0.5; font-size:12px; text-transform:uppercase;">Select Playlist</div>';
@@ -687,13 +1098,28 @@
         if (pl && !pl.tracks.includes(S.targetSongId)) {
             pl.tracks.push(S.targetSongId);
             localStorage.setItem('auraPlaylists', JSON.stringify(S.playlists));
-            toast(`Added to ${pl.name}`);
+            // Auto-cache when added to playlist
+            cacheTrackSilent(S.targetSongId);
+            toast(`Added to ${pl.name} • Saving offline…`);
         }
         closeSheet();
     }
 
-    function fmt(s) { if (!s) return "0:00"; const m = Math.floor(s/60); const sc = Math.floor(s%60); return m + ":" + (sc < 10 ? "0"+sc : sc); }
-    function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
+    function fmt(s) {
+        if (!s) return "0:00";
+        const m = Math.floor(s / 60);
+        const sc = Math.floor(s % 60);
+        return m + ":" + (sc < 10 ? "0" + sc : sc);
+    }
+
+    function toast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
     function openFullPlayer() { document.getElementById('full-player').classList.add('open'); }
     function closeFullPlayer() { document.getElementById('full-player').classList.remove('open'); }
 
