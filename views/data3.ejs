@@ -553,106 +553,173 @@
     const aud = document.getElementById('aud');
 
     // =============================================
-    // SERVICE WORKER + OFFLINE CACHE SYSTEM
+    // OFFLINE CACHE — IndexedDB (works on all mobile browsers)
+    // No Service Worker needed. Audio blobs stored directly in IDB.
     // =============================================
 
-    let swReady = false;
-    let cachedUrls = new Set(); // URLs currently in cache
-    let swMessageCallbacks = {};
+    const IDB_NAME    = 'aura-music';
+    const IDB_STORE   = 'audio';
+    const IDB_VERSION = 1;
 
-    function initServiceWorker() {
-        if (!('serviceWorker' in navigator) || !('caches' in window)) {
-            console.warn('Offline not supported in this browser');
-            return;
+    let idb = null;           // IDB connection
+    let cachedUrls = new Set(); // public_ids that are stored offline
+    let blobUrlMap = {};       // public_id → object URL (for playback)
+
+    function proxyUrl(song) {
+        if (!song || !song.url || song.url === '#') return null;
+        return `/proxy-audio/${encodeURIComponent(song.public_id)}?url=${encodeURIComponent(song.url)}`;
+    }
+
+    // Open (or create) the IndexedDB
+    function openIDB() {
+        return new Promise((resolve, reject) => {
+            if (idb) { resolve(idb); return; }
+            const req = indexedDB.open(IDB_NAME, IDB_VERSION);
+            req.onupgradeneeded = e => {
+                e.target.result.createObjectStore(IDB_STORE, { keyPath: 'id' });
+            };
+            req.onsuccess = e => { idb = e.target.result; resolve(idb); };
+            req.onerror   = e => reject(e.target.error);
+        });
+    }
+
+    // Store an ArrayBuffer under a key
+    function idbPut(id, buffer, mimeType) {
+        return openIDB().then(db => new Promise((resolve, reject) => {
+            const tx  = db.transaction(IDB_STORE, 'readwrite');
+            const req = tx.objectStore(IDB_STORE).put({ id, buffer, mimeType });
+            req.onsuccess = () => resolve();
+            req.onerror   = e => reject(e.target.error);
+        }));
+    }
+
+    // Read a record by key
+    function idbGet(id) {
+        return openIDB().then(db => new Promise((resolve, reject) => {
+            const tx  = db.transaction(IDB_STORE, 'readonly');
+            const req = tx.objectStore(IDB_STORE).get(id);
+            req.onsuccess = e => resolve(e.target.result || null);
+            req.onerror   = e => reject(e.target.error);
+        }));
+    }
+
+    // Delete a record by key
+    function idbDelete(id) {
+        return openIDB().then(db => new Promise((resolve, reject) => {
+            const tx  = db.transaction(IDB_STORE, 'readwrite');
+            const req = tx.objectStore(IDB_STORE).delete(id);
+            req.onsuccess = () => resolve();
+            req.onerror   = e => reject(e.target.error);
+        }));
+    }
+
+    // Get all stored keys
+    function idbGetAllKeys() {
+        return openIDB().then(db => new Promise((resolve, reject) => {
+            const tx  = db.transaction(IDB_STORE, 'readonly');
+            const req = tx.objectStore(IDB_STORE).getAllKeys();
+            req.onsuccess = e => resolve(e.target.result || []);
+            req.onerror   = e => reject(e.target.error);
+        }));
+    }
+
+    // Get all records (for size calculation)
+    function idbGetAll() {
+        return openIDB().then(db => new Promise((resolve, reject) => {
+            const tx  = db.transaction(IDB_STORE, 'readonly');
+            const req = tx.objectStore(IDB_STORE).getAll();
+            req.onsuccess = e => resolve(e.target.result || []);
+            req.onerror   = e => reject(e.target.error);
+        }));
+    }
+
+    // Load all stored keys into cachedUrls on startup
+    async function initOfflineCache() {
+        try {
+            const keys = await idbGetAllKeys();
+            cachedUrls = new Set(keys);
+            // Pre-build blob URLs for any stored tracks so playback is instant
+            // (don't block startup — do it lazily)
+            updateOfflinePanelStats();
+            render();
+        } catch (err) {
+            console.warn('[IDB] Init failed:', err);
         }
-        navigator.serviceWorker.register('/sw.js').then(reg => {
-            swReady = true;
-            console.log('SW registered');
-            refreshCacheStatus();
-        }).catch(err => {
-            console.warn('SW registration failed:', err);
-        });
-
-        // Listen for messages from SW
-        navigator.serviceWorker.addEventListener('message', (event) => {
-            const { type, trackId, url, cachedUrls: urls, bytes, count, alreadyCached } = event.data;
-
-            if (type === 'CACHE_SUCCESS') {
-                cachedUrls.add(url);
-                // Update badge on track
-                const badge = document.querySelector(`[data-offline-id="${trackId}"]`);
-                if (badge) { badge.className = 'offline-badge'; badge.textContent = '✓'; }
-                updateOfflinePanelStats();
-                updateFPOfflineStatus();
-                render();
-                if (!alreadyCached) toast('✓ Saved for offline');
-            }
-
-            if (type === 'CACHE_ERROR') {
-                const badge = document.querySelector(`[data-offline-id="${trackId}"]`);
-                if (badge) badge.remove();
-                toast('Offline save failed');
-            }
-
-            if (type === 'REMOVE_SUCCESS') {
-                updateOfflinePanelStats();
-                render();
-            }
-
-            if (type === 'CACHE_STATUS') {
-                cachedUrls = new Set(urls);
-                updateOfflinePanelStats();
-                updateFPOfflineStatus();
-                render();
-            }
-
-            if (type === 'CACHE_SIZE') {
-                const el = document.getElementById('op-size');
-                if (el) el.textContent = formatBytes(bytes) + ' used';
-                const el2 = document.getElementById('op-count');
-                if (el2) el2.textContent = `${count} track${count !== 1 ? 's' : ''} cached`;
-                const sdc = document.getElementById('sd-offline-count');
-                if (sdc) sdc.textContent = count > 0 ? count : '';
-            }
-        });
     }
 
-    function sendSW(msg) {
-        if (!swReady || !navigator.serviceWorker.controller) return;
-        navigator.serviceWorker.controller.postMessage(msg);
-    }
-
-    function refreshCacheStatus() {
-        sendSW({ type: 'GET_CACHE_STATUS' });
-        sendSW({ type: 'GET_CACHE_SIZE' });
-    }
-
-    function cacheTrack(song) {
-        if (!swReady) { toast('Offline not available'); return; }
-        if (!song.url || song.url === '#') { toast('No audio URL for this track'); return; }
-        if (cachedUrls.has(song.url)) { toast('Already cached'); return; }
-
-        // Show caching badge immediately
-        const badge = document.querySelector(`[data-offline-id="${song.public_id}"]`);
-        if (badge) { badge.className = 'offline-badge caching'; badge.textContent = '↓'; }
-
-        sendSW({ type: 'CACHE_AUDIO', url: song.url, trackId: song.public_id });
-        toast('Saving for offline…');
-    }
-
-    function removeCachedTrack(song) {
-        if (!song.url || song.url === '#') return;
-        cachedUrls.delete(song.url);
-        sendSW({ type: 'REMOVE_AUDIO', url: song.url, trackId: song.public_id });
-        toast('Removed from offline');
-        render();
+    // Returns a blob: URL for a cached track, building it if needed
+    async function getBlobUrl(song) {
+        if (blobUrlMap[song.public_id]) return blobUrlMap[song.public_id];
+        try {
+            const record = await idbGet(song.public_id);
+            if (!record) return null;
+            const blob = new Blob([record.buffer], { type: record.mimeType || 'audio/mpeg' });
+            const url  = URL.createObjectURL(blob);
+            blobUrlMap[song.public_id] = url;
+            return url;
+        } catch {
+            return null;
+        }
     }
 
     function isCached(song) {
-        return song.url && song.url !== '#' && cachedUrls.has(song.url);
+        return !!song && cachedUrls.has(song.public_id);
     }
 
-    // Cache all songs in current playlist
+    async function cacheTrack(song) {
+        const pUrl = proxyUrl(song);
+        if (!pUrl) { toast('No audio URL for this track'); return; }
+        if (cachedUrls.has(song.public_id)) { toast('Already saved offline ✓'); return; }
+
+        // Show downloading badge
+        const badge = document.querySelector(`[data-offline-id="${song.public_id}"]`);
+        if (badge) { badge.className = 'offline-badge caching'; badge.textContent = '↓'; badge.style.display = 'flex'; }
+        toast('Downloading for offline…');
+
+        try {
+            const resp = await fetch(pUrl);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+            const mimeType = resp.headers.get('content-type') || 'audio/mpeg';
+            const buffer   = await resp.arrayBuffer();
+
+            await idbPut(song.public_id, buffer, mimeType);
+            cachedUrls.add(song.public_id);
+
+            // Revoke old blob URL if any, will be rebuilt on next play
+            if (blobUrlMap[song.public_id]) {
+                URL.revokeObjectURL(blobUrlMap[song.public_id]);
+                delete blobUrlMap[song.public_id];
+            }
+
+            if (badge) { badge.className = 'offline-badge'; badge.textContent = '✓'; badge.style.display = 'flex'; }
+            updateOfflinePanelStats();
+            updateFPOfflineStatus();
+            render();
+            toast('✓ Saved for offline');
+        } catch (err) {
+            console.error('[IDB] cacheTrack failed:', err);
+            if (badge) { badge.style.display = 'none'; }
+            toast('Save failed: ' + err.message);
+        }
+    }
+
+    async function removeCachedTrack(song) {
+        try {
+            await idbDelete(song.public_id);
+            cachedUrls.delete(song.public_id);
+            if (blobUrlMap[song.public_id]) {
+                URL.revokeObjectURL(blobUrlMap[song.public_id]);
+                delete blobUrlMap[song.public_id];
+            }
+            updateOfflinePanelStats();
+            render();
+            toast('Removed from offline');
+        } catch (err) {
+            toast('Remove failed: ' + err.message);
+        }
+    }
+
     function cachePlaylist() {
         const pl = S.activePlId === 'liked'
             ? { tracks: Array.from(S.liked) }
@@ -660,52 +727,70 @@
         if (!pl) return;
         const songs = pl.tracks.map(id => allSongs.find(s => s.public_id === id)).filter(Boolean);
         let queued = 0;
-        songs.forEach(s => {
-            if (s.url && s.url !== '#' && !cachedUrls.has(s.url)) {
-                cacheTrack(s);
+        songs.forEach((s, i) => {
+            if (!isCached(s) && proxyUrl(s)) {
+                setTimeout(() => cacheTrack(s), i * 600); // stagger to avoid overwhelming mobile
                 queued++;
             }
         });
-        if (queued === 0) toast('All songs already cached!');
-        else toast(`Caching ${queued} song${queued > 1 ? 's' : ''}…`);
+        if (queued === 0) toast('All songs already saved!');
+        else toast(`Downloading ${queued} song${queued > 1 ? 's' : ''}…`);
     }
 
-    // Cache all songs across all playlists
     function cacheAllPlaylistSongs() {
-        const allPlTrackIds = new Set();
-        S.playlists.forEach(pl => pl.tracks.forEach(id => allPlTrackIds.add(id)));
-        Array.from(S.liked).forEach(id => allPlTrackIds.add(id));
-
+        const allIds = new Set();
+        S.playlists.forEach(pl => pl.tracks.forEach(id => allIds.add(id)));
+        Array.from(S.liked).forEach(id => allIds.add(id));
         let queued = 0;
-        allPlTrackIds.forEach(id => {
+        allIds.forEach(id => {
             const s = allSongs.find(x => x.public_id === id);
-            if (s && s.url && s.url !== '#' && !cachedUrls.has(s.url)) {
-                setTimeout(() => cacheTrack(s), queued * 300); // stagger requests
+            if (s && !isCached(s) && proxyUrl(s)) {
+                setTimeout(() => cacheTrack(s), queued * 600);
                 queued++;
             }
         });
-        if (queued === 0) toast('All playlist songs already cached!');
+        if (queued === 0) toast('All playlist songs already saved!');
         else toast(`Queuing ${queued} song${queued > 1 ? 's' : ''} for offline…`);
         toggleOfflinePanel();
     }
 
-    function clearAllCache() {
-        caches.delete('aura-audio-v1').then(() => {
-            cachedUrls.clear();
+    async function clearAllCache() {
+        try {
+            const db  = await openIDB();
+            const tx  = db.transaction(IDB_STORE, 'readwrite');
+            tx.objectStore(IDB_STORE).clear();
+            // Revoke all blob URLs
+            Object.values(blobUrlMap).forEach(u => URL.revokeObjectURL(u));
+            blobUrlMap  = {};
+            cachedUrls  = new Set();
             updateOfflinePanelStats();
             render();
             toast('Offline data cleared');
-        });
+        } catch (err) {
+            toast('Clear failed: ' + err.message);
+        }
         toggleOfflinePanel();
     }
 
-    function updateOfflinePanelStats() {
-        sendSW({ type: 'GET_CACHE_SIZE' });
+    async function updateOfflinePanelStats() {
+        try {
+            const records = await idbGetAll();
+            let totalBytes = 0;
+            records.forEach(r => { if (r.buffer) totalBytes += r.buffer.byteLength; });
+            const count = records.length;
+
+            const el  = document.getElementById('op-size');
+            const el2 = document.getElementById('op-count');
+            const sdc = document.getElementById('sd-offline-count');
+            if (el)  el.textContent  = totalBytes > 0 ? formatBytes(totalBytes) + ' used' : '0 B used';
+            if (el2) el2.textContent = `${count} track${count !== 1 ? 's' : ''} saved`;
+            if (sdc) sdc.textContent = count > 0 ? count : '';
+        } catch { /* ignore */ }
     }
 
     function updateFPOfflineStatus() {
         const track = S.queue[S.idx];
-        const el = document.getElementById('fp-offline-status');
+        const el  = document.getElementById('fp-offline-status');
         const txt = document.getElementById('fp-offline-text');
         if (!track || !el) return;
         if (isCached(track)) {
@@ -720,28 +805,24 @@
     function toggleOfflinePanel() {
         S.offlinePanelOpen = !S.offlinePanelOpen;
         document.getElementById('offline-panel').classList.toggle('show', S.offlinePanelOpen);
-        if (S.offlinePanelOpen) refreshCacheStatus();
+        if (S.offlinePanelOpen) updateOfflinePanelStats();
     }
 
     function formatBytes(bytes) {
-        if (bytes === 0) return '0 B';
+        if (!bytes || bytes === 0) return '0 B';
         if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
         return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
     }
 
-    // Auto-cache when added to playlist
     function cacheTrackSilent(songId) {
         const song = allSongs.find(s => s.public_id === songId);
-        if (song && song.url && song.url !== '#' && !cachedUrls.has(song.url)) {
-            // Delay slightly to not block UI
-            setTimeout(() => {
-                sendSW({ type: 'CACHE_AUDIO', url: song.url, trackId: song.public_id });
-            }, 500);
+        if (song && !isCached(song) && proxyUrl(song)) {
+            setTimeout(() => cacheTrack(song), 1000);
         }
     }
 
-    // Init SW on load
-    initServiceWorker();
+    // Init IDB on load
+    initOfflineCache();
 
     // =============================================
     // NAV
@@ -885,7 +966,7 @@
     // =============================================
 
     // Called when user taps a track in a list. Reads context from the DOM element.
-    function playSongInContext(id, el) {
+    async function playSongInContext(id, el) {
         // Read context from data attributes set by tlHTML
         const ctxSongsJson = el.dataset.ctxSongs;
         const ctxLabel = el.dataset.ctxLabel || null;
@@ -909,13 +990,11 @@
         S.queue = S.context ? [...S.context.songs] : [...allSongs];
     }
 
-    function playSong(id) {
-        // Make sure queue is in sync with context
+    async function playSong(id) {
         const pool = S.context ? S.context.songs : allSongs;
 
         let idx = S.queue.findIndex(s => s.public_id === id);
         if (idx === -1) {
-            // Song not in current queue — add it at front (shouldn't normally happen with context)
             const s = pool.find(x => x.public_id === id) || allSongs.find(x => x.public_id === id);
             S.queue = [s, ...pool.filter(x => x.public_id !== id)];
             idx = 0;
@@ -923,7 +1002,16 @@
         S.idx = idx;
 
         const track = S.queue[S.idx];
-        if (track.url !== "#") aud.src = track.url;
+        if (track.url && track.url !== '#') {
+            // Try IndexedDB blob first (works fully offline, fastest on repeat plays)
+            const blobUrl = await getBlobUrl(track);
+            if (blobUrl) {
+                aud.src = blobUrl;
+            } else {
+                // Fall back to proxy stream (requires network)
+                aud.src = proxyUrl(track) || track.url;
+            }
+        }
         aud.play().catch(() => {});
         S.playing = true;
         document.getElementById('mini-player').classList.add('show');
@@ -938,10 +1026,9 @@
         updateUI();
     }
 
-    function nextTrack() {
+    async function nextTrack() {
         if (S.queue.length === 0) return;
         if (S.shuffle) {
-            // Random within current queue, not same song
             let newIdx;
             do { newIdx = Math.floor(Math.random() * S.queue.length); }
             while (S.queue.length > 1 && newIdx === S.idx);
@@ -949,12 +1036,11 @@
         } else {
             S.idx = (S.idx + 1) % S.queue.length;
         }
-        playSong(S.queue[S.idx].public_id);
+        await playSong(S.queue[S.idx].public_id);
     }
 
-    function prevTrack() {
+    async function prevTrack() {
         if (S.queue.length === 0) return;
-        // If more than 3s in, restart current track instead of going back
         if (aud.currentTime > 3) { aud.currentTime = 0; return; }
         if (S.shuffle) {
             let newIdx;
@@ -964,7 +1050,7 @@
         } else {
             S.idx = (S.idx - 1 + S.queue.length) % S.queue.length;
         }
-        playSong(S.queue[S.idx].public_id);
+        await playSong(S.queue[S.idx].public_id);
     }
 
     function updateUI() {

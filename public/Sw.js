@@ -1,7 +1,6 @@
-// Aura Music Service Worker
-// Place this file at: /public/sw.js
+// Aura Music Service Worker — place at /public/sw.js
 
-const AUDIO_CACHE = 'aura-audio-v1';
+const AUDIO_CACHE = 'aura-audio-v2';
 
 // ─── Lifecycle ───────────────────────────────────────────────────────────────
 
@@ -9,49 +8,33 @@ self.addEventListener('install', () => self.skipWaiting());
 
 self.addEventListener('activate', (event) => {
     event.waitUntil(
-        caches.keys().then(keys =>
-            Promise.all(
-                keys
-                    .filter(k => k !== AUDIO_CACHE)
-                    .map(k => caches.delete(k))
-            )
-        ).then(() => clients.claim())
+        caches.keys()
+            .then(keys => Promise.all(
+                keys.filter(k => k !== AUDIO_CACHE).map(k => caches.delete(k))
+            ))
+            .then(() => clients.claim())
     );
 });
 
 // ─── Fetch Intercept ─────────────────────────────────────────────────────────
-// Intercepts Cloudinary audio requests and serves from cache when available.
-// Uses cors mode so the response is cacheable (opaque responses are not).
+// Only intercepts same-origin /proxy-audio/ requests — no CORS issues ever.
 
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
-    const isCloudinary = url.hostname.includes('cloudinary.com') ||
-                         url.hostname.includes('res.cloudinary');
-
-    if (!isCloudinary) return;
+    if (!url.pathname.startsWith('/proxy-audio/')) return;
 
     event.respondWith(
         caches.open(AUDIO_CACHE).then(async (cache) => {
             const cached = await cache.match(event.request.url);
-            if (cached) return cached;
-
-            // Must use cors + omit — 'no-cors' produces an opaque response
-            // that the Cache API will silently reject on production domains
-            const networkReq = new Request(event.request.url, {
-                mode: 'cors',
-                credentials: 'omit',
-            });
-
-            try {
-                const response = await fetch(networkReq);
-                if (response.ok && response.type !== 'opaque') {
-                    cache.put(event.request.url, response.clone());
-                }
-                return response;
-            } catch {
-                // Network failed and nothing in cache — let the browser handle it
-                return fetch(event.request);
+            if (cached) {
+                console.log('[SW] Cache hit:', url.pathname);
+                return cached;
             }
+            const response = await fetch(event.request);
+            if (response.ok) {
+                cache.put(event.request.url, response.clone());
+            }
+            return response;
         })
     );
 });
@@ -59,9 +42,15 @@ self.addEventListener('fetch', (event) => {
 // ─── Message Handler ─────────────────────────────────────────────────────────
 
 self.addEventListener('message', async (event) => {
-    const { type, url, trackId } = event.data;
+    // Allow client to trigger immediate SW activation (used on update)
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+        return;
+    }
 
-    // Helper — safely reply to the client that sent this message
+    const { type, url, trackId } = event.data || {};
+    if (!type) return;
+
     const reply = (payload) => {
         try { event.source?.postMessage(payload); } catch { /* tab closed */ }
     };
@@ -71,26 +60,16 @@ self.addEventListener('message', async (event) => {
         try {
             const cache = await caches.open(AUDIO_CACHE);
             const existing = await cache.match(url);
-
             if (existing) {
                 reply({ type: 'CACHE_SUCCESS', trackId, url, alreadyCached: true });
                 return;
             }
-
-            // Explicit CORS mode — critical for production deployments (Render, Vercel, etc.)
-            // Cloudinary must have your production domain in its allowed-origins list.
-            const response = await fetch(url, { mode: 'cors', credentials: 'omit' });
-
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-            if (response.type === 'opaque') {
-                throw new Error('Opaque response — add your domain to Cloudinary CORS settings');
-            }
-
+            // Same-origin fetch — proxy URL → Express → Cloudinary
+            // No CORS headers needed at all
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
             await cache.put(url, response.clone());
             reply({ type: 'CACHE_SUCCESS', trackId, url });
-
         } catch (err) {
             console.error('[SW] CACHE_AUDIO failed:', err.message);
             reply({ type: 'CACHE_ERROR', trackId, error: err.message });
@@ -104,7 +83,6 @@ self.addEventListener('message', async (event) => {
             await cache.delete(url);
             reply({ type: 'REMOVE_SUCCESS', trackId });
         } catch (err) {
-            console.error('[SW] REMOVE_AUDIO failed:', err.message);
             reply({ type: 'REMOVE_ERROR', trackId, error: err.message });
         }
     }
@@ -125,28 +103,16 @@ self.addEventListener('message', async (event) => {
         try {
             const cache = await caches.open(AUDIO_CACHE);
             const keys  = await cache.keys();
-
-            // Use Content-Length header first (fast path — avoids reading blobs)
-            let totalBytes = 0;
-            let count = 0;
-
+            let totalBytes = 0, count = 0;
             await Promise.all(keys.map(async (req) => {
                 const resp = await cache.match(req);
                 if (!resp) return;
                 count++;
                 const cl = resp.headers.get('content-length');
-                if (cl) {
-                    totalBytes += parseInt(cl, 10);
-                } else {
-                    // Fallback: read blob (slower but accurate)
-                    const blob = await resp.blob();
-                    totalBytes += blob.size;
-                }
+                totalBytes += cl ? parseInt(cl, 10) : (await resp.blob()).size;
             }));
-
             reply({ type: 'CACHE_SIZE', bytes: totalBytes, count });
         } catch (err) {
-            console.error('[SW] GET_CACHE_SIZE failed:', err.message);
             reply({ type: 'CACHE_SIZE', bytes: 0, count: 0 });
         }
     }
